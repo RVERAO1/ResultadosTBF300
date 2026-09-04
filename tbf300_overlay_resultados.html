@@ -26,7 +26,7 @@
 
   /* CLASSIFICAÇÃO */
   #standings {
-    position:absolute; right:36px; top:74px; width:520px;
+    position:absolute; right:28px; top:48px; width:520px;
     border:1px solid rgba(215,165,38,.65);
     border-radius:18px; overflow:hidden;
     background:linear-gradient(180deg,rgba(9,13,20,.96),rgba(7,10,15,.91));
@@ -149,7 +149,7 @@
   const qs = new URLSearchParams(location.search);
   const EVENT_ID = Number(qs.get('evento') || 582);
   const DAY = Math.max(1, Math.min(4, Number(qs.get('dia') || 2)));
-  const REFRESH_MS = Math.max(15000, Number(qs.get('refresh') || 30000));
+  const REFRESH_MS = Math.max(15000, Number(qs.get('refresh') || 20000));
   const ROTATE_MS = Math.max(6000, Number(qs.get('rotate') || 12000));
   const API = 'https://restboliche.bigmidia.com/cbbol/api';
 
@@ -258,11 +258,38 @@
   }
 
   async function getJson(url) {
-    // GitHub Pages não recebe CORS da CBBOL; usa o proxy como rota principal.
-    const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-    const res = await fetch(proxy, {cache:'no-store'});
-    if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
-    return await res.json();
+    // A CBBOL não libera CORS para o GitHub Pages.
+    // Usamos redundância de proxies para não depender de um único serviço.
+    const encoded = encodeURIComponent(url);
+    const routes = [
+      'https://api.allorigins.win/raw?url=' + encoded,
+      'https://corsproxy.io/?url=' + encoded,
+      'https://api.codetabs.com/v1/proxy?quest=' + encoded
+    ];
+
+    let lastError = null;
+    for (const route of routes) {
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 7000);
+        const res = await fetch(route, {
+          cache:'no-store',
+          signal: controller.signal,
+          headers:{'Accept':'application/json,text/plain,*/*'}
+        });
+        clearTimeout(timer);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const json = JSON.parse(text);
+        if (!json || !Object.prototype.hasOwnProperty.call(json,'tabela'))
+          throw new Error('Resposta inválida');
+        return json;
+      } catch (e) {
+        lastError = e;
+        console.warn('Rota CBBOL falhou:', route, e);
+      }
+    }
+    throw lastError || new Error('Todas as rotas CBBOL falharam');
   }
 
   async function fetchDivisionForDay(d, day) {
@@ -362,7 +389,7 @@
     const base = items.length ? items.join('<span class="sep">◆</span>') : '<span class="ticker-item">D2 • Aguardando a publicação dos primeiros confrontos pela CBBOL…</span>';
     // Duplica a sequência para rolagem contínua sem salto.
     document.getElementById('tickerTrack').innerHTML = base + '<span class="sep">◆</span>' + base + '<span class="sep">◆</span>';
-    const duration = Math.max(45, items.length * 8);
+    const duration = Math.max(22, items.length * 3);
     document.getElementById('tickerTrack').style.setProperty('--ticker-duration', duration + 's');
   }
 
@@ -385,7 +412,7 @@
       status.className = 'api-ok';
     } catch (e) {
       console.error('Falha CBBOL:', e);
-      status.textContent = 'CBBOL indisponível';
+      status.textContent = 'Reconectando à CBBOL…';
       status.title = String(e && e.message ? e.message : e);
       status.className = 'api-err';
       if (!divisionData.size) document.getElementById('rows').innerHTML = '<div class="empty">Falha temporária na atualização da CBBOL.</div>';
