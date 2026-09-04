@@ -26,7 +26,7 @@
 
   /* CLASSIFICAÇÃO */
   #standings {
-    position:absolute; right:28px; top:48px; width:520px;
+    position:absolute; right:28px; top:34px; width:590px;
     border:1px solid rgba(215,165,38,.65);
     border-radius:18px; overflow:hidden;
     background:linear-gradient(180deg,rgba(9,13,20,.96),rgba(7,10,15,.91));
@@ -39,7 +39,7 @@
     background:linear-gradient(105deg,rgba(13,79,155,.82),rgba(12,18,28,.96) 55%,rgba(215,165,38,.18));
     border-bottom:1px solid rgba(215,165,38,.55);
   }
-  .logo {width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+  .logo {width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
   .kicker{font-size:12px;letter-spacing:1.7px;color:var(--gold2);font-weight:800;text-transform:uppercase}
   .title{font-size:20px;line-height:1.05;font-weight:900;text-transform:uppercase;margin-top:3px}
   .division{font-size:12px;color:#dce7f7;font-weight:700;margin-top:6px}
@@ -55,7 +55,7 @@
     border-bottom:1px solid var(--line);
   }
   .row{
-    min-height:44px; padding:6px 12px; font-size:13px;
+    min-height:35px; padding:4px 12px; font-size:12px;
     border-bottom:1px solid rgba(255,255,255,.07);
   }
   .row:last-child{border-bottom:0}
@@ -72,6 +72,18 @@
   }
   .api-ok{color:#a8dcbf}
   .api-err{color:#ff9b9b}
+
+
+  .row.qualifying{
+    background:linear-gradient(90deg,rgba(215,165,38,.18),rgba(13,79,155,.10));
+    box-shadow:inset 4px 0 0 var(--gold);
+  }
+  .row.qualifying .pos{color:var(--gold2)}
+  .qmark{
+    display:inline-block;margin-left:6px;padding:2px 5px;border-radius:5px;
+    background:rgba(215,165,38,.18);border:1px solid rgba(215,165,38,.5);
+    color:var(--gold2);font-size:8px;font-weight:950;vertical-align:1px;
+  }
 
   /* TICKER */
   #ticker {
@@ -126,7 +138,7 @@
     </div>
     <div id="rows"><div class="empty">Conectando à CBBOL…</div></div>
     <div class="foot">
-      <span id="stageLabel">D2 • partidas 7–12</span>
+      <span id="stageLabel">D2 • TOP 8 avançam às finais</span>
       <span id="status">Atualizando…</span>
     </div>
   </aside>
@@ -171,6 +183,82 @@
     {display:'RODRIGO VERÃO', aliases:['Rodrigo Verao','Rodrigo Verão'], division:2920},
     {display:'RAQUEL TENUTA', aliases:['Raquel Tenuta'], division:2921}
   ];
+
+
+  // Snapshot D1 verificado diretamente na classificação oficial da CBBOL.
+  const D1_SNAPSHOT = {
+    2918: [
+      {name:'WILLIAM HIDEKI', pos:4, total:1270, avg:211.67, gap:86},
+      {name:'THIAGO WANDSCHER', pos:9, total:1214, avg:202.33, gap:142},
+      {name:'NILO PONCE', pos:14, total:1128, avg:188.00, gap:228}
+    ],
+    2919: [
+      {name:'MICHEL BELMONTE', pos:4, total:1161, avg:193.50, gap:121},
+      {name:'MATHEUS VERÃO', pos:9, total:1065, avg:177.50, gap:217},
+      {name:'GUI PONCE', pos:11, total:1033, avg:172.17, gap:249}
+    ],
+    2920: [
+      {name:'GUSTAVO BUZELLE', pos:4, total:1051, avg:175.17, gap:72},
+      {name:'RODRIGO VERÃO', pos:6, total:1008, avg:168.00, gap:115}
+    ],
+    2921: [
+      {name:'RAQUEL TENUTA', pos:7, total:1008, avg:168.00, gap:152}
+    ]
+  };
+
+  function snapshotDivisions() {
+    return divisions.map(d => ({...d, sourceDay:1, snapshot:true, rows:[]}))
+      .filter(d => (D1_SNAPSHOT[d.id] || []).length);
+  }
+
+  function renderSnapshotDivision(d) {
+    document.getElementById('divisionName').textContent = `${d.short} • CLASSIF. APÓS D1`;
+    const rows = D1_SNAPSHOT[d.id] || [];
+    document.getElementById('rows').innerHTML = rows.map(x => `
+      <div class="row">
+        <div class="pos">${x.pos}º</div>
+        <div class="name">${escapeHtml(x.name)}</div>
+        <div class="num">${x.total.toLocaleString('pt-BR')}</div>
+        <div class="num">${x.avg.toFixed(2).replace('.',',')}</div>
+        <div class="gap">-${x.gap}</div>
+      </div>`).join('');
+  }
+
+
+  function renderAllStandingsSnapshot() {
+    document.getElementById('divisionName').textContent = 'TODAS AS DIVISÕES • CLASSIF. APÓS D1';
+    const labels = {
+      2918:'1ª MASC.', 2919:'2ª MASC.', 2920:'3ª MASC.', 2921:'1ª FEM.'
+    };
+    const order = [2918,2919,2920,2921];
+    const html = [];
+    order.forEach(id => {
+      html.push(`<div style="padding:6px 12px 4px;background:rgba(13,79,155,.22);border-top:1px solid rgba(215,165,38,.35);border-bottom:1px solid rgba(255,255,255,.07);font-size:10px;font-weight:950;letter-spacing:1px;color:var(--gold2)">${labels[id]}</div>`);
+      (D1_SNAPSHOT[id] || []).forEach(x => html.push(`
+        <div class="row ${x.pos <= 8 ? 'qualifying' : ''}">
+          <div class="pos">${x.pos}º</div>
+          <div class="name">${escapeHtml(x.name)}${x.pos <= 8 ? '<span class="qmark">TOP 8</span>' : ''}</div>
+          <div class="num">${x.total.toLocaleString('pt-BR')}</div>
+          <div class="num">${x.avg.toFixed(2).replace('.',',')}</div>
+          <div class="gap">-${x.gap}</div>
+        </div>`));
+    });
+    document.getElementById('rows').innerHTML = html.join('');
+  }
+
+  function renderSnapshotTicker() {
+    const items = Object.values(D1_SNAPSHOT).flat().map(x => `
+      <span class="ticker-item">
+        <span class="ath">D1 • ${escapeHtml(x.name)}</span>
+        <span class="score">${x.pos}º</span>
+        <span class="opp">${x.total.toLocaleString('pt-BR')} pts • média ${x.avg.toFixed(2).replace('.',',')}</span>
+        <span class="bonus">-${x.gap} pts do líder</span>
+      </span>`);
+    const base = items.join('<span class="sep">◆</span>');
+    const track = document.getElementById('tickerTrack');
+    track.innerHTML = base + '<span class="sep">◆</span>' + base + '<span class="sep">◆</span>';
+    track.style.setProperty('--ticker-duration', Math.max(28, items.length * 3.2) + 's');
+  }
 
   // D2 = partidas 7 a 12, conforme o itinerário oficial.
   const schedule = {
@@ -312,6 +400,7 @@
   }
 
   function renderDivision(d) {
+    if (d.snapshot) { renderSnapshotDivision(d); return; }
     const sourceDay = d.sourceDay || DAY;
     document.getElementById('divisionName').textContent =
       sourceDay === DAY ? `${d.short} • D${DAY}` : `${d.short} • CLASSIF. APÓS D${sourceDay}`;
@@ -389,8 +478,27 @@
     const base = items.length ? items.join('<span class="sep">◆</span>') : '<span class="ticker-item">D2 • Aguardando a publicação dos primeiros confrontos pela CBBOL…</span>';
     // Duplica a sequência para rolagem contínua sem salto.
     document.getElementById('tickerTrack').innerHTML = base + '<span class="sep">◆</span>' + base + '<span class="sep">◆</span>';
-    const duration = Math.max(22, items.length * 3);
+    const duration = Math.max(28, items.length * 3.2);
     document.getElementById('tickerTrack').style.setProperty('--ticker-duration', duration + 's');
+  }
+
+
+  function renderAllLiveStandings(divs) {
+    const labels = {2918:'1ª MASC.',2919:'2ª MASC.',2920:'3ª MASC.',2921:'1ª FEM.'};
+    const html=[];
+    divs.forEach(d => {
+      const athletes=tracked.filter(t=>t.division===d.id);
+      const found=athletes.map(t=>({t,r:findRow(d.rows,t.aliases)})).filter(x=>x.r);
+      if(!found.length) return;
+      html.push(`<div style="padding:6px 12px 4px;background:rgba(13,79,155,.22);border-top:1px solid rgba(215,165,38,.35);border-bottom:1px solid rgba(255,255,255,.07);font-size:10px;font-weight:950;letter-spacing:1px;color:var(--gold2)">${labels[d.id]}</div>`);
+      const leaderPoints=d.rows.length?metrics(d.rows[0]).points:0;
+      found.forEach(({t,r})=>{
+        const m=metrics(r), pos=d.rows.indexOf(r)+1, gap=Math.max(0,leaderPoints-m.points);
+        html.push(`<div class="row ${pos<=8?'qualifying':''}"><div class="pos">${pos}º</div><div class="name">${escapeHtml(t.display)}${pos<=8?'<span class="qmark">TOP 8</span>':''}</div><div class="num">${m.pins.toLocaleString('pt-BR')}</div><div class="num">${m.avg.toFixed(2).replace('.',',')}</div><div class="gap ${gap===0?'leader':''}">${gap===0?'LÍDER':'-'+gap}</div></div>`);
+      });
+    });
+    document.getElementById('divisionName').textContent=`TODAS AS DIVISÕES • D${DAY}`;
+    document.getElementById('rows').innerHTML=html.join('');
   }
 
   async function refresh() {
@@ -403,8 +511,10 @@
       activeDivisions = loaded.filter(d => tracked.some(t => t.division === d.id && findRow(d.rows,t.aliases)));
       if (!activeDivisions.length) activeDivisions = loaded;
       divIndex %= Math.max(1, activeDivisions.length);
-      renderDivision(activeDivisions[divIndex]);
-      renderTicker();
+      const hasCurrentDay = activeDivisions.some(d => (d.sourceDay || DAY) >= DAY);
+      if (DAY > 1 && !hasCurrentDay) renderAllStandingsSnapshot();
+      else renderAllLiveStandings(activeDivisions);
+      if (DAY > 1 && !hasCurrentDay) renderSnapshotTicker(); else renderTicker();
       const now = new Date();
       const fallbackDay = activeDivisions.length ? Math.min(...activeDivisions.map(d => d.sourceDay || DAY)) : DAY;
       status.textContent = (fallbackDay < DAY ? `Base D${fallbackDay} • ` : 'CBBOL • ') +
@@ -412,10 +522,18 @@
       status.className = 'api-ok';
     } catch (e) {
       console.error('Falha CBBOL:', e);
-      status.textContent = 'Reconectando à CBBOL…';
+      if (!divisionData.size) {
+        activeDivisions = snapshotDivisions();
+        divIndex %= activeDivisions.length;
+        renderAllStandingsSnapshot();
+        renderSnapshotTicker();
+        status.textContent = 'Base oficial D1';
+        status.className = 'api-ok';
+      } else {
+        status.textContent = 'Última atualização mantida';
+        status.className = 'api-ok';
+      }
       status.title = String(e && e.message ? e.message : e);
-      status.className = 'api-err';
-      if (!divisionData.size) document.getElementById('rows').innerHTML = '<div class="empty">Falha temporária na atualização da CBBOL.</div>';
     }
   }
 
@@ -425,12 +543,16 @@
     DAY===3 ? 'D3 • partidas 13–18' :
     'D4 • finais';
 
-  setInterval(() => {
-    if (activeDivisions.length > 1) {
-      divIndex = (divIndex + 1) % activeDivisions.length;
-      renderDivision(activeDivisions[divIndex]);
-    }
-  }, ROTATE_MS);
+  activeDivisions = snapshotDivisions();
+  divIndex = 0;
+  renderAllStandingsSnapshot();
+  renderSnapshotTicker();
+  document.getElementById('status').textContent = DAY > 1 ? 'Base oficial D1' : 'D1';
+  document.getElementById('status').className = 'api-ok';
+
+  // A tabela permanece única, mostrando simultaneamente todos os atletas TBF300.
+  // Não alternamos mais as divisões.
+
 
   refresh();
   setInterval(refresh, REFRESH_MS);
