@@ -247,9 +247,19 @@
 
   async function fetchDivision(d) {
     const url = `${API}/evento-atleta/tabela?id_evento=${EVENT_ID}&dia=${DAY}&ctg=${d.id}&_=${Date.now()}`;
-    const res = await fetch(url, {cache:'no-store'});
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
+    let json;
+    try {
+      const res = await fetch(url, {cache:'no-store'});
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      json = await res.json();
+    } catch (directError) {
+      // GitHub Pages -> CBBOL pode ser bloqueado por CORS.
+      // Fallback público: AllOrigins devolve o JSON remoto em "contents".
+      const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+      const res2 = await fetch(proxy, {cache:'no-store'});
+      if (!res2.ok) throw new Error(`Proxy HTTP ${res2.status}`);
+      json = await res2.json();
+    }
     const rows = Array.isArray(json?.tabela) ? json.tabela : [];
     const ranked = [...rows].sort((a,b) => metrics(b).points - metrics(a).points);
     return {...d, rows: ranked};
@@ -352,6 +362,7 @@
     } catch (e) {
       console.error('Falha CBBOL:', e);
       status.textContent = 'CBBOL indisponível';
+      status.title = String(e && e.message ? e.message : e);
       status.className = 'api-err';
       if (!divisionData.size) document.getElementById('rows').innerHTML = '<div class="empty">Falha temporária na atualização da CBBOL.</div>';
     }
