@@ -163,7 +163,7 @@
   const DAY = Math.max(1, Math.min(4, Number(qs.get('dia') || 2)));
   const REFRESH_MS = Math.max(15000, Number(qs.get('refresh') || 20000));
   const ROTATE_MS = Math.max(6000, Number(qs.get('rotate') || 12000));
-  const API = 'https://restboliche.bigmidia.com/cbbol/api';
+  const WORKER_API = 'https://noisy-sea-5a8a.rverao1.workers.dev';
 
   const divisions = [
     {id:2918, short:'1ª DIVISÃO MASCULINA'},
@@ -346,42 +346,26 @@
   }
 
   async function getJson(url) {
-    // A CBBOL não libera CORS para o GitHub Pages.
-    // Usamos redundância de proxies para não depender de um único serviço.
-    const encoded = encodeURIComponent(url);
-    const routes = [
-      'https://api.allorigins.win/raw?url=' + encoded,
-      'https://corsproxy.io/?url=' + encoded,
-      'https://api.codetabs.com/v1/proxy?quest=' + encoded
-    ];
-
-    let lastError = null;
-    for (const route of routes) {
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 7000);
-        const res = await fetch(route, {
-          cache:'no-store',
-          signal: controller.signal,
-          headers:{'Accept':'application/json,text/plain,*/*'}
-        });
-        clearTimeout(timer);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        const json = JSON.parse(text);
-        if (!json || !Object.prototype.hasOwnProperty.call(json,'tabela'))
-          throw new Error('Resposta inválida');
-        return json;
-      } catch (e) {
-        lastError = e;
-        console.warn('Rota CBBOL falhou:', route, e);
-      }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+    try {
+      const res = await fetch(url, {
+        cache:'no-store',
+        signal:controller.signal,
+        headers:{'Accept':'application/json'}
+      });
+      if (!res.ok) throw new Error(`Worker HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json || !Object.prototype.hasOwnProperty.call(json,'tabela'))
+        throw new Error('Resposta inválida do Worker');
+      return json;
+    } finally {
+      clearTimeout(timer);
     }
-    throw lastError || new Error('Todas as rotas CBBOL falharam');
   }
 
   async function fetchDivisionForDay(d, day) {
-    const url = `${API}/evento-atleta/tabela?id_evento=${EVENT_ID}&dia=${day}&ctg=${d.id}&_=${Date.now()}`;
+    const url = `${WORKER_API}/tabela?dia=${day}&ctg=${d.id}&_=${Date.now()}`;
     const json = await getJson(url);
     const rows = Array.isArray(json?.tabela) ? json.tabela : [];
     // A ordem oficial é a pontuação da série (pinos + bônus), como exibida pela CBBOL.
