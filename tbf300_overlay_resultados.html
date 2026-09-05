@@ -138,7 +138,7 @@
     </div>
     <div id="rows"><div class="empty">Conectando à CBBOL…</div></div>
     <div class="foot">
-      <span id="stageLabel">D2 • TOP 8 avançam às finais</span>
+      <span id="stageLabel">D3 • partidas 13–18</span>
       <span id="status">Atualizando…</span>
     </div>
   </aside>
@@ -150,7 +150,7 @@
     </div>
     <div class="ticker-window">
       <div class="ticker-track" id="tickerTrack">
-        <div class="ticker-item">Aguardando os primeiros resultados do D2…</div>
+        <div class="ticker-item">Aguardando os primeiros resultados do D3…</div>
       </div>
     </div>
   </footer>
@@ -160,7 +160,7 @@
 (() => {
   const qs = new URLSearchParams(location.search);
   const EVENT_ID = Number(qs.get('evento') || 582);
-  const DAY = Math.max(1, Math.min(4, Number(qs.get('dia') || 2)));
+  const DAY = Math.max(1, Math.min(4, Number(qs.get('dia') || 3)));
   const REFRESH_MS = Math.max(15000, Number(qs.get('refresh') || 20000));
   const ROTATE_MS = Math.max(6000, Number(qs.get('rotate') || 12000));
   const WORKER_API = 'https://noisy-sea-5a8a.rverao1.workers.dev';
@@ -260,43 +260,43 @@
     track.style.setProperty('--ticker-duration', Math.max(28, items.length * 3.2) + 's');
   }
 
-  // D2 = partidas 7 a 12, conforme o itinerário oficial.
+  // D3 = partidas 13 a 18, conforme o itinerário oficial.
   const schedule = {
     'NILO PONCE': {
-      7:'Niltinho Farias', 8:'Joso Figueiredo', 9:'Cabral Neto',
-      10:'Igor Lopes', 11:'Marcos Nemerski', 12:'Daniel Murta'
+      13:'Rafael Pizzoli', 14:'Igor Pizzoli', 15:'John Jr',
+      16:'Flávio Castellões', 17:'Rafael Grigori'
     },
     'THIAGO WANDSCHER': {
-      7:'Igor Pizzoli', 8:'John Jr', 9:'Rafael Pizzoli',
-      10:'Joso Figueiredo', 11:'Cabral Neto', 12:'Niltinho Farias'
+      13:'Rogerio Bachi', 14:'William Hideki', 15:'Marcos Dartora',
+      16:'Jair Dartora', 17:'João Vitor Dartora'
     },
     'WILLIAM HIDEKI': {
-      7:'Igor Lopes', 8:'Marcos Nemerski', 9:'Daniel Murta',
-      10:'Rafael Pizzoli', 11:'Igor Pizzoli', 12:'John Jr'
+      13:'Marcos Dartora', 14:'Thiago Wandscher', 15:'Jair Dartora',
+      16:'João Vitor Dartora', 17:'Rogerio Bachi'
     },
     'MICHEL BELMONTE': {
-      7:'Matheus Verão', 8:'Henrique Pontara', 9:'Gui Ponce',
-      10:'Bruno Torres', 11:'Renato Castellões', 12:'Bruno Cabeça'
+      13:'Almer Nakano', 14:'Gilmar Bachi', 15:'Sidiney Dartora',
+      16:'Márcio Vieira', 17:'Adilson Balthazar'
     },
     'MATHEUS VERÃO': {
-      7:'Michel Belmonte', 8:'Gilmar Bachi', 9:'Márcio Vieira',
-      10:'Adilson Balthazar', 11:'Sidiney Dartora', 12:'Almer Nakano'
+      13:'Renato Castellões', 14:'Bruno Cabeça', 15:'Bruno Torres',
+      16:'Henrique Pontara', 17:'Gui Ponce'
     },
     'GUI PONCE': {
-      7:'Gilmar Bachi', 8:'Márcio Vieira', 9:'Michel Belmonte',
-      10:'Sidiney Dartora', 11:'Almer Nakano', 12:'Adilson Balthazar'
+      13:'Bruno Cabeça', 14:'Henrique Pontara', 15:'Renato Castellões',
+      16:'Bruno Torres', 17:'Matheus Verão'
     },
     'GUSTAVO BUZELLE': {
-      7:'George Sarrafo', 8:'Márcio Martins', 10:'Leandro Henrique',
-      11:'Henrique Rats', 12:'Decio Abreu'
+      13:'Mario Okumura', 14:'Reinaldo Tanaka', 15:'Rodrigo Verao',
+      16:'Isak Joukhadar', 17:'Rafael Rodrigues'
     },
     'RODRIGO VERÃO': {
-      7:'Henrique Rats', 8:'Decio Abreu', 9:'Leandro Henrique',
-      10:'Márcio Martins', 12:'George Sarrafo'
+      13:'Rafael Rodrigues', 14:'Mario Okumura', 15:'Gustavo Buzelle',
+      16:'Reinaldo Tanaka', 17:'Isak Joukhadar'
     },
     'RAQUEL TENUTA': {
-      7:'Júlia Paschoal', 8:'Kelyn Kimura', 9:'Lívia Rodrigues Leite',
-      10:'Sandra Maciel', 12:'Erika Pimenta'
+      13:'Lucia Maria A P Vieira', 14:'Roseli Santos', 15:'Pollyanna Arantes',
+      16:'Jacque Costa'
     }
   };
 
@@ -475,7 +475,7 @@
     const m = metrics(row);
     const sched = schedule[t.display] || {};
 
-    // Busca a partida mais recente do D2 que já tenha adversário previamente definido.
+    // Busca a partida mais recente do D3 que já tenha adversário previamente definido.
     const completed = m.lines
       .filter(x => x.v > 0 && x.n >= 7 && x.n <= 12 && sched[x.n])
       .sort((a,b) => b.n - a.n);
@@ -516,7 +516,7 @@
         </span>`);
     });
 
-    const base = items.length ? items.join('<span class="sep">◆</span>') : '<span class="ticker-item">D2 • Aguardando a publicação dos primeiros confrontos pela CBBOL…</span>';
+    const base = items.length ? items.join('<span class="sep">◆</span>') : '<span class="ticker-item">D3 • Aguardando a publicação dos primeiros confrontos pela CBBOL…</span>';
     // Duplica a sequência para rolagem contínua sem salto.
     document.getElementById('tickerTrack').innerHTML = base + '<span class="sep">◆</span>' + base + '<span class="sep">◆</span>';
     const duration = Math.max(28, items.length * 3.2);
