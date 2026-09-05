@@ -481,7 +481,6 @@
 
     const ownGame = completed[0];
     const opponentName = sched[ownGame.n];
-    const todayRows = Array.isArray(d.currentRows) ? d.currentRows : [];
     const opponent = todayRows.find(r => norm(rowName(r)) === norm(opponentName) || norm(rowName(r)).includes(norm(opponentName)));
     const oppGame = opponent ? parseLines(opponent).find(x => x.n === ownGame.n) : null;
     const oppScore = oppGame?.v || 0;
