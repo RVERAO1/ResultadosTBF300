@@ -134,7 +134,7 @@
       <div class="live"><span class="dot"></span> AO VIVO</div>
     </div>
     <div class="table-head">
-      <div>POS</div><div>NOME</div><div class="num">PINOS</div><div class="num">MÃDIA</div><div class="num">PTOS 1Âº</div>
+      <div>POS</div><div>NOME</div><div class="num">PINOS</div><div class="num">MÃDIA</div><div class="num">PTOS 1º</div>
     </div>
     <div id="rows"><div class="empty">Conectando Ã  CBBOLâ¦</div></div>
     <div class="foot">
@@ -166,9 +166,9 @@
   const WORKER_API = 'https://noisy-sea-5a8a.rverao1.workers.dev';
 
   const divisions = [
-    {id:2918, short:'1Âª DIVISÃO MASCULINA'},
-    {id:2919, short:'2Âª DIVISÃO MASCULINA'},
-    {id:2920, short:'3Âª DIVISÃO MASCULINA'},
+    {id:2918, short:'1ª DIVISÃO MASCULINA'},
+    {id:2919, short:'2ª DIVISÃO MASCULINA'},
+    {id:2920, short:'3ª DIVISÃO MASCULINA'},
     {id:2921, short:'DIVISÃO FEMININA'}
   ];
 
@@ -216,7 +216,7 @@
     const rows = D1_SNAPSHOT[d.id] || [];
     document.getElementById('rows').innerHTML = rows.map(x => `
       <div class="row">
-        <div class="pos">${x.pos}Âº</div>
+        <div class="pos">${x.pos}º</div>
         <div class="name">${escapeHtml(x.name)}</div>
         <div class="num">${x.total.toLocaleString('pt-BR')}</div>
         <div class="num">${x.avg.toFixed(2).replace('.',',')}</div>
@@ -228,7 +228,7 @@
   function renderAllStandingsSnapshot() {
     document.getElementById('divisionName').textContent = 'TODAS AS DIVISÃES â¢ CLASSIF. APÃS D1';
     const labels = {
-      2918:'1Âª MASC.', 2919:'2Âª MASC.', 2920:'3Âª MASC.', 2921:'1Âª FEM.'
+      2918:'1ª MASC.', 2919:'2ª MASC.', 2920:'3ª MASC.', 2921:'1ª FEM.'
     };
     const order = [2918,2919,2920,2921];
     const html = [];
@@ -236,7 +236,7 @@
       html.push(`<div style="padding:6px 12px 4px;background:rgba(13,79,155,.22);border-top:1px solid rgba(215,165,38,.35);border-bottom:1px solid rgba(255,255,255,.07);font-size:10px;font-weight:950;letter-spacing:1px;color:var(--gold2)">${labels[id]}</div>`);
       (D1_SNAPSHOT[id] || []).forEach(x => html.push(`
         <div class="row ${x.pos <= 8 ? 'qualifying' : ''}">
-          <div class="pos">${x.pos}Âº</div>
+          <div class="pos">${x.pos}º</div>
           <div class="name">${escapeHtml(x.name)}${x.pos <= 8 ? '<span class="qmark">TOP 8</span>' : ''}</div>
           <div class="num">${x.total.toLocaleString('pt-BR')}</div>
           <div class="num">${x.avg.toFixed(2).replace('.',',')}</div>
@@ -250,7 +250,7 @@
     const items = Object.values(D1_SNAPSHOT).flat().map(x => `
       <span class="ticker-item">
         <span class="ath">D1 â¢ ${escapeHtml(x.name)}</span>
-        <span class="score">${x.pos}Âº</span>
+        <span class="score">${x.pos}º</span>
         <span class="opp">${x.total.toLocaleString('pt-BR')} pts â¢ mÃ©dia ${x.avg.toFixed(2).replace('.',',')}</span>
         <span class="bonus">-${x.gap} pts do lÃ­der</span>
       </span>`);
@@ -456,7 +456,7 @@
       const gap = Math.max(0, leaderPoints - m.points);
       html.push(`
         <div class="row">
-          <div class="pos">${pos}Âº</div>
+          <div class="pos">${pos}º</div>
           <div class="name">${escapeHtml(t.display)}</div>
           <div class="num">${m.pins.toLocaleString('pt-BR')}</div>
           <div class="num">${m.avg.toFixed(2).replace('.',',')}</div>
@@ -525,7 +525,7 @@
 
 
   function renderAllLiveStandings(divs) {
-    const labels = {2918:'1Âª MASC.',2919:'2Âª MASC.',2920:'3Âª MASC.',2921:'1Âª FEM.'};
+    const labels = {2918:'1ª MASC.',2919:'2ª MASC.',2920:'3ª MASC.',2921:'1ª FEM.'};
     const html=[];
     divs.forEach(d => {
       const athletes=tracked.filter(t=>t.division===d.id);
@@ -535,7 +535,7 @@
       const leaderPoints=d.rows.length?metrics(d.rows[0]).points:0;
       found.forEach(({t,r})=>{
         const m=metrics(r), pos=d.rows.indexOf(r)+1, gap=Math.max(0,leaderPoints-m.points);
-        html.push(`<div class="row ${pos<=8?'qualifying':''}"><div class="pos">${pos}Âº</div><div class="name">${escapeHtml(t.display)}${pos<=8?'<span class="qmark">TOP 8</span>':''}</div><div class="num">${m.pins.toLocaleString('pt-BR')}</div><div class="num">${m.avg.toFixed(2).replace('.',',')}</div><div class="gap ${gap===0?'leader':''}">${gap===0?'LÃDER':'-'+gap}</div></div>`);
+        html.push(`<div class="row ${pos<=8?'qualifying':''}"><div class="pos">${pos}º</div><div class="name">${escapeHtml(t.display)}${pos<=8?'<span class="qmark">TOP 8</span>':''}</div><div class="num">${m.pins.toLocaleString('pt-BR')}</div><div class="num">${m.avg.toFixed(2).replace('.',',')}</div><div class="gap ${gap===0?'leader':''}">${gap===0?'LÃDER':'-'+gap}</div></div>`);
       });
     });
     document.getElementById('divisionName').textContent=`TODAS AS DIVISÃES â¢ ACUMULADO ATÃ D${DAY}`;
