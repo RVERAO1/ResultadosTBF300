@@ -342,11 +342,12 @@
     const games = Number(row?.l) || lines.filter(x => x.v > 0).length || 0;
     const previous = Number(row?.anterior) || 0;
     const dayPoints = Number(row?.pontos_serie) || (rawPins + lines.reduce((s,x)=>s+x.r,0));
-    const points = previous + dayPoints;
-    const avgPins = previous + rawPins;
-    const avg = games ? avgPins / games : 0;
-    const pins = points;
-    return {lines,rawPins,pins,games,avg,points,previous,dayPoints,avgPins};
+    // A CBBOL usa bônus apenas para a classificação por pontos.
+    // PINOS e MÉDIA devem considerar exclusivamente a derrubada real dos jogos.
+    const points = Number.isFinite(Number(row?._officialPoints)) ? Number(row._officialPoints) : previous + dayPoints;
+    const pins = rawPins;
+    const avg = games ? pins / games : 0;
+    return {lines,rawPins,pins,games,avg,points,previous,dayPoints};
   }
 
   async function getJson(url) {
@@ -379,46 +380,29 @@
     return String(row?.id || norm(row?.nome_evento || row?.nome_completo || ''));
   }
 
-  function mergeDayRows(daySets) {
-    const map = new Map();
+  function mergeDayRows(daySets, latestRows) {
+    // Mantém a ordem oficial devolvida pela CBBOL no dia mais recente
+    // e agrega somente as linhas (pinos reais) dos dias anteriores.
+    return latestRows.map(latest => {
+      const key = athleteKey(latest);
+      const allLines = [];
 
-    daySets.forEach(({day, rows}) => {
-      rows.forEach(row => {
-        const key = athleteKey(row);
-        if (!key) return;
-
-        if (!map.has(key)) {
-          map.set(key, {
-            ...row,
-            linhas: '[]',
-            pontos_serie: '0',
-            l: '0',
-            _days: []
-          });
-        }
-
-        const acc = map.get(key);
-        const prevLines = parseLines(acc);
-        const newLines = parseLines(row);
-
-        acc.linhas = JSON.stringify([...prevLines, ...newLines]);
-        acc.pontos_serie = String((Number(acc.pontos_serie) || 0) + (Number(row.pontos_serie) || 0));
-        acc.l = String((Number(acc.l) || 0) + (Number(row.l) || newLines.filter(x=>x.v>0).length || 0));
-        acc._days.push(day);
-
-        // Preserva os nomes/campos mais recentes retornados pela CBBOL.
-        acc.nome_evento = row.nome_evento || acc.nome_evento;
-        acc.nome_completo = row.nome_completo || acc.nome_completo;
-        acc.uf = row.uf || acc.uf;
+      daySets.forEach(({rows}) => {
+        const same = rows.find(r => athleteKey(r) === key);
+        if (same) allLines.push(...parseLines(same));
       });
-    });
 
-    return [...map.values()].sort((a,b) => metrics(b).points - metrics(a).points);
+      return {
+        ...latest,
+        linhas: JSON.stringify(allLines),
+        // "anterior" já representa a pontuação acumulada antes do dia atual;
+        // "pontos_serie" inclui os bônus do dia atual.
+        _officialPoints: (Number(latest.anterior) || 0) + (Number(latest.pontos_serie) || 0)
+      };
+    });
   }
 
   async function fetchDivision(d) {
-    // A API da CBBOL devolve cada dia separadamente.
-    // Para a classificação oficial durante D2/D3, acumulamos D1 + ... + dia atual.
     const requests = [];
     for (let day = 1; day <= DAY; day++) requests.push(fetchDivisionForDay(d, day));
 
@@ -428,8 +412,12 @@
 
     const sourceDay = Math.max(...nonEmpty.map(x => x.day));
     const currentSet = nonEmpty.find(x => x.day === sourceDay);
-    const officialRows = [...(currentSet?.rows || [])]
-      .sort((a,b) => metrics(b).points - metrics(a).points);
+    const usedSets = nonEmpty.filter(x => x.day <= sourceDay);
+
+    // A ordem do currentSet é a classificação oficial da CBBOL.
+    // Agregamos D1...D(atual) apenas para obter PINOS e MÉDIA acumulados,
+    // sem reordenar a tabela por um cálculo paralelo.
+    const officialRows = mergeDayRows(usedSets, currentSet?.rows || []);
 
     return {
       ...d,
@@ -477,7 +465,7 @@
 
     // Busca a partida mais recente do D3 que já tenha adversário previamente definido.
     const completed = m.lines
-      .filter(x => x.v > 0 && x.n >= 7 && x.n <= 12 && sched[x.n])
+      .filter(x => x.v > 0 && x.n >= 13 && x.n <= 18 && sched[x.n])
       .sort((a,b) => b.n - a.n);
     if (!completed.length) return null;
 
