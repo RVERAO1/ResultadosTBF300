@@ -134,7 +134,7 @@
       <div class="live"><span class="dot"></span> AO VIVO</div>
     </div>
     <div class="table-head">
-      <div>POS</div><div>NOME</div><div class="num">PINOS</div><div class="num">MÃDIA</div><div class="num">PTOS 1º</div>
+      <div>POS</div><div>NOME</div><div class="num">PINOS</div><div class="num">MÃDIA</div><div class="num">PTOS 1\u00BA</div>
     </div>
     <div id="rows"><div class="empty">Conectando Ã  CBBOLâ¦</div></div>
     <div class="foot">
@@ -166,9 +166,9 @@
   const WORKER_API = 'https://noisy-sea-5a8a.rverao1.workers.dev';
 
   const divisions = [
-    {id:2918, short:'1ª DIVISÃO MASCULINA'},
-    {id:2919, short:'2ª DIVISÃO MASCULINA'},
-    {id:2920, short:'3ª DIVISÃO MASCULINA'},
+    {id:2918, short:'1\u00AA DIVISÃO MASCULINA'},
+    {id:2919, short:'2\u00AA DIVISÃO MASCULINA'},
+    {id:2920, short:'3\u00AA DIVISÃO MASCULINA'},
     {id:2921, short:'DIVISÃO FEMININA'}
   ];
 
@@ -216,7 +216,7 @@
     const rows = D1_SNAPSHOT[d.id] || [];
     document.getElementById('rows').innerHTML = rows.map(x => `
       <div class="row">
-        <div class="pos">${x.pos}º</div>
+        <div class="pos">${x.pos}\u00BA</div>
         <div class="name">${escapeHtml(x.name)}</div>
         <div class="num">${x.total.toLocaleString('pt-BR')}</div>
         <div class="num">${x.avg.toFixed(2).replace('.',',')}</div>
@@ -228,7 +228,7 @@
   function renderAllStandingsSnapshot() {
     document.getElementById('divisionName').textContent = 'TODAS AS DIVISÃES â¢ CLASSIF. APÃS D1';
     const labels = {
-      2918:'1ª MASC.', 2919:'2ª MASC.', 2920:'3ª MASC.', 2921:'1ª FEM.'
+      2918:'1\u00AA MASC.', 2919:'2\u00AA MASC.', 2920:'3\u00AA MASC.', 2921:'1\u00AA FEM.'
     };
     const order = [2918,2919,2920,2921];
     const html = [];
@@ -236,7 +236,7 @@
       html.push(`<div style="padding:6px 12px 4px;background:rgba(13,79,155,.22);border-top:1px solid rgba(215,165,38,.35);border-bottom:1px solid rgba(255,255,255,.07);font-size:10px;font-weight:950;letter-spacing:1px;color:var(--gold2)">${labels[id]}</div>`);
       (D1_SNAPSHOT[id] || []).forEach(x => html.push(`
         <div class="row ${x.pos <= 8 ? 'qualifying' : ''}">
-          <div class="pos">${x.pos}º</div>
+          <div class="pos">${x.pos}\u00BA</div>
           <div class="name">${escapeHtml(x.name)}${x.pos <= 8 ? '<span class="qmark">TOP 8</span>' : ''}</div>
           <div class="num">${x.total.toLocaleString('pt-BR')}</div>
           <div class="num">${x.avg.toFixed(2).replace('.',',')}</div>
@@ -250,7 +250,7 @@
     const items = Object.values(D1_SNAPSHOT).flat().map(x => `
       <span class="ticker-item">
         <span class="ath">D1 â¢ ${escapeHtml(x.name)}</span>
-        <span class="score">${x.pos}º</span>
+        <span class="score">${x.pos}\u00BA</span>
         <span class="opp">${x.total.toLocaleString('pt-BR')} pts â¢ mÃ©dia ${x.avg.toFixed(2).replace('.',',')}</span>
         <span class="bonus">-${x.gap} pts do lÃ­der</span>
       </span>`);
@@ -295,7 +295,7 @@
       10:'MÃ¡rcio Martins', 12:'George Sarrafo'
     },
     'RAQUEL TENUTA': {
-      7:'JÃºlia Paschoal', 8:'Kelyn Kimura', 9:'LÃ­via Rodrigues Leite',
+      7:'JÃ\u00BAlia Paschoal', 8:'Kelyn Kimura', 9:'LÃ­via Rodrigues Leite',
       10:'Sandra Maciel', 12:'Erika Pimenta'
     }
   };
@@ -456,7 +456,7 @@
       const gap = Math.max(0, leaderPoints - m.points);
       html.push(`
         <div class="row">
-          <div class="pos">${pos}º</div>
+          <div class="pos">${pos}\u00BA</div>
           <div class="name">${escapeHtml(t.display)}</div>
           <div class="num">${m.pins.toLocaleString('pt-BR')}</div>
           <div class="num">${m.avg.toFixed(2).replace('.',',')}</div>
@@ -517,7 +517,7 @@
     });
 
     const base = items.length ? items.join('<span class="sep">â</span>') : '<span class="ticker-item">D2 â¢ Aguardando a publicaÃ§Ã£o dos primeiros confrontos pela CBBOLâ¦</span>';
-    // Duplica a sequÃªncia para rolagem contÃ­nua sem salto.
+    // Duplica a sequÃ\u00AAncia para rolagem contÃ­nua sem salto.
     document.getElementById('tickerTrack').innerHTML = base + '<span class="sep">â</span>' + base + '<span class="sep">â</span>';
     const duration = Math.max(28, items.length * 3.2);
     document.getElementById('tickerTrack').style.setProperty('--ticker-duration', duration + 's');
@@ -525,7 +525,7 @@
 
 
   function renderAllLiveStandings(divs) {
-    const labels = {2918:'1ª MASC.',2919:'2ª MASC.',2920:'3ª MASC.',2921:'1ª FEM.'};
+    const labels = {2918:'1\u00AA MASC.',2919:'2\u00AA MASC.',2920:'3\u00AA MASC.',2921:'1\u00AA FEM.'};
     const html=[];
     divs.forEach(d => {
       const athletes=tracked.filter(t=>t.division===d.id);
@@ -535,7 +535,7 @@
       const leaderPoints=d.rows.length?metrics(d.rows[0]).points:0;
       found.forEach(({t,r})=>{
         const m=metrics(r), pos=d.rows.indexOf(r)+1, gap=Math.max(0,leaderPoints-m.points);
-        html.push(`<div class="row ${pos<=8?'qualifying':''}"><div class="pos">${pos}º</div><div class="name">${escapeHtml(t.display)}${pos<=8?'<span class="qmark">TOP 8</span>':''}</div><div class="num">${m.pins.toLocaleString('pt-BR')}</div><div class="num">${m.avg.toFixed(2).replace('.',',')}</div><div class="gap ${gap===0?'leader':''}">${gap===0?'LÃDER':'-'+gap}</div></div>`);
+        html.push(`<div class="row ${pos<=8?'qualifying':''}"><div class="pos">${pos}\u00BA</div><div class="name">${escapeHtml(t.display)}${pos<=8?'<span class="qmark">TOP 8</span>':''}</div><div class="num">${m.pins.toLocaleString('pt-BR')}</div><div class="num">${m.avg.toFixed(2).replace('.',',')}</div><div class="gap ${gap===0?'leader':''}">${gap===0?'LÃDER':'-'+gap}</div></div>`);
       });
     });
     document.getElementById('divisionName').textContent=`TODAS AS DIVISÃES â¢ ACUMULADO ATÃ D${DAY}`;
@@ -591,7 +591,7 @@
   document.getElementById('status').textContent = DAY > 1 ? 'Base oficial D1' : 'D1';
   document.getElementById('status').className = 'api-ok';
 
-  // A tabela permanece Ãºnica, mostrando simultaneamente todos os atletas TBF300.
+  // A tabela permanece Ã\u00BAnica, mostrando simultaneamente todos os atletas TBF300.
   // NÃ£o alternamos mais as divisÃµes.
 
 
