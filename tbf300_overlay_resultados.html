@@ -338,11 +338,14 @@
 
   function metrics(row) {
     const lines = parseLines(row);
-    const pins = lines.reduce((s,x) => s + x.v, 0);
-    const games = lines.filter(x => x.v > 0).length || Number(row?.l) || 0;
-    const avg = games ? pins / games : 0;
-    const points = Number(row?.pontos_serie) || (pins + lines.reduce((s,x)=>s+x.r,0));
-    return {lines,pins,games,avg,points};
+    const rawPins = lines.reduce((s,x) => s + x.v, 0);
+    const games = Number(row?.l) || lines.filter(x => x.v > 0).length || 0;
+    const points = Number(row?.pontos_serie) || (rawPins + lines.reduce((s,x)=>s+x.r,0));
+    const avg = games ? points / games : 0;
+    // Para a classificação, "PINOS/TOTAL" segue o T oficial da CBBOL,
+    // que incorpora os bônus quando existentes.
+    const pins = points;
+    return {lines,rawPins,pins,games,avg,points};
   }
 
   async function getJson(url) {
@@ -368,19 +371,70 @@
     const url = `${WORKER_API}/tabela?dia=${day}&ctg=${d.id}&_=${Date.now()}`;
     const json = await getJson(url);
     const rows = Array.isArray(json?.tabela) ? json.tabela : [];
-    // A ordem oficial é a pontuação da série (pinos + bônus), como exibida pela CBBOL.
-    const ranked = [...rows].sort((a,b) => metrics(b).points - metrics(a).points);
-    return {...d, rows: ranked, sourceDay: day};
+    return {day, rows};
+  }
+
+  function athleteKey(row) {
+    return String(row?.id || norm(row?.nome_evento || row?.nome_completo || ''));
+  }
+
+  function mergeDayRows(daySets) {
+    const map = new Map();
+
+    daySets.forEach(({day, rows}) => {
+      rows.forEach(row => {
+        const key = athleteKey(row);
+        if (!key) return;
+
+        if (!map.has(key)) {
+          map.set(key, {
+            ...row,
+            linhas: '[]',
+            pontos_serie: '0',
+            l: '0',
+            _days: []
+          });
+        }
+
+        const acc = map.get(key);
+        const prevLines = parseLines(acc);
+        const newLines = parseLines(row);
+
+        acc.linhas = JSON.stringify([...prevLines, ...newLines]);
+        acc.pontos_serie = String((Number(acc.pontos_serie) || 0) + (Number(row.pontos_serie) || 0));
+        acc.l = String((Number(acc.l) || 0) + (Number(row.l) || newLines.filter(x=>x.v>0).length || 0));
+        acc._days.push(day);
+
+        // Preserva os nomes/campos mais recentes retornados pela CBBOL.
+        acc.nome_evento = row.nome_evento || acc.nome_evento;
+        acc.nome_completo = row.nome_completo || acc.nome_completo;
+        acc.uf = row.uf || acc.uf;
+      });
+    });
+
+    return [...map.values()].sort((a,b) => metrics(b).points - metrics(a).points);
   }
 
   async function fetchDivision(d) {
-    // Antes de a CBBOL publicar o D2, o endpoint dia=2 retorna tabela vazia.
-    // Regride automaticamente ao último dia com classificação publicada.
-    for (let day = DAY; day >= 1; day--) {
-      const result = await fetchDivisionForDay(d, day);
-      if (result.rows.length) return result;
-    }
-    return {...d, rows: [], sourceDay: DAY};
+    // A API da CBBOL devolve cada dia separadamente.
+    // Para a classificação oficial durante D2/D3, acumulamos D1 + ... + dia atual.
+    const requests = [];
+    for (let day = 1; day <= DAY; day++) requests.push(fetchDivisionForDay(d, day));
+
+    const daySets = await Promise.all(requests);
+    const nonEmpty = daySets.filter(x => x.rows.length);
+    if (!nonEmpty.length) return {...d, rows: [], currentRows: [], sourceDay: 1};
+
+    const sourceDay = Math.max(...nonEmpty.map(x => x.day));
+    const currentSet = nonEmpty.find(x => x.day === sourceDay);
+    const cumulativeRows = mergeDayRows(nonEmpty.filter(x => x.day <= sourceDay));
+
+    return {
+      ...d,
+      rows: cumulativeRows,                 // classificação acumulada
+      currentRows: currentSet?.rows || [],  // somente o dia atual, usado no ticker
+      sourceDay
+    };
   }
 
   function renderDivision(d) {
@@ -413,7 +467,8 @@
 
   function latestConfrontation(t, d) {
     if ((d.sourceDay || DAY) < DAY) return null;
-    const row = findRow(d.rows, t.aliases);
+    const todayRows = Array.isArray(d.currentRows) ? d.currentRows : [];
+    const row = findRow(todayRows, t.aliases);
     if (!row) return null;
     const m = metrics(row);
     const sched = schedule[t.display] || {};
@@ -426,7 +481,8 @@
 
     const ownGame = completed[0];
     const opponentName = sched[ownGame.n];
-    const opponent = d.rows.find(r => norm(rowName(r)) === norm(opponentName) || norm(rowName(r)).includes(norm(opponentName)));
+    const todayRows = Array.isArray(d.currentRows) ? d.currentRows : [];
+    const opponent = todayRows.find(r => norm(rowName(r)) === norm(opponentName) || norm(rowName(r)).includes(norm(opponentName)));
     const oppGame = opponent ? parseLines(opponent).find(x => x.n === ownGame.n) : null;
     const oppScore = oppGame?.v || 0;
 
@@ -481,7 +537,7 @@
         html.push(`<div class="row ${pos<=8?'qualifying':''}"><div class="pos">${pos}º</div><div class="name">${escapeHtml(t.display)}${pos<=8?'<span class="qmark">TOP 8</span>':''}</div><div class="num">${m.pins.toLocaleString('pt-BR')}</div><div class="num">${m.avg.toFixed(2).replace('.',',')}</div><div class="gap ${gap===0?'leader':''}">${gap===0?'LÍDER':'-'+gap}</div></div>`);
       });
     });
-    document.getElementById('divisionName').textContent=`TODAS AS DIVISÕES • D${DAY}`;
+    document.getElementById('divisionName').textContent=`TODAS AS DIVISÕES • ACUMULADO ATÉ D${DAY}`;
     document.getElementById('rows').innerHTML=html.join('');
   }
 
@@ -523,7 +579,7 @@
 
   document.getElementById('stageLabel').textContent =
     DAY===1 ? 'D1 • partidas 1–6' :
-    DAY===2 ? 'D2 • partidas 7–12' :
+    DAY===2 ? 'D2 • classificação acumulada + confrontos' :
     DAY===3 ? 'D3 • partidas 13–18' :
     'D4 • finais';
 
