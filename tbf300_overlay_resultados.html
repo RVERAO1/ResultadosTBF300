@@ -177,10 +177,10 @@
     {display:'THIAGO WANDSCHER', aliases:['Thiago Wandscher'], division:2918},
     {display:'WILLIAM HIDEKI', aliases:['William Hideki'], division:2918},
     {display:'MICHEL BELMONTE', aliases:['Michel Belmonte'], division:2919},
-    {display:'MATHEUS VERÃO', aliases:['Matheus Ver\u00E3o','Matheus Verao'], division:2919},
+    {display:'MATHEUS VER' + String.fromCharCode(195) + 'O', aliases:['Matheus Verao'], division:2919},
     {display:'GUI PONCE', aliases:['Gui Ponce','Guilherme Ponce'], division:2919},
     {display:'GUSTAVO BUZELLE', aliases:['Gustavo Buzelle'], division:2920},
-    {display:'RODRIGO VERÃO', aliases:['Rodrigo Verao','Rodrigo Ver\u00E3o'], division:2920},
+    {display:'RODRIGO VER' + String.fromCharCode(195) + 'O', aliases:['Rodrigo Verao'], division:2920},
     {display:'RAQUEL TENUTA', aliases:['Raquel Tenuta'], division:2921}
   ];
 
@@ -193,12 +193,12 @@
       {name:'NILO PONCE', pos:17, total:2215, avg:184.58, gap:412}
     ],
     2919: [
-      {name:'MATHEUS VER\u00C3O', pos:5, total:2412, avg:201.00, gap:110},
+      {name:'MATHEUS VER' + String.fromCharCode(195) + 'O', pos:5, total:2412, avg:201.00, gap:110},
       {name:'MICHEL BELMONTE', pos:7, total:2403, avg:200.25, gap:119},
       {name:'GUI PONCE', pos:11, total:2091, avg:174.25, gap:431}
     ],
     2920: [
-      {name:'RODRIGO VER\u00C3O', pos:3, total:2175, avg:181.25, gap:228},
+      {name:'RODRIGO VER' + String.fromCharCode(195) + 'O', pos:3, total:2175, avg:181.25, gap:228},
       {name:'GUSTAVO BUZELLE', pos:6, total:2112, avg:176.00, gap:291}
     ],
     2921: [
@@ -278,7 +278,7 @@
       13:'Almer Nakano', 14:'Gilmar Bachi', 15:'Sidiney Dartora',
       16:'MÃ¡rcio Vieira', 17:'Adilson Balthazar'
     },
-    'MATHEUS VERÃO': {
+    ['MATHEUS VER' + String.fromCharCode(195) + 'O']: {
       13:'Renato CastellÃµes', 14:'Bruno CabeÃ§a', 15:'Bruno Torres',
       16:'Henrique Pontara', 17:'Gui Ponce'
     },
@@ -290,7 +290,7 @@
       13:'Mario Okumura', 14:'Reinaldo Tanaka', 15:'Rodrigo Verao',
       16:'Isak Joukhadar', 17:'Rafael Rodrigues'
     },
-    'RODRIGO VERÃO': {
+    ['RODRIGO VER' + String.fromCharCode(195) + 'O']: {
       13:'Rafael Rodrigues', 14:'Mario Okumura', 15:'Gustavo Buzelle',
       16:'Reinaldo Tanaka', 17:'Isak Joukhadar'
     },
@@ -576,7 +576,7 @@
   document.getElementById('stageLabel').textContent =
     DAY===1 ? 'D1 â¢ partidas 1â6' :
     DAY===2 ? 'D2 â¢ classificaÃ§Ã£o acumulada + confrontos' :
-    DAY===3 ? 'D3 â¢ partidas 13â18' :
+    DAY===3 ? 'D3 ' + String.fromCharCode(8226) + ' partidas 13' + String.fromCharCode(8211) + '18' :
     'D4 â¢ finais';
 
   activeDivisions = snapshotDivisions();
