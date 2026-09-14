@@ -3,38 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prism Live - Circuito MT 2026 - Etapa 2</title>
+  <title>Circuito MT 2026 - Etapa 2 - Prism Live</title>
 
   <style>
     :root {
       --amarelo: #ffd43b;
-      --amarelo-borda: rgba(255, 212, 59, 0.92);
-      --amarelo-suave: rgba(255, 212, 59, 0.22);
-
+      --amarelo-borda: rgba(255, 212, 59, 0.94);
       --verde: #00d084;
-      --verde-suave: rgba(0, 208, 132, 0.16);
-
-      --azul-1: rgba(3, 14, 28, 0.82);
-      --azul-2: rgba(7, 28, 52, 0.84);
-      --azul-3: rgba(5, 18, 34, 0.70);
-
       --branco: #ffffff;
       --cinza: #dce6ef;
       --cinza-2: #bfcad6;
-
       --sombra: rgba(0, 0, 0, 0.42);
-      --fundo-card: linear-gradient(135deg, rgba(2, 18, 34, 0.88), rgba(9, 38, 68, 0.76));
-      --fundo-card-2: linear-gradient(135deg, rgba(2, 18, 34, 0.88), rgba(6, 66, 55, 0.52));
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html,
-    body {
+    html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
@@ -43,12 +27,7 @@
       color: var(--branco);
     }
 
-    body {
-      width: 1920px;
-      height: 1080px;
-      position: relative;
-      background: transparent;
-    }
+    body { width: 1920px; height: 1080px; position: relative; }
 
     .overlay {
       position: relative;
@@ -58,84 +37,64 @@
       overflow: hidden;
     }
 
-    /* LOGO SUPERIOR ESQUERDO */
     .top-left-logo {
       position: absolute;
       left: 36px;
       top: 26px;
       z-index: 30;
-      width: 205px;
-      height: 78px;
+      width: 245px;
+      height: 90px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, rgba(4, 20, 37, 0.82), rgba(8, 32, 58, 0.60));
+      background: rgba(4, 20, 37, 0.76);
       border: 2px solid var(--amarelo-borda);
       border-radius: 18px;
       box-shadow: 0 12px 28px var(--sombra);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      padding: 8px 14px;
+      padding: 10px 16px;
     }
 
-    .top-left-logo img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
+    .logo-svg {
+      width: 100%;
+      height: 100%;
       display: block;
       filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
     }
 
-    /* CABEÇALHO DIREITO */
     .event-info {
       position: absolute;
       right: 36px;
       top: 26px;
       z-index: 30;
-      min-width: 360px;
-      max-width: 420px;
-      padding: 16px 20px;
-      background: linear-gradient(135deg, rgba(4, 20, 37, 0.82), rgba(8, 32, 58, 0.60));
+      width: 420px;
+      padding: 18px 22px;
+      background: rgba(4, 20, 37, 0.78);
       border: 2px solid var(--amarelo-borda);
       border-radius: 18px;
       box-shadow: 0 12px 28px var(--sombra);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-    }
-
-    .event-kicker {
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--amarelo);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
     }
 
     .event-title {
-      font-size: 31px;
+      font-size: 34px;
       line-height: 1;
       font-weight: 1000;
       text-transform: uppercase;
+      color: #ffffff;
       margin-bottom: 8px;
     }
 
     .event-subtitle {
-      font-size: 13px;
-      line-height: 1.35;
+      font-size: 15px;
+      line-height: 1.25;
       font-weight: 900;
       color: var(--cinza);
       text-transform: uppercase;
       letter-spacing: 0.8px;
     }
 
-    /* ÁREA DAS CÂMERAS */
     .camera-stage {
       position: absolute;
-      left: 0;
-      top: 0;
-      width: 1920px;
-      height: 1080px;
+      inset: 0;
       background: transparent;
       z-index: 1;
       pointer-events: none;
@@ -143,30 +102,16 @@
 
     .camera-box {
       position: absolute;
-      background: transparent; /* IMPORTANTE: fundo transparente */
+      background: transparent;
       border: 3px solid var(--amarelo-borda);
-      border-radius: 0; /* quadrado para encaixar melhor a câmera */
-      box-shadow:
-        0 0 0 1px rgba(0, 0, 0, 0.22),
-        0 12px 26px rgba(0, 0, 0, 0.20);
+      border-radius: 0;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22), 0 12px 26px rgba(0, 0, 0, 0.20);
       overflow: hidden;
       pointer-events: none;
     }
 
-    /* Duas câmeras iguais */
-    .cam-1 {
-      left: 40px;
-      top: 124px;
-      width: 904px;
-      height: 508px; /* 16:9 */
-    }
-
-    .cam-2 {
-      left: 976px;
-      top: 124px;
-      width: 904px;
-      height: 508px; /* 16:9 */
-    }
+    .cam-1 { left: 40px; top: 124px; width: 904px; height: 508px; }
+    .cam-2 { left: 976px; top: 124px; width: 904px; height: 508px; }
 
     .camera-label {
       position: absolute;
@@ -214,7 +159,6 @@
       flex: 0 0 auto;
     }
 
-    /* QUADROS DE RESULTADO */
     .results-wrapper {
       position: absolute;
       left: 36px;
@@ -232,28 +176,13 @@
       position: relative;
       border: 2px solid var(--amarelo-borda);
       border-radius: 22px;
-      background:
-        radial-gradient(circle at top left, rgba(0, 208, 132, 0.10), transparent 24%),
-        linear-gradient(135deg, rgba(2, 18, 34, 0.90), rgba(9, 38, 68, 0.78));
+      background: radial-gradient(circle at top left, rgba(0, 208, 132, 0.10), transparent 24%), linear-gradient(135deg, rgba(2, 18, 34, 0.90), rgba(9, 38, 68, 0.78));
       box-shadow: 0 16px 32px var(--sombra);
       padding: 18px 18px 16px 18px;
       overflow: hidden;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    .result-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(110deg, transparent, rgba(255,255,255,0.03), transparent);
-      pointer-events: none;
     }
 
     .card-header {
-      position: relative;
-      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -270,7 +199,6 @@
     }
 
     .card-badge {
-      flex: 0 0 auto;
       padding: 7px 12px;
       border-radius: 999px;
       border: 1px solid rgba(255, 212, 59, 0.8);
@@ -283,12 +211,9 @@
       white-space: nowrap;
     }
 
-    .table-head,
-    .table-row {
-      position: relative;
-      z-index: 2;
+    .table-head, .table-row {
       display: grid;
-      grid-template-columns: 48px 1fr 92px 92px;
+      grid-template-columns: 48px 1fr 76px 76px;
       align-items: center;
       gap: 10px;
     }
@@ -305,14 +230,7 @@
       letter-spacing: 0.8px;
     }
 
-    .rows {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      min-height: 236px;
-    }
+    .rows { display: flex; flex-direction: column; gap: 7px; min-height: 236px; }
 
     .table-row {
       padding: 10px 12px;
@@ -322,13 +240,9 @@
       min-height: 38px;
     }
 
-    .col-pos {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 1000;
-      font-size: 20px;
-      color: var(--amarelo);
+    .table-row.top4 {
+      border-color: rgba(255, 212, 59, 0.72);
+      background: linear-gradient(90deg, rgba(255, 212, 59, 0.18), rgba(0, 208, 132, 0.13));
     }
 
     .pos-pill {
@@ -342,11 +256,10 @@
       color: #08131f;
       font-size: 18px;
       font-weight: 1000;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.34);
     }
 
     .col-name {
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 900;
       color: var(--branco);
       line-height: 1;
@@ -355,25 +268,21 @@
       text-overflow: ellipsis;
     }
 
-    .col-total,
-    .col-media {
-      font-size: 21px;
+    .col-total, .col-media {
+      font-size: 20px;
       font-weight: 1000;
       color: var(--branco);
       text-align: right;
       line-height: 1;
     }
 
-    .col-media {
-      color: var(--amarelo);
-    }
+    .col-media { color: var(--amarelo); }
 
     .card-footer {
       position: absolute;
       left: 18px;
       right: 18px;
       bottom: 14px;
-      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -387,17 +296,10 @@
       letter-spacing: 0.7px;
     }
 
-    .status-ok {
-      color: #8ef8bf;
-    }
-
-    .status-wait {
-      color: #ffd97a;
-    }
+    .status-ok { color: #8ef8bf; }
+    .status-wait { color: #ffd97a; }
 
     .loading-note {
-      position: relative;
-      z-index: 2;
       min-height: 236px;
       display: flex;
       align-items: center;
@@ -412,115 +314,60 @@
     }
 
     @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(0.8);
-        opacity: 0.55;
-      }
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.8); opacity: 0.55; }
     }
   </style>
 </head>
+
 <body>
   <div class="overlay">
-    <!-- Logo superior esquerda -->
-    <div class="top-left-logo">
-      <img src="/assets/tbf300-sports.png" alt="TBF300 Sports" />
+    <div class="top-left-logo" aria-label="TBF300 Sports">
+      <svg class="logo-svg" viewBox="0 0 520 170" role="img" aria-label="TBF300 Sports">
+        <rect x="8" y="8" width="504" height="154" rx="22" fill="#061a31" stroke="#f4d03f" stroke-width="8"/>
+        <text x="260" y="74" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="62" font-weight="900" fill="#ffffff" stroke="#0a1629" stroke-width="3">TBF300</text>
+        <rect x="72" y="86" width="376" height="24" fill="#f04923"/>
+        <text x="260" y="142" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="46" font-weight="900" fill="#ffffff" stroke="#0a1629" stroke-width="2">SPORTS</text>
+      </svg>
     </div>
 
-    <!-- Info do evento -->
     <div class="event-info">
-      <div class="event-kicker">Prism Live • 2 Câmeras</div>
       <div class="event-title" id="eventTitle">Circuito MT 2026</div>
-      <div class="event-subtitle" id="eventSubtitle">
-        Etapa 2 • Rondonópolis • Resultados automáticos Boliche Brasil
-      </div>
+      <div class="event-subtitle" id="eventSubtitle">Etapa 2 • Rondonópolis</div>
     </div>
 
-    <!-- Áreas transparentes de câmera -->
     <div class="camera-stage">
       <div class="camera-box cam-1">
         <div class="camera-label" id="cam1Label">Câmera 1</div>
-        <div class="camera-live">
-          <span class="live-dot"></span>
-          AO VIVO
-        </div>
+        <div class="camera-live"><span class="live-dot"></span> Ao vivo</div>
       </div>
 
       <div class="camera-box cam-2">
         <div class="camera-label" id="cam2Label">Câmera 2</div>
-        <div class="camera-live">
-          <span class="live-dot"></span>
-          AO VIVO
-        </div>
+        <div class="camera-live"><span class="live-dot"></span> Ao vivo</div>
       </div>
     </div>
 
-    <!-- Resultados -->
     <div class="results-wrapper">
-      <div class="result-card" id="card-m1">
-        <div class="card-header">
-          <div class="card-title">1ª Divisão Masculina</div>
-          <div class="card-badge">Top 5</div>
-        </div>
-
-        <div class="table-head">
-          <div>#</div>
-          <div>Atleta</div>
-          <div style="text-align:right;">Total</div>
-          <div style="text-align:right;">Média</div>
-        </div>
-
+      <div class="result-card">
+        <div class="card-header"><div class="card-title">1ª Divisão Masculina</div><div class="card-badge" id="badge-m1">Circuito</div></div>
+        <div class="table-head"><div>#</div><div>Atleta</div><div style="text-align:right;">Pts</div><div style="text-align:right;">ML</div></div>
         <div class="rows" id="rows-m1"></div>
-
-        <div class="card-footer">
-          <span id="status-m1" class="status-wait">Aguardando</span>
-          <span id="update-m1">--:--:--</span>
-        </div>
+        <div class="card-footer"><span id="status-m1" class="status-wait">Etapa anterior</span><span id="update-m1">Circuito</span></div>
       </div>
 
-      <div class="result-card" id="card-m2">
-        <div class="card-header">
-          <div class="card-title">2ª Divisão Masculina</div>
-          <div class="card-badge">Top 5</div>
-        </div>
-
-        <div class="table-head">
-          <div>#</div>
-          <div>Atleta</div>
-          <div style="text-align:right;">Total</div>
-          <div style="text-align:right;">Média</div>
-        </div>
-
+      <div class="result-card">
+        <div class="card-header"><div class="card-title">2ª Divisão Masculina</div><div class="card-badge" id="badge-m2">Circuito</div></div>
+        <div class="table-head"><div>#</div><div>Atleta</div><div style="text-align:right;">Pts</div><div style="text-align:right;">ML</div></div>
         <div class="rows" id="rows-m2"></div>
-
-        <div class="card-footer">
-          <span id="status-m2" class="status-wait">Aguardando</span>
-          <span id="update-m2">--:--:--</span>
-        </div>
+        <div class="card-footer"><span id="status-m2" class="status-wait">Etapa anterior</span><span id="update-m2">Circuito</span></div>
       </div>
 
-      <div class="result-card" id="card-f1">
-        <div class="card-header">
-          <div class="card-title">1ª Divisão Feminina</div>
-          <div class="card-badge">Top 5</div>
-        </div>
-
-        <div class="table-head">
-          <div>#</div>
-          <div>Atleta</div>
-          <div style="text-align:right;">Total</div>
-          <div style="text-align:right;">Média</div>
-        </div>
-
+      <div class="result-card">
+        <div class="card-header"><div class="card-title">1ª Divisão Feminina</div><div class="card-badge" id="badge-f1">Circuito</div></div>
+        <div class="table-head"><div>#</div><div>Atleta</div><div style="text-align:right;">Pts</div><div style="text-align:right;">ML</div></div>
         <div class="rows" id="rows-f1"></div>
-
-        <div class="card-footer">
-          <span id="status-f1" class="status-wait">Aguardando</span>
-          <span id="update-f1">--:--:--</span>
-        </div>
+        <div class="card-footer"><span id="status-f1" class="status-wait">Etapa anterior</span><span id="update-f1">Circuito</span></div>
       </div>
     </div>
   </div>
@@ -529,45 +376,52 @@
     const params = new URLSearchParams(window.location.search);
 
     const CONFIG = {
-      evento: params.get("evento") || "588",
+      evento: params.get("evento") || "589",
       dia: params.get("dia") || "1",
-      limit: parseInt(params.get("limit") || "5", 10),
+      limite: parseInt(params.get("limite") || params.get("limit") || "5", 10),
       etapa: params.get("etapa") || "Etapa 2",
       cidade: params.get("cidade") || "Rondonópolis",
       titulo: params.get("titulo") || "Circuito MT 2026",
       refreshMs: parseInt(params.get("refresh") || "15000", 10),
       cam1: params.get("cam1") || "Câmera 1",
-      cam2: params.get("cam2") || "Câmera 2"
+      cam2: params.get("cam2") || "Câmera 2",
+      apiBase: (params.get("api") || "").replace(/\/$/, "")
+    };
+
+    const FALLBACK_CIRCUITO = {
+      "masculino-1": [
+        { posicao: 1, atleta: "Michel Belmonte", pontos: 100, maiorLinha: 224 },
+        { posicao: 2, atleta: "Thiago Wandscher", pontos: 85, maiorLinha: 221 },
+        { posicao: 3, atleta: "NILO PONCE", pontos: 75, maiorLinha: 224 },
+        { posicao: 4, atleta: "Matheus Verão", pontos: 65, maiorLinha: 232 },
+        { posicao: 5, atleta: "Romildo Souza", pontos: 60, maiorLinha: 199 }
+      ],
+      "masculino-2": [
+        { posicao: 1, atleta: "Gustavo Buzelle", pontos: 100, maiorLinha: 204 },
+        { posicao: 2, atleta: "RONALDO OLIVEIRA", pontos: 85, maiorLinha: 201 },
+        { posicao: 3, atleta: "Nelson Saga", pontos: 75, maiorLinha: 188 },
+        { posicao: 4, atleta: "GUILHERME SCHEER", pontos: 65, maiorLinha: 225 },
+        { posicao: 5, atleta: "GILBERTO RIBEIRO", pontos: 60, maiorLinha: 192 }
+      ],
+      "feminino": [
+        { posicao: 1, atleta: "Raquel Tenuta", pontos: 100, maiorLinha: 201 },
+        { posicao: 2, atleta: "Dani Ledur", pontos: 85, maiorLinha: 192 },
+        { posicao: 3, atleta: "Agda Nogueira", pontos: 75, maiorLinha: 163 },
+        { posicao: 4, atleta: "Joselia Moreno", pontos: 65, maiorLinha: 201 },
+        { posicao: 5, atleta: "Tereza Belmonte", pontos: 60, maiorLinha: 162 }
+      ]
     };
 
     const categorias = [
-      {
-        slug: "masculino-1",
-        rowsId: "rows-m1",
-        statusId: "status-m1",
-        updateId: "update-m1",
-        label: "1ª Divisão Masculina"
-      },
-      {
-        slug: "masculino-2",
-        rowsId: "rows-m2",
-        statusId: "status-m2",
-        updateId: "update-m2",
-        label: "2ª Divisão Masculina"
-      },
-      {
-        slug: "feminino",
-        rowsId: "rows-f1",
-        statusId: "status-f1",
-        updateId: "update-f1",
-        label: "1ª Divisão Feminina"
-      }
+      { slug: "masculino-1", rowsId: "rows-m1", statusId: "status-m1", updateId: "update-m1", badgeId: "badge-m1" },
+      { slug: "masculino-2", rowsId: "rows-m2", statusId: "status-m2", updateId: "update-m2", badgeId: "badge-m2" },
+      { slug: "feminino", rowsId: "rows-f1", statusId: "status-f1", updateId: "update-f1", badgeId: "badge-f1" }
     ];
 
-    document.getElementById("eventTitle").textContent = CONFIG.titulo;
-    document.getElementById("eventSubtitle").textContent =
-      `${CONFIG.etapa} • ${CONFIG.cidade} • Resultados automáticos Boliche Brasil`;
+    const ultimoValido = {};
 
+    document.getElementById("eventTitle").textContent = CONFIG.titulo;
+    document.getElementById("eventSubtitle").textContent = `${CONFIG.etapa} • ${CONFIG.cidade}`;
     document.getElementById("cam1Label").textContent = CONFIG.cam1;
     document.getElementById("cam2Label").textContent = CONFIG.cam2;
 
@@ -575,86 +429,70 @@
       if (!isoString) return "--:--:--";
       const d = new Date(isoString);
       if (Number.isNaN(d.getTime())) return "--:--:--";
-
-      return d.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-    }
-
-    function formatMedia(valor) {
-      const num = Number(valor || 0);
-      return num.toFixed(2).replace(".", ",");
-    }
-
-    function formatTotal(valor) {
-      const num = Number(valor || 0);
-      return String(num);
-    }
-
-    function setLoading(rowsEl, mensagem) {
-      rowsEl.innerHTML = `
-        <div class="loading-note">${mensagem}</div>
-      `;
+      return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     }
 
     function renderRows(rowsEl, atletas) {
-      if (!Array.isArray(atletas) || atletas.length === 0) {
-        setLoading(rowsEl, "Aguardando resultados oficiais da categoria.");
-        return;
-      }
-
-      rowsEl.innerHTML = atletas.slice(0, CONFIG.limit).map((item, index) => {
-        const posicao = item.posicao || (index + 1);
+      rowsEl.innerHTML = atletas.slice(0, CONFIG.limite).map((item, index) => {
+        const posicao = item.posicao || index + 1;
         const atleta = item.atleta || item.nome || "Atleta";
-        const total = formatTotal(item.total ?? item.serie ?? item.pontos ?? 0);
-        const media = formatMedia(item.media ?? 0);
+        const pontos = item.pontos ?? item.pontosCircuito ?? item.total ?? 0;
+        const maiorLinha = item.maiorLinha ?? item.maior_linha ?? item.ml ?? "-";
+        const top4 = posicao <= 4 ? "top4" : "";
 
         return `
-          <div class="table-row">
-            <div class="col-pos">
-              <span class="pos-pill">${posicao}</span>
-            </div>
-            <div class="col-name">${atleta}</div>
-            <div class="col-total">${total}</div>
-            <div class="col-media">${media}</div>
+          <div class="table-row ${top4}">
+            <div><span class="pos-pill">${posicao}</span></div>
+            <div class="col-name" title="${atleta}">${atleta}</div>
+            <div class="col-total">${pontos}</div>
+            <div class="col-media">${maiorLinha}</div>
           </div>
         `;
       }).join("");
+    }
+
+    function usarFallback(cat, motivo = "Classificação após Etapa 1") {
+      const rowsEl = document.getElementById(cat.rowsId);
+      const statusEl = document.getElementById(cat.statusId);
+      const updateEl = document.getElementById(cat.updateId);
+      const badgeEl = document.getElementById(cat.badgeId);
+      const dados = ultimoValido[cat.slug] || FALLBACK_CIRCUITO[cat.slug] || [];
+
+      renderRows(rowsEl, dados);
+      statusEl.textContent = ultimoValido[cat.slug] ? "Última atualização válida" : motivo;
+      statusEl.className = "status-wait";
+      updateEl.textContent = ultimoValido[cat.slug] ? "Boliche Brasil" : "Circuito";
+      badgeEl.textContent = ultimoValido[cat.slug] ? "Ao vivo" : "Etapa 1";
     }
 
     async function carregarCategoria(cat) {
       const rowsEl = document.getElementById(cat.rowsId);
       const statusEl = document.getElementById(cat.statusId);
       const updateEl = document.getElementById(cat.updateId);
+      const badgeEl = document.getElementById(cat.badgeId);
 
-      const url = `/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(cat.slug)}&dia=${encodeURIComponent(CONFIG.dia)}&limit=${encodeURIComponent(CONFIG.limit)}`;
+      const url = `${CONFIG.apiBase}/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(cat.slug)}&dia=${encodeURIComponent(CONFIG.dia)}&limite=${encodeURIComponent(CONFIG.limite)}&_=${Date.now()}`;
 
       try {
-        statusEl.textContent = "Carregando...";
-        statusEl.className = "status-wait";
-
         const resposta = await fetch(url, { cache: "no-store" });
+        if (!resposta.ok) throw new Error("Falha HTTP");
+
         const dados = await resposta.json();
+        const atletas = Array.isArray(dados.atletas) ? dados.atletas : [];
 
-        renderRows(rowsEl, dados.atletas || []);
-
-        if (dados.status === "ok" && Array.isArray(dados.atletas) && dados.atletas.length > 0) {
-          statusEl.textContent = "Atualização automática";
+        if (dados.status === "ok" && atletas.length > 0) {
+          ultimoValido[cat.slug] = atletas;
+          renderRows(rowsEl, atletas);
+          statusEl.textContent = "Etapa 2 ao vivo";
           statusEl.className = "status-ok";
-        } else {
-          statusEl.textContent = dados.mensagem || "Aguardando resultados";
-          statusEl.className = "status-wait";
+          updateEl.textContent = formatHora(dados.atualizadoEm);
+          badgeEl.textContent = "Ao vivo";
+          return;
         }
 
-        updateEl.textContent = formatHora(dados.atualizadoEm);
+        usarFallback(cat);
       } catch (erro) {
-        console.error(`Erro ao carregar ${cat.slug}:`, erro);
-        setLoading(rowsEl, "Falha ao carregar dados da categoria.");
-        statusEl.textContent = "Erro de conexão";
-        statusEl.className = "status-wait";
-        updateEl.textContent = "--:--:--";
+        usarFallback(cat);
       }
     }
 
