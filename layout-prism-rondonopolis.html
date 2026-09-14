@@ -8,14 +8,15 @@
   <style>
     :root {
       --amarelo: #ffd43b;
-      --amarelo-borda: rgba(255, 212, 59, 0.94);
+      --amarelo-borda: rgba(255, 212, 59, 0.96);
       --verde: #21d18d;
       --texto: #f7f9fd;
       --muted: rgba(255,255,255,0.78);
       --muted2: rgba(255,255,255,0.58);
-      --card-bg: linear-gradient(135deg, rgba(8,22,44,0.94), rgba(31,53,84,0.88));
-      --row-bg: rgba(255,255,255,0.060);
-      --shadow: 0 16px 34px rgba(0,0,0,0.34);
+      --chrome: linear-gradient(135deg, rgba(6,16,32,0.97), rgba(17,34,62,0.96));
+      --card-bg: linear-gradient(135deg, rgba(8,22,44,0.97), rgba(31,53,84,0.95));
+      --row-bg: rgba(255,255,255,0.065);
+      --shadow: 0 16px 34px rgba(0,0,0,0.38);
     }
 
     * {
@@ -36,9 +37,7 @@
       color: var(--texto);
     }
 
-    body {
-      position: relative;
-    }
+    body { position: relative; }
 
     .viewport {
       position: fixed;
@@ -57,98 +56,159 @@
       height: 1080px;
       transform: translate(-50%, -50%) scale(var(--scale, 1));
       transform-origin: center center;
-      background: transparent;
       overflow: hidden;
+      background: transparent;
+    }
+
+    /* Áreas opacas do layout. Somente as duas janelas de câmera permanecem transparentes. */
+    .chrome-top,
+    .chrome-left,
+    .chrome-right,
+    .chrome-center,
+    .chrome-bottom {
+      position: absolute;
+      background: var(--chrome);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .chrome-top {
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 96px;
+      border-bottom: 2px solid rgba(255,212,59,0.34);
+    }
+
+    .chrome-left {
+      left: 0;
+      top: 96px;
+      bottom: 0;
+      width: 28px;
+    }
+
+    .chrome-right {
+      right: 0;
+      top: 96px;
+      bottom: 0;
+      width: 28px;
+    }
+
+    .chrome-center {
+      left: 950px;
+      top: 96px;
+      width: 20px;
+      height: 632px;
+      background: linear-gradient(180deg, rgba(8,22,42,0.98), rgba(11,32,52,0.97));
+    }
+
+    .chrome-bottom {
+      left: 0;
+      right: 0;
+      top: 728px;
+      bottom: 0;
+      border-top: 2px solid rgba(255,212,59,0.32);
+    }
+
+    .top-title {
+      position: absolute;
+      left: 34px;
+      top: 20px;
+      z-index: 10;
+    }
+
+    .top-title .eyebrow {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--amarelo);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .top-title .title {
+      font-size: 29px;
+      line-height: 1;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .4px;
     }
 
     .top-info {
       position: absolute;
-      top: 28px;
-      right: 40px;
-      width: 500px;
-      min-height: 112px;
-      padding: 18px 22px;
-      border: 2px solid var(--amarelo-borda);
-      border-radius: 22px;
-      background: linear-gradient(135deg, rgba(9,18,35,.92), rgba(33,56,93,.86));
+      top: 14px;
+      right: 34px;
+      width: 425px;
+      min-height: 68px;
+      padding: 11px 16px;
+      border: 1px solid var(--amarelo-borda);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(13,29,53,.98), rgba(38,58,91,.96));
       box-shadow: var(--shadow);
       z-index: 20;
     }
 
-    .top-info .eyebrow {
-      font-size: 18px;
-      line-height: 1;
-      font-weight: 900;
-      color: var(--amarelo);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
     .top-info .title {
-      font-size: 29px;
+      font-size: 22px;
       font-weight: 900;
-      letter-spacing: 0.4px;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .top-info .sub {
-      font-size: 14px;
+      font-size: 11px;
       font-weight: 800;
       color: var(--muted);
-      letter-spacing: .4px;
       text-transform: uppercase;
-      line-height: 1.3;
+      letter-spacing: .5px;
     }
 
     .top-info .status {
-      margin-top: 8px;
-      font-size: 12px;
+      margin-top: 4px;
+      font-size: 10px;
       font-weight: 800;
       color: var(--muted2);
       text-transform: uppercase;
-      letter-spacing: .6px;
+      letter-spacing: .5px;
     }
 
     .camera-wrap {
       position: absolute;
-      left: 58px;
-      right: 58px;
-      top: 140px;
-      height: 505px;
+      left: 28px;
+      right: 28px;
+      top: 96px;
+      height: 632px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 34px;
+      gap: 20px;
       z-index: 5;
     }
 
     .camera-box {
       position: relative;
       width: 100%;
-      height: 505px;
+      height: 632px;
       border: 3px solid var(--amarelo-borda);
       border-radius: 0;
       background: transparent;
       overflow: hidden;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.20);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22);
     }
 
     .camera-label {
       position: absolute;
-      top: 16px;
-      left: 16px;
+      top: 14px;
+      left: 14px;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
+      padding: 9px 17px;
       border-radius: 999px;
       background: linear-gradient(135deg, #29d99a, #14b47a);
       color: #07131f;
-      font-size: 19px;
+      font-size: 17px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -157,17 +217,17 @@
 
     .camera-live {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      top: 14px;
+      right: 14px;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 18px;
+      gap: 9px;
+      padding: 9px 17px;
       border-radius: 999px;
-      background: rgba(8, 17, 30, 0.82);
-      border: 1px solid rgba(241, 194, 50, 0.55);
+      background: rgba(8,17,30,0.88);
+      border: 1px solid rgba(241,194,50,0.60);
       color: #fff;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -176,34 +236,33 @@
 
     .camera-live::before {
       content: "";
-      width: 11px;
-      height: 11px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: #21e38a;
       box-shadow: 0 0 10px rgba(33,227,138,.75);
-      display: inline-block;
     }
 
     .boards {
       position: absolute;
-      left: 58px;
-      right: 58px;
-      bottom: 30px;
-      height: 385px;
+      left: 28px;
+      right: 28px;
+      bottom: 16px;
+      height: 320px;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
       z-index: 10;
     }
 
     .board-card {
       position: relative;
-      height: 385px;
+      height: 320px;
       border: 2px solid var(--amarelo-borda);
-      border-radius: 22px;
+      border-radius: 18px;
       background: var(--card-bg);
       box-shadow: var(--shadow);
-      padding: 18px 18px 14px;
+      padding: 14px 14px 12px;
       overflow: hidden;
     }
 
@@ -211,16 +270,16 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
-      gap: 12px;
+      margin-bottom: 8px;
+      gap: 10px;
     }
 
     .board-title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 900;
       text-transform: uppercase;
       color: #ffd449;
-      letter-spacing: .4px;
+      letter-spacing: .35px;
       line-height: 1.05;
       white-space: nowrap;
       overflow: hidden;
@@ -229,106 +288,102 @@
 
     .board-badge {
       flex: 0 0 auto;
-      padding: 7px 13px;
+      padding: 6px 11px;
       border-radius: 999px;
       border: 1px solid rgba(241,194,50,.75);
       background: rgba(255,255,255,0.08);
       color: #fff7cd;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: .7px;
+      letter-spacing: .6px;
     }
 
     .board-sub {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 800;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      letter-spacing: .8px;
+      margin-bottom: 7px;
     }
 
     .table-head,
     .table-row {
       display: grid;
-      grid-template-columns: 48px 1fr 95px 85px;
+      grid-template-columns: 40px 1fr 70px 62px;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .table-head {
-      background: rgba(38, 217, 154, 0.18);
-      border-radius: 13px;
-      padding: 9px 11px;
-      margin-bottom: 9px;
-      font-size: 13px;
+      background: rgba(38,217,154,0.18);
+      border-radius: 10px;
+      padding: 7px 9px;
+      margin-bottom: 6px;
+      font-size: 10px;
       font-weight: 900;
       text-transform: uppercase;
       color: #eef5ff;
-      letter-spacing: .7px;
+      letter-spacing: .6px;
     }
 
     .rows {
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      min-height: 230px;
+      gap: 5px;
+      min-height: 208px;
     }
 
     .table-row {
-      min-height: 43px;
-      border-radius: 13px;
-      padding: 7px 11px;
+      min-height: 36px;
+      border-radius: 10px;
+      padding: 5px 9px;
       background: var(--row-bg);
       border: 1px solid rgba(255,255,255,0.06);
     }
 
     .pos {
-      width: 31px;
-      height: 31px;
-      border-radius: 10px;
+      width: 27px;
+      height: 27px;
+      border-radius: 8px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, #ffe27a, #e4b71c);
       color: #102037;
-      font-size: 17px;
+      font-size: 14px;
       font-weight: 900;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
     }
 
     .name {
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 800;
-      color: #ffffff;
+      color: #fff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-right: 4px;
     }
 
     .val,
     .avg {
-      font-size: 17px;
+      font-size: 14px;
       font-weight: 900;
       text-align: right;
       color: #fff;
     }
 
-    .avg {
-      color: var(--amarelo);
-    }
+    .avg { color: var(--amarelo); }
 
     .empty-state {
-      height: 230px;
+      height: 205px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 20px;
+      padding: 16px;
       color: rgba(255,255,255,.85);
-      font-size: 20px;
+      font-size: 17px;
       font-weight: 900;
       text-transform: uppercase;
       line-height: 1.3;
@@ -336,54 +391,56 @@
 
     .card-footer {
       position: absolute;
-      left: 18px;
-      right: 18px;
-      bottom: 13px;
+      left: 14px;
+      right: 14px;
+      bottom: 9px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      font-size: 11px;
+      gap: 10px;
+      font-size: 9px;
       font-weight: 800;
       text-transform: uppercase;
       color: var(--muted);
-      letter-spacing: .6px;
-      border-top: 1px solid rgba(255, 212, 59, 0.18);
-      padding-top: 8px;
+      letter-spacing: .45px;
+      border-top: 1px solid rgba(255,212,59,0.18);
+      padding-top: 5px;
     }
 
     .card-footer .live-dot {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       white-space: nowrap;
     }
 
     .card-footer .live-dot::before {
       content: "";
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #1fe28a;
-      box-shadow: 0 0 8px rgba(31,226,138,.7);
-      display: inline-block;
-      flex: 0 0 auto;
-    }
-
-    @media (max-aspect-ratio: 16/9) {
-      .overlay {
-        transform: translate(-50%, -50%) scale(var(--scale, 1));
-      }
+      box-shadow: 0 0 7px rgba(31,226,138,.7);
     }
   </style>
 </head>
 <body>
   <div class="viewport">
     <div class="overlay" id="overlay">
-      <div class="top-info">
+      <div class="chrome-top"></div>
+      <div class="chrome-left"></div>
+      <div class="chrome-right"></div>
+      <div class="chrome-center"></div>
+      <div class="chrome-bottom"></div>
+
+      <div class="top-title">
         <div class="eyebrow">Circuito MT 2026</div>
         <div class="title">Etapa 2 • Rondonópolis</div>
-        <div class="sub">Resultados por categoria</div>
+      </div>
+
+      <div class="top-info">
+        <div class="title">Circuito MT 2026</div>
+        <div class="sub">Etapa 2 • Rondonópolis</div>
         <div class="status" id="statusAtualizacao">Carregando dados…</div>
       </div>
 
@@ -392,7 +449,6 @@
           <div class="camera-label" id="cam1Label">Câmera 1</div>
           <div class="camera-live">Ao vivo</div>
         </div>
-
         <div class="camera-box">
           <div class="camera-label" id="cam2Label">Câmera 2</div>
         </div>
@@ -456,31 +512,30 @@
       document.documentElement.style.setProperty("--scale", escala);
     }
 
-    window.addEventListener("resize", ajustarEscala);
     ajustarEscala();
+    window.addEventListener("resize", ajustarEscala);
 
     function formatMedia(valor) {
       const num = Number(valor || 0);
       return num.toFixed(2).replace(".", ",");
     }
 
-    function renderCard(categoria, payload, modo = "live") {
+    function renderCard(categoria, atletas, modo = "fallback") {
       const el = document.getElementById(categoria.cardId);
-      const atletas = Array.isArray(payload) ? payload : [];
       const isFallback = modo === "fallback";
       const badge = isFallback ? "Circuito" : "Top 5";
       const col3 = isFallback ? "Pts" : "Total";
       const col4 = isFallback ? "ML" : "Média";
 
-      const rowsHtml = atletas.length
-        ? atletas.map(item => `
-          <div class="table-row">
-            <div><span class="pos">${item.posicao}</span></div>
-            <div class="name">${item.atleta}</div>
-            <div class="val">${isFallback ? item.pontos : item.total}</div>
-            <div class="avg">${isFallback ? item.maiorLinha : formatMedia(item.media)}</div>
-          </div>
-        `).join("")
+      const rows = Array.isArray(atletas) && atletas.length
+        ? atletas.slice(0, CONFIG.limite).map(item => `
+            <div class="table-row">
+              <div><span class="pos">${item.posicao}</span></div>
+              <div class="name">${item.atleta}</div>
+              <div class="val">${isFallback ? item.pontos : item.total}</div>
+              <div class="avg">${isFallback ? item.maiorLinha : formatMedia(item.media)}</div>
+            </div>
+          `).join("")
         : `<div class="empty-state">Aguardando dados da categoria</div>`;
 
       el.innerHTML = `
@@ -488,14 +543,11 @@
           <div class="board-title">${categoria.nome}</div>
           <div class="board-badge">${badge}</div>
         </div>
-        <div class="board-sub">${isFallback ? "Classificação após a Etapa 1" : "Resultado automático da etapa atual"}</div>
+        <div class="board-sub">${isFallback ? "Classificação após a Etapa 1" : "Resultado automático da Etapa 2"}</div>
         <div class="table-head">
-          <div>#</div>
-          <div>Atleta</div>
-          <div style="text-align:right">${col3}</div>
-          <div style="text-align:right">${col4}</div>
+          <div>#</div><div>Atleta</div><div style="text-align:right">${col3}</div><div style="text-align:right">${col4}</div>
         </div>
-        <div class="rows">${rowsHtml}</div>
+        <div class="rows">${rows}</div>
         <div class="card-footer">
           <div class="live-dot">${isFallback ? "Circuito após Etapa 1" : "Atualização automática"}</div>
           <div>${isFallback ? "Fallback" : "Boliche Brasil"}</div>
@@ -505,39 +557,33 @@
 
     async function carregarCategoria(categoria) {
       if (!CONFIG.apiBase) {
-        renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
-        return { modo: "fallback" };
+        renderCard(categoria, fallbackCircuito[categoria.key], "fallback");
+        return false;
       }
 
-      const url = `${CONFIG.apiBase}/api/top?evento=${CONFIG.evento}&categoria=${categoria.key}&dia=${CONFIG.dia}&limite=${CONFIG.limite}`;
-
       try {
+        const url = `${CONFIG.apiBase}/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(categoria.key)}&dia=${encodeURIComponent(CONFIG.dia)}&limite=${encodeURIComponent(CONFIG.limite)}&_=${Date.now()}`;
         const resp = await fetch(url, { cache: "no-store" });
         if (!resp.ok) throw new Error("Falha HTTP");
         const dados = await resp.json();
+        const atletas = Array.isArray(dados.atletas) ? dados.atletas : [];
 
-        if (dados && dados.status === "ok" && Array.isArray(dados.atletas) && dados.atletas.length) {
-          renderCard(categoria, dados.atletas, "live");
-          return { modo: "live" };
+        if (dados.status === "ok" && atletas.length) {
+          renderCard(categoria, atletas, "live");
+          return true;
         }
+      } catch (e) {}
 
-        renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
-        return { modo: "fallback" };
-      } catch (e) {
-        renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
-        return { modo: "fallback" };
-      }
+      renderCard(categoria, fallbackCircuito[categoria.key], "fallback");
+      return false;
     }
 
     async function carregarTudo() {
       const statusEl = document.getElementById("statusAtualizacao");
       statusEl.textContent = "Atualizando…";
-
       const resultados = await Promise.all(categorias.map(carregarCategoria));
-      const algumLive = resultados.some(r => r.modo === "live");
-
-      statusEl.textContent = algumLive
-        ? `Dia ${CONFIG.dia} • dados oficiais recebidos`
+      statusEl.textContent = resultados.some(Boolean)
+        ? "Dados oficiais da Etapa 2"
         : "Exibindo classificação após a Etapa 1";
     }
 
