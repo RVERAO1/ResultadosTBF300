@@ -13,7 +13,7 @@
       --texto: #f7f9fd;
       --muted: rgba(255,255,255,0.78);
       --muted2: rgba(255,255,255,0.58);
-      --card-bg: linear-gradient(135deg, rgba(8,22,44,0.94), rgba(31,53,84,0.86));
+      --card-bg: linear-gradient(135deg, rgba(8,22,44,0.94), rgba(31,53,84,0.88));
       --row-bg: rgba(255,255,255,0.060);
       --shadow: 0 16px 34px rgba(0,0,0,0.34);
     }
@@ -22,15 +22,15 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     html,
     body {
-      width: 1920px;
-      height: 1080px;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
       background: transparent;
       color: var(--texto);
@@ -40,34 +40,45 @@
       position: relative;
     }
 
-    .overlay {
-      position: relative;
-      width: 1920px;
-      height: 1080px;
+    .viewport {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
       background: transparent;
+    }
+
+    .overlay {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1920px;
+      height: 1080px;
+      transform: translate(-50%, -50%) scale(var(--scale, 1));
+      transform-origin: center center;
+      background: transparent;
+      overflow: hidden;
     }
 
     .top-info {
       position: absolute;
       top: 28px;
-      right: 32px;
-      width: 470px;
-      min-height: 118px;
+      right: 40px;
+      width: 500px;
+      min-height: 112px;
       padding: 18px 22px;
       border: 2px solid var(--amarelo-borda);
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(9,18,35,.93), rgba(33,56,93,.84));
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(9,18,35,.92), rgba(33,56,93,.86));
       box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 30;
+      z-index: 20;
     }
 
     .top-info .eyebrow {
       font-size: 18px;
       line-height: 1;
-      font-weight: 1000;
+      font-weight: 900;
       color: var(--amarelo);
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -75,26 +86,29 @@
     }
 
     .top-info .title {
-      font-size: 28px;
-      line-height: 1.05;
-      font-weight: 1000;
+      font-size: 29px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
       margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .top-info .sub {
-      font-size: 15px;
-      font-weight: 900;
+      font-size: 14px;
+      font-weight: 800;
       color: var(--muted);
       letter-spacing: .4px;
       text-transform: uppercase;
-      line-height: 1.35;
+      line-height: 1.3;
     }
 
     .top-info .status {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 800;
       color: var(--muted2);
       text-transform: uppercase;
       letter-spacing: .6px;
@@ -102,20 +116,20 @@
 
     .camera-wrap {
       position: absolute;
-      left: 32px;
-      right: 32px;
-      top: 142px;
-      height: 500px;
-      display: flex;
-      gap: 32px;
+      left: 58px;
+      right: 58px;
+      top: 140px;
+      height: 505px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
       z-index: 5;
-      pointer-events: none;
     }
 
     .camera-box {
       position: relative;
-      flex: 1 1 0;
-      height: 500px;
+      width: 100%;
+      height: 505px;
       border: 3px solid var(--amarelo-borda);
       border-radius: 0;
       background: transparent;
@@ -134,8 +148,8 @@
       border-radius: 999px;
       background: linear-gradient(135deg, #29d99a, #14b47a);
       color: #07131f;
-      font-size: 22px;
-      font-weight: 1000;
+      font-size: 19px;
+      font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 1px;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
@@ -153,8 +167,8 @@
       background: rgba(8, 17, 30, 0.82);
       border: 1px solid rgba(241, 194, 50, 0.55);
       color: #fff;
-      font-size: 18px;
-      font-weight: 1000;
+      font-size: 16px;
+      font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 1px;
       box-shadow: 0 10px 24px rgba(0,0,0,.25);
@@ -168,31 +182,28 @@
       background: #21e38a;
       box-shadow: 0 0 10px rgba(33,227,138,.75);
       display: inline-block;
-      animation: pulse 1.4s ease-in-out infinite;
     }
 
     .boards {
       position: absolute;
-      left: 32px;
-      right: 32px;
-      bottom: 28px;
-      height: 378px;
+      left: 58px;
+      right: 58px;
+      bottom: 30px;
+      height: 385px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 20px;
-      z-index: 20;
-      pointer-events: none;
+      z-index: 10;
     }
 
     .board-card {
       position: relative;
+      height: 385px;
       border: 2px solid var(--amarelo-borda);
-      border-radius: 28px;
+      border-radius: 22px;
       background: var(--card-bg);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      padding: 18px 18px 16px;
+      padding: 18px 18px 14px;
       overflow: hidden;
     }
 
@@ -200,56 +211,59 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       gap: 12px;
     }
 
     .board-title {
       font-size: 24px;
-      font-weight: 1000;
+      font-weight: 900;
       text-transform: uppercase;
       color: #ffd449;
-      letter-spacing: .5px;
+      letter-spacing: .4px;
       line-height: 1.05;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .board-badge {
       flex: 0 0 auto;
-      padding: 8px 14px;
+      padding: 7px 13px;
       border-radius: 999px;
       border: 1px solid rgba(241,194,50,.75);
       background: rgba(255,255,255,0.08);
       color: #fff7cd;
-      font-size: 15px;
-      font-weight: 1000;
+      font-size: 13px;
+      font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: .8px;
+      letter-spacing: .7px;
     }
 
     .board-sub {
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 800;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .table-head,
     .table-row {
       display: grid;
-      grid-template-columns: 52px 1fr 115px 105px;
+      grid-template-columns: 48px 1fr 95px 85px;
       align-items: center;
       gap: 10px;
     }
 
     .table-head {
       background: rgba(38, 217, 154, 0.18);
-      border-radius: 14px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 1000;
+      border-radius: 13px;
+      padding: 9px 11px;
+      margin-bottom: 9px;
+      font-size: 13px;
+      font-weight: 900;
       text-transform: uppercase;
       color: #eef5ff;
       letter-spacing: .7px;
@@ -258,50 +272,46 @@
     .rows {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
+      min-height: 230px;
     }
 
     .table-row {
-      min-height: 45px;
-      border-radius: 14px;
-      padding: 8px 12px;
+      min-height: 43px;
+      border-radius: 13px;
+      padding: 7px 11px;
       background: var(--row-bg);
       border: 1px solid rgba(255,255,255,0.06);
     }
 
-    .table-row.top4 {
-      border-color: rgba(255, 212, 59, 0.72);
-      background: linear-gradient(90deg, rgba(255, 212, 59, 0.17), rgba(33, 209, 141, 0.12));
-    }
-
     .pos {
-      width: 32px;
-      height: 32px;
+      width: 31px;
+      height: 31px;
       border-radius: 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, #ffe27a, #e4b71c);
       color: #102037;
-      font-size: 18px;
-      font-weight: 1000;
+      font-size: 17px;
+      font-weight: 900;
       box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
     }
 
     .name {
       font-size: 16px;
-      font-weight: 900;
-      color: #fff;
+      font-weight: 800;
+      color: #ffffff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-right: 6px;
+      padding-right: 4px;
     }
 
     .val,
     .avg {
       font-size: 17px;
-      font-weight: 1000;
+      font-weight: 900;
       text-align: right;
       color: #fff;
     }
@@ -318,8 +328,8 @@
       text-align: center;
       padding: 20px;
       color: rgba(255,255,255,.85);
-      font-size: 22px;
-      font-weight: 1000;
+      font-size: 20px;
+      font-weight: 900;
       text-transform: uppercase;
       line-height: 1.3;
     }
@@ -328,25 +338,28 @@
       position: absolute;
       left: 18px;
       right: 18px;
-      bottom: 14px;
+      bottom: 13px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      font-size: 12px;
-      font-weight: 900;
+      font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
       color: var(--muted);
       letter-spacing: .6px;
+      border-top: 1px solid rgba(255, 212, 59, 0.18);
+      padding-top: 8px;
     }
 
-    .card-footer .dot {
+    .card-footer .live-dot {
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      white-space: nowrap;
     }
 
-    .card-footer .dot::before {
+    .card-footer .live-dot::before {
       content: "";
       width: 8px;
       height: 8px;
@@ -354,39 +367,42 @@
       background: #1fe28a;
       box-shadow: 0 0 8px rgba(31,226,138,.7);
       display: inline-block;
+      flex: 0 0 auto;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .55; transform: scale(.82); }
+    @media (max-aspect-ratio: 16/9) {
+      .overlay {
+        transform: translate(-50%, -50%) scale(var(--scale, 1));
+      }
     }
   </style>
 </head>
-
 <body>
-  <div class="overlay">
-    <div class="top-info">
-      <div class="eyebrow">Circuito MT 2026</div>
-      <div class="title">Etapa 2 • Rondonópolis</div>
-      <div class="sub">Resultados por categoria</div>
-      <div class="status" id="statusAtualizacao">Carregando dados…</div>
-    </div>
-
-    <div class="camera-wrap">
-      <div class="camera-box">
-        <div class="camera-label" id="cam1Label">Câmera 1</div>
-        <div class="camera-live">Ao vivo</div>
+  <div class="viewport">
+    <div class="overlay" id="overlay">
+      <div class="top-info">
+        <div class="eyebrow">Circuito MT 2026</div>
+        <div class="title">Etapa 2 • Rondonópolis</div>
+        <div class="sub">Resultados por categoria</div>
+        <div class="status" id="statusAtualizacao">Carregando dados…</div>
       </div>
 
-      <div class="camera-box">
-        <div class="camera-label" id="cam2Label">Câmera 2</div>
-      </div>
-    </div>
+      <div class="camera-wrap">
+        <div class="camera-box">
+          <div class="camera-label" id="cam1Label">Câmera 1</div>
+          <div class="camera-live">Ao vivo</div>
+        </div>
 
-    <div class="boards">
-      <div class="board-card" id="card-m1"></div>
-      <div class="board-card" id="card-m2"></div>
-      <div class="board-card" id="card-f"></div>
+        <div class="camera-box">
+          <div class="camera-label" id="cam2Label">Câmera 2</div>
+        </div>
+      </div>
+
+      <div class="boards">
+        <div class="board-card" id="card-m1"></div>
+        <div class="board-card" id="card-m2"></div>
+        <div class="board-card" id="card-f"></div>
+      </div>
     </div>
   </div>
 
@@ -396,15 +412,11 @@
     const CONFIG = {
       evento: params.get("evento") || "589",
       dia: params.get("dia") || "1",
-      limite: Number(params.get("limite") || params.get("limit") || "5"),
+      limite: Number(params.get("limite") || "5"),
       apiBase: (params.get("api") || "").replace(/\/$/, ""),
-      refreshMs: Number(params.get("refresh") || "30000"),
       cam1: params.get("cam1") || "Câmera 1",
       cam2: params.get("cam2") || "Câmera 2"
     };
-
-    document.getElementById("cam1Label").textContent = CONFIG.cam1;
-    document.getElementById("cam2Label").textContent = CONFIG.cam2;
 
     const categorias = [
       { key: "masculino-1", nome: "1ª Divisão Masculina", cardId: "card-m1" },
@@ -436,44 +448,39 @@
       ]
     };
 
+    document.getElementById("cam1Label").textContent = CONFIG.cam1;
+    document.getElementById("cam2Label").textContent = CONFIG.cam2;
+
+    function ajustarEscala() {
+      const escala = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      document.documentElement.style.setProperty("--scale", escala);
+    }
+
+    window.addEventListener("resize", ajustarEscala);
+    ajustarEscala();
+
     function formatMedia(valor) {
       const num = Number(valor || 0);
       return num.toFixed(2).replace(".", ",");
     }
 
-    function normalizarAtleta(item, index) {
-      return {
-        posicao: Number(item.posicao || item.pos || index + 1),
-        atleta: item.atleta || item.nome || item.nome_evento || item.nome_completo || "Atleta",
-        total: Number(item.total || item.pontos_serie || item.pontos || 0),
-        media: Number(item.media || item.m || 0),
-        maiorLinha: Number(item.maiorLinha || item.maior_linha || item.ml || 0)
-      };
-    }
-
-    function renderCard(categoria, atletas, modo) {
+    function renderCard(categoria, payload, modo = "live") {
       const el = document.getElementById(categoria.cardId);
-      const isFallback = modo !== "live";
+      const atletas = Array.isArray(payload) ? payload : [];
+      const isFallback = modo === "fallback";
       const badge = isFallback ? "Circuito" : "Top 5";
       const col3 = isFallback ? "Pts" : "Total";
       const col4 = isFallback ? "ML" : "Média";
-      const subtitulo = isFallback ? "Classificação após a Etapa 1" : "Resultado oficial da Etapa 2";
-      const footerLeft = isFallback ? "Fallback do circuito" : "Atualização automática";
-      const footerRight = isFallback ? "Etapa 1 consolidada" : "Boliche Brasil";
 
       const rowsHtml = atletas.length
-        ? atletas.slice(0, CONFIG.limite).map((item, index) => {
-          const a = normalizarAtleta(item, index);
-          const rowTop4 = a.posicao <= 4 ? "top4" : "";
-          return `
-            <div class="table-row ${rowTop4}">
-              <div><span class="pos">${a.posicao}</span></div>
-              <div class="name">${a.atleta}</div>
-              <div class="val">${isFallback ? (item.pontos ?? a.total) : a.total}</div>
-              <div class="avg">${isFallback ? (item.maiorLinha ?? a.maiorLinha) : formatMedia(a.media)}</div>
-            </div>
-          `;
-        }).join("")
+        ? atletas.map(item => `
+          <div class="table-row">
+            <div><span class="pos">${item.posicao}</span></div>
+            <div class="name">${item.atleta}</div>
+            <div class="val">${isFallback ? item.pontos : item.total}</div>
+            <div class="avg">${isFallback ? item.maiorLinha : formatMedia(item.media)}</div>
+          </div>
+        `).join("")
         : `<div class="empty-state">Aguardando dados da categoria</div>`;
 
       el.innerHTML = `
@@ -481,7 +488,7 @@
           <div class="board-title">${categoria.nome}</div>
           <div class="board-badge">${badge}</div>
         </div>
-        <div class="board-sub">${subtitulo}</div>
+        <div class="board-sub">${isFallback ? "Classificação após a Etapa 1" : "Resultado automático da etapa atual"}</div>
         <div class="table-head">
           <div>#</div>
           <div>Atleta</div>
@@ -490,61 +497,52 @@
         </div>
         <div class="rows">${rowsHtml}</div>
         <div class="card-footer">
-          <div class="dot">${footerLeft}</div>
-          <div>${footerRight}</div>
+          <div class="live-dot">${isFallback ? "Circuito após Etapa 1" : "Atualização automática"}</div>
+          <div>${isFallback ? "Fallback" : "Boliche Brasil"}</div>
         </div>
       `;
     }
 
-    function getApiUrl(categoria) {
-      if (!CONFIG.apiBase) return null;
-      return `${CONFIG.apiBase}/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(categoria.key)}&dia=${encodeURIComponent(CONFIG.dia)}&limite=${encodeURIComponent(CONFIG.limite)}&_=${Date.now()}`;
-    }
-
     async function carregarCategoria(categoria) {
-      const url = getApiUrl(categoria);
-
-      if (!url) {
+      if (!CONFIG.apiBase) {
         renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
-        return "fallback";
+        return { modo: "fallback" };
       }
+
+      const url = `${CONFIG.apiBase}/api/top?evento=${CONFIG.evento}&categoria=${categoria.key}&dia=${CONFIG.dia}&limite=${CONFIG.limite}`;
 
       try {
         const resp = await fetch(url, { cache: "no-store" });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        if (!resp.ok) throw new Error("Falha HTTP");
         const dados = await resp.json();
 
         if (dados && dados.status === "ok" && Array.isArray(dados.atletas) && dados.atletas.length) {
           renderCard(categoria, dados.atletas, "live");
-          return "live";
+          return { modo: "live" };
         }
 
         renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
-        return "fallback";
-      } catch (erro) {
+        return { modo: "fallback" };
+      } catch (e) {
         renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
-        return "fallback";
+        return { modo: "fallback" };
       }
     }
 
     async function carregarTudo() {
       const statusEl = document.getElementById("statusAtualizacao");
-      statusEl.textContent = "Atualizando dados…";
+      statusEl.textContent = "Atualizando…";
 
-      const modos = await Promise.all(categorias.map(carregarCategoria));
-      const algumLive = modos.includes("live");
+      const resultados = await Promise.all(categorias.map(carregarCategoria));
+      const algumLive = resultados.some(r => r.modo === "live");
 
-      if (algumLive) {
-        statusEl.textContent = `Dia ${CONFIG.dia} • dados oficiais recebidos`;
-      } else if (CONFIG.apiBase) {
-        statusEl.textContent = "Sem dados da Etapa 2 • exibindo classificação do circuito";
-      } else {
-        statusEl.textContent = "Worker não informado • exibindo classificação do circuito";
-      }
+      statusEl.textContent = algumLive
+        ? `Dia ${CONFIG.dia} • dados oficiais recebidos`
+        : "Exibindo classificação após a Etapa 1";
     }
 
     carregarTudo();
-    setInterval(carregarTudo, CONFIG.refreshMs);
+    setInterval(carregarTudo, 30000);
   </script>
 </body>
 </html>
