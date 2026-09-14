@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Rodapé Scroll • Circuito MT 2026</title>
+
+  <style>
+    :root {
+      --amarelo: #ffd43b;
+      --verde: #21d18d;
+      --azul-escuro: rgba(5, 17, 34, 0.95);
+      --azul-medio: rgba(10, 31, 56, 0.95);
+      --texto: #ffffff;
+      --muted: rgba(255,255,255,0.78);
+      --borda: rgba(255, 212, 59, 0.94);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body {
+      position: relative;
+    }
+
+    .stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .ticker {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 94px;
+      display: grid;
+      grid-template-columns: 270px 1fr 220px;
+      align-items: stretch;
+      background:
+        linear-gradient(90deg, rgba(4,17,31,0.98), rgba(7,35,58,0.98), rgba(4,17,31,0.98));
+      border-top: 3px solid var(--borda);
+      border-bottom: 3px solid var(--borda);
+      box-shadow: 0 -12px 30px rgba(0,0,0,0.36);
+      color: var(--texto);
+      overflow: hidden;
+    }
+
+    .brand {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 22px;
+      background: linear-gradient(135deg, rgba(0,100,75,0.94), rgba(5,24,42,0.98));
+      border-right: 2px solid rgba(255,212,59,0.44);
+    }
+
+    .brand-kicker {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--amarelo);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 1000;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-sub {
+      margin-top: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      white-space: nowrap;
+    }
+
+    .viewport {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(90deg, rgba(4,17,31,0.98), rgba(11,32,54,0.98));
+    }
+
+    .track {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      min-width: max-content;
+      white-space: nowrap;
+      will-change: transform;
+      animation: scroll var(--duracao, 48s) linear infinite;
+      padding-left: 45px;
+    }
+
+    .group {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+      padding: 0 26px;
+      font-size: 19px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .45px;
+    }
+
+    .item .label {
+      color: var(--amarelo);
+    }
+
+    .item .value {
+      color: #ffffff;
+    }
+
+    .item .category {
+      color: #87f2c3;
+    }
+
+    .separator {
+      flex: 0 0 auto;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--verde);
+      box-shadow: 0 0 12px rgba(33,209,141,.75);
+    }
+
+    .status {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 20px;
+      background: linear-gradient(135deg, rgba(5,24,42,0.98), rgba(69,55,6,0.94));
+      border-left: 2px solid rgba(255,212,59,0.44);
+      text-align: right;
+    }
+
+    .status-main {
+      font-size: 13px;
+      font-weight: 1000;
+      color: var(--amarelo);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      white-space: nowrap;
+    }
+
+    .status-sub {
+      margin-top: 5px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      white-space: nowrap;
+    }
+
+    @keyframes scroll {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="ticker">
+      <div class="brand">
+        <div class="brand-kicker">Circuito MT 2026</div>
+        <div class="brand-title">Etapa 2</div>
+        <div class="brand-sub">Rondonópolis</div>
+      </div>
+
+      <div class="viewport">
+        <div class="track" id="track">
+          <div class="group" id="groupA"></div>
+          <div class="group" id="groupB"></div>
+        </div>
+      </div>
+
+      <div class="status">
+        <div class="status-main" id="statusMain">Circuito</div>
+        <div class="status-sub" id="statusSub">Classificação Etapa 1</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const CONFIG = {
+      evento: params.get("evento") || "589",
+      dia: params.get("dia") || "1",
+      apiBase: (params.get("api") || "").replace(/\/$/, ""),
+      refreshMs: Number(params.get("refresh") || "30000"),
+      duracao: Number(params.get("duracao") || "50")
+    };
+
+    document.documentElement.style.setProperty("--duracao", `${CONFIG.duracao}s`);
+
+    const categorias = [
+      { key: "masculino-1", nome: "1ª Divisão Masculina" },
+      { key: "masculino-2", nome: "2ª Divisão Masculina" },
+      { key: "feminino", nome: "1ª Divisão Feminina" }
+    ];
+
+    const fallbackCircuito = {
+      "masculino-1": [
+        { posicao: 1, atleta: "Michel Belmonte", pontos: 100, maiorLinha: 224, total: 2092, media: 190.18 },
+        { posicao: 2, atleta: "Thiago Wandscher", pontos: 85, maiorLinha: 214, total: 1908, media: 173.45 },
+        { posicao: 3, atleta: "Nilo Ponce", pontos: 75, maiorLinha: 217, total: 1864, media: 169.45 },
+        { posicao: 4, atleta: "Matheus Verão", pontos: 65, maiorLinha: 232, total: 1841, media: 167.36 },
+        { posicao: 5, atleta: "Romildo Souza", pontos: 60, maiorLinha: 168, total: 1701, media: 154.64 }
+      ],
+      "masculino-2": [
+        { posicao: 1, atleta: "Gustavo Buzelle", pontos: 100, maiorLinha: 225, total: 1841, media: 167.36 },
+        { posicao: 2, atleta: "Ronaldo Oliveira", pontos: 85, maiorLinha: 201, total: 1807, media: 164.27 },
+        { posicao: 3, atleta: "Nelson Saga", pontos: 75, maiorLinha: 188, total: 1748, media: 158.91 },
+        { posicao: 4, atleta: "Guilherme Scheer", pontos: 65, maiorLinha: 225, total: 1710, media: 155.45 },
+        { posicao: 5, atleta: "Gilberto Ribeiro", pontos: 60, maiorLinha: 192, total: 1684, media: 153.09 }
+      ],
+      "feminino": [
+        { posicao: 1, atleta: "Raquel Tenuta", pontos: 100, maiorLinha: 201, total: 1846, media: 167.82 },
+        { posicao: 2, atleta: "Dani Ledur", pontos: 85, maiorLinha: 192, total: 1533, media: 139.36 },
+        { posicao: 3, atleta: "Agda Nogueira", pontos: 75, maiorLinha: 163, total: 1454, media: 132.18 },
+        { posicao: 4, atleta: "Josélia Moreno", pontos: 65, maiorLinha: 201, total: 1401, media: 127.36 },
+        { posicao: 5, atleta: "Tereza Belmonte", pontos: 60, maiorLinha: 162, total: 1330, media: 120.91 }
+      ]
+    };
+
+    function fmtMedia(v) {
+      return Number(v || 0).toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function criarItem(label, value, category) {
+      return `
+        <div class="item">
+          <span class="category">${category}</span>
+          <span class="label">${label}</span>
+          <span class="value">${value}</span>
+        </div>
+        <span class="separator"></span>
+      `;
+    }
+
+    function estatisticasCategoria(atletas, categoria) {
+      if (!Array.isArray(atletas) || atletas.length === 0) return [];
+
+      const lista = [...atletas].sort((a, b) => {
+        const pa = Number(a.pontos ?? a.pontosCircuito ?? 0);
+        const pb = Number(b.pontos ?? b.pontosCircuito ?? 0);
+        if (pb !== pa) return pb - pa;
+        return Number(b.total || 0) - Number(a.total || 0);
+      });
+
+      const primeiro = lista[0];
+      const segundo = lista[1] || primeiro;
+      const quarto = lista[3] || lista[lista.length - 1];
+      const quinto = lista[4] || lista[lista.length - 1];
+
+      const maiorLinha = [...lista].sort((a, b) => Number(b.maiorLinha || 0) - Number(a.maiorLinha || 0))[0];
+      const maiorMedia = [...lista].sort((a, b) => Number(b.media || 0) - Number(a.media || 0))[0];
+
+      const p1 = Number(primeiro.pontos ?? primeiro.pontosCircuito ?? 0);
+      const p2 = Number(segundo.pontos ?? segundo.pontosCircuito ?? 0);
+      const p4 = Number(quarto.pontos ?? quarto.pontosCircuito ?? 0);
+      const p5 = Number(quinto.pontos ?? quinto.pontosCircuito ?? 0);
+
+      const itens = [];
+
+      itens.push({
+        label: "Líder:",
+        value: `${primeiro.atleta} • ${p1} pts`,
+        category: categoria
+      });
+
+      itens.push({
+        label: "Diferença para a liderança:",
+        value: `${primeiro.atleta} tem ${Math.max(0, p1 - p2)} pts de vantagem sobre ${segundo.atleta}`,
+        category: categoria
+      });
+
+      itens.push({
+        label: "Maior linha:",
+        value: `${maiorLinha.atleta} • ${maiorLinha.maiorLinha}`,
+        category: categoria
+      });
+
+      itens.push({
+        label: "Maior média:",
+        value: `${maiorMedia.atleta} • ${fmtMedia(maiorMedia.media)}`,
+        category: categoria
+      });
+
+      itens.push({
+        label: "Corte Top 4:",
+        value: `${quarto.atleta} • ${p4} pts • vantagem de ${Math.max(0, p4 - p5)} pt(s) para o 5º`,
+        category: categoria
+      });
+
+      return itens;
+    }
+
+    async function buscarCategoria(cat) {
+      if (!CONFIG.apiBase) {
+        return {
+          atletas: fallbackCircuito[cat.key] || [],
+          live: false
+        };
+      }
+
+      const url = `${CONFIG.apiBase}/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(cat.key)}&dia=${encodeURIComponent(CONFIG.dia)}&limite=50&_=${Date.now()}`;
+
+      try {
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP");
+        const dados = await r.json();
+
+        if (dados?.status === "ok" && Array.isArray(dados.atletas) && dados.atletas.length) {
+          return { atletas: dados.atletas, live: true };
+        }
+      } catch (e) {}
+
+      return {
+        atletas: fallbackCircuito[cat.key] || [],
+        live: false
+      };
+    }
+
+    function atualizarTicker(itens) {
+      const html = itens.map(i => criarItem(i.label, i.value, i.category)).join("");
+      document.getElementById("groupA").innerHTML = html;
+      document.getElementById("groupB").innerHTML = html;
+    }
+
+    async function carregar() {
+      const resultados = await Promise.all(
+        categorias.map(async cat => ({
+          cat,
+          result: await buscarCategoria(cat)
+        }))
+      );
+
+      let algumLive = false;
+      let itens = [];
+
+      resultados.forEach(({ cat, result }) => {
+        if (result.live) algumLive = true;
+        itens = itens.concat(estatisticasCategoria(result.atletas, cat.nome));
+      });
+
+      atualizarTicker(itens);
+
+      document.getElementById("statusMain").textContent = algumLive ? "Etapa 2 • Ao vivo" : "Circuito";
+      document.getElementById("statusSub").textContent = algumLive ? "Dados oficiais" : "Classificação após Etapa 1";
+    }
+
+    carregar();
+    setInterval(carregar, CONFIG.refreshMs);
+  </script>
+</body>
+</html>
