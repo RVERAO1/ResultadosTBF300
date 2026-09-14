@@ -2,281 +2,327 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Circuito MT 2026 - Etapa 2 - Prism Live</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Circuito MT 2026 • Etapa 2 • Rondonópolis</title>
 
   <style>
     :root {
       --amarelo: #ffd43b;
       --amarelo-borda: rgba(255, 212, 59, 0.94);
-      --verde: #00d084;
-      --branco: #ffffff;
-      --cinza: #dce6ef;
-      --cinza-2: #bfcad6;
-      --sombra: rgba(0, 0, 0, 0.42);
+      --verde: #21d18d;
+      --texto: #f7f9fd;
+      --muted: rgba(255,255,255,0.78);
+      --muted2: rgba(255,255,255,0.58);
+      --card-bg: linear-gradient(135deg, rgba(8,22,44,0.94), rgba(31,53,84,0.86));
+      --row-bg: rgba(255,255,255,0.060);
+      --shadow: 0 16px 34px rgba(0,0,0,0.34);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
 
-    html, body {
-      width: 100%;
-      height: 100%;
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
       overflow: hidden;
       background: transparent;
-      font-family: Arial, Helvetica, sans-serif;
-      color: var(--branco);
+      color: var(--texto);
     }
 
-    body { width: 1920px; height: 1080px; position: relative; }
+    body {
+      position: relative;
+    }
 
     .overlay {
       position: relative;
       width: 1920px;
       height: 1080px;
-      background: transparent;
       overflow: hidden;
+      background: transparent;
     }
 
-    .top-left-logo {
+    .top-info {
       position: absolute;
-      left: 36px;
-      top: 26px;
-      z-index: 30;
-      width: 245px;
-      height: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(4, 20, 37, 0.76);
-      border: 2px solid var(--amarelo-borda);
-      border-radius: 18px;
-      box-shadow: 0 12px 28px var(--sombra);
-      padding: 10px 16px;
-    }
-
-    .logo-svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
-    }
-
-    .event-info {
-      position: absolute;
-      right: 36px;
-      top: 26px;
-      z-index: 30;
-      width: 420px;
+      top: 28px;
+      right: 32px;
+      width: 470px;
+      min-height: 118px;
       padding: 18px 22px;
-      background: rgba(4, 20, 37, 0.78);
       border: 2px solid var(--amarelo-borda);
-      border-radius: 18px;
-      box-shadow: 0 12px 28px var(--sombra);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(9,18,35,.93), rgba(33,56,93,.84));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 30;
     }
 
-    .event-title {
-      font-size: 34px;
+    .top-info .eyebrow {
+      font-size: 18px;
       line-height: 1;
       font-weight: 1000;
+      color: var(--amarelo);
+      letter-spacing: 1px;
       text-transform: uppercase;
-      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .top-info .title {
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 1000;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
-    .event-subtitle {
+    .top-info .sub {
       font-size: 15px;
-      line-height: 1.25;
       font-weight: 900;
-      color: var(--cinza);
+      color: var(--muted);
+      letter-spacing: .4px;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      line-height: 1.35;
     }
 
-    .camera-stage {
+    .top-info .status {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .camera-wrap {
       position: absolute;
-      inset: 0;
-      background: transparent;
-      z-index: 1;
+      left: 32px;
+      right: 32px;
+      top: 142px;
+      height: 500px;
+      display: flex;
+      gap: 32px;
+      z-index: 5;
       pointer-events: none;
     }
 
     .camera-box {
-      position: absolute;
-      background: transparent;
+      position: relative;
+      flex: 1 1 0;
+      height: 500px;
       border: 3px solid var(--amarelo-borda);
       border-radius: 0;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22), 0 12px 26px rgba(0, 0, 0, 0.20);
+      background: transparent;
       overflow: hidden;
-      pointer-events: none;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.20);
     }
-
-    .cam-1 { left: 40px; top: 124px; width: 904px; height: 508px; }
-    .cam-2 { left: 976px; top: 124px; width: 904px; height: 508px; }
 
     .camera-label {
       position: absolute;
-      left: 12px;
-      top: 10px;
-      z-index: 3;
-      padding: 8px 14px;
+      top: 16px;
+      left: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
       border-radius: 999px;
-      background: linear-gradient(90deg, rgba(0, 208, 132, 0.92), rgba(0, 126, 89, 0.86));
-      border: 1px solid rgba(255,255,255,0.16);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.22);
-      font-size: 12px;
+      background: linear-gradient(135deg, #29d99a, #14b47a);
+      color: #07131f;
+      font-size: 22px;
       font-weight: 1000;
-      color: #08131f;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
     }
 
     .camera-live {
       position: absolute;
-      right: 12px;
-      top: 10px;
-      z-index: 3;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(2, 16, 31, 0.72);
-      border: 1px solid rgba(255, 212, 59, 0.75);
-      display: flex;
+      top: 16px;
+      right: 16px;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      font-size: 11px;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(8, 17, 30, 0.82);
+      border: 1px solid rgba(241, 194, 50, 0.55);
+      color: #fff;
+      font-size: 18px;
       font-weight: 1000;
-      color: var(--branco);
       text-transform: uppercase;
-      letter-spacing: 0.9px;
+      letter-spacing: 1px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
     }
 
-    .live-dot {
-      width: 9px;
-      height: 9px;
+    .camera-live::before {
+      content: "";
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
-      background: #00e676;
-      box-shadow: 0 0 12px rgba(0, 230, 118, 0.95);
+      background: #21e38a;
+      box-shadow: 0 0 10px rgba(33,227,138,.75);
+      display: inline-block;
       animation: pulse 1.4s ease-in-out infinite;
-      flex: 0 0 auto;
     }
 
-    .results-wrapper {
+    .boards {
       position: absolute;
-      left: 36px;
-      right: 36px;
-      bottom: 26px;
-      height: 388px;
-      z-index: 20;
+      left: 32px;
+      right: 32px;
+      bottom: 28px;
+      height: 378px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
+      gap: 20px;
+      z-index: 20;
       pointer-events: none;
     }
 
-    .result-card {
+    .board-card {
       position: relative;
       border: 2px solid var(--amarelo-borda);
-      border-radius: 22px;
-      background: radial-gradient(circle at top left, rgba(0, 208, 132, 0.10), transparent 24%), linear-gradient(135deg, rgba(2, 18, 34, 0.90), rgba(9, 38, 68, 0.78));
-      box-shadow: 0 16px 32px var(--sombra);
-      padding: 18px 18px 16px 18px;
+      border-radius: 28px;
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 18px 18px 16px;
       overflow: hidden;
     }
 
-    .card-header {
+    .board-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 14px;
       gap: 12px;
+    }
+
+    .board-title {
+      font-size: 24px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      color: #ffd449;
+      letter-spacing: .5px;
+      line-height: 1.05;
+    }
+
+    .board-badge {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(241,194,50,.75);
+      background: rgba(255,255,255,0.08);
+      color: #fff7cd;
+      font-size: 15px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .board-sub {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 12px;
     }
 
-    .card-title {
-      font-size: 22px;
-      font-weight: 1000;
-      color: var(--amarelo);
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    .card-badge {
-      padding: 7px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 212, 59, 0.8);
-      background: rgba(255, 212, 59, 0.12);
-      font-size: 11px;
-      font-weight: 1000;
-      color: var(--branco);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      white-space: nowrap;
-    }
-
-    .table-head, .table-row {
+    .table-head,
+    .table-row {
       display: grid;
-      grid-template-columns: 48px 1fr 76px 76px;
+      grid-template-columns: 52px 1fr 115px 105px;
       align-items: center;
       gap: 10px;
     }
 
     .table-head {
-      padding: 10px 12px;
+      background: rgba(38, 217, 154, 0.18);
       border-radius: 14px;
-      background: linear-gradient(90deg, rgba(0, 208, 132, 0.16), rgba(255, 212, 59, 0.08));
-      margin-bottom: 8px;
-      font-size: 11px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
       font-weight: 1000;
-      color: var(--cinza);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      color: #eef5ff;
+      letter-spacing: .7px;
     }
 
-    .rows { display: flex; flex-direction: column; gap: 7px; min-height: 236px; }
+    .rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     .table-row {
-      padding: 10px 12px;
+      min-height: 45px;
       border-radius: 14px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.07);
-      min-height: 38px;
+      padding: 8px 12px;
+      background: var(--row-bg);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .table-row.top4 {
       border-color: rgba(255, 212, 59, 0.72);
-      background: linear-gradient(90deg, rgba(255, 212, 59, 0.18), rgba(0, 208, 132, 0.13));
+      background: linear-gradient(90deg, rgba(255, 212, 59, 0.17), rgba(33, 209, 141, 0.12));
     }
 
-    .pos-pill {
-      min-width: 34px;
-      height: 34px;
+    .pos {
+      width: 32px;
+      height: 32px;
       border-radius: 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(180deg, #ffe066, #e0b400);
-      color: #08131f;
+      background: linear-gradient(135deg, #ffe27a, #e4b71c);
+      color: #102037;
       font-size: 18px;
       font-weight: 1000;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
     }
 
-    .col-name {
-      font-size: 20px;
+    .name {
+      font-size: 16px;
       font-weight: 900;
-      color: var(--branco);
-      line-height: 1;
+      color: #fff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding-right: 6px;
     }
 
-    .col-total, .col-media {
-      font-size: 20px;
+    .val,
+    .avg {
+      font-size: 17px;
       font-weight: 1000;
-      color: var(--branco);
       text-align: right;
-      line-height: 1;
+      color: #fff;
     }
 
-    .col-media { color: var(--amarelo); }
+    .avg {
+      color: var(--amarelo);
+    }
+
+    .empty-state {
+      height: 230px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      color: rgba(255,255,255,.85);
+      font-size: 22px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
 
     .card-footer {
       position: absolute;
@@ -284,91 +330,63 @@
       right: 18px;
       bottom: 14px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255, 212, 59, 0.22);
-      font-size: 10px;
-      font-weight: 1000;
-      color: var(--cinza-2);
+      font-size: 12px;
+      font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.7px;
+      color: var(--muted);
+      letter-spacing: .6px;
     }
 
-    .status-ok { color: #8ef8bf; }
-    .status-wait { color: #ffd97a; }
-
-    .loading-note {
-      min-height: 236px;
-      display: flex;
+    .card-footer .dot {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 16px;
-      font-size: 20px;
-      font-weight: 1000;
-      color: var(--cinza);
-      line-height: 1.35;
-      text-transform: uppercase;
+      gap: 8px;
+    }
+
+    .card-footer .dot::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1fe28a;
+      box-shadow: 0 0 8px rgba(31,226,138,.7);
+      display: inline-block;
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(0.8); opacity: 0.55; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .55; transform: scale(.82); }
     }
   </style>
 </head>
 
 <body>
   <div class="overlay">
-    <div class="top-left-logo" aria-label="TBF300 Sports">
-      <svg class="logo-svg" viewBox="0 0 520 170" role="img" aria-label="TBF300 Sports">
-        <rect x="8" y="8" width="504" height="154" rx="22" fill="#061a31" stroke="#f4d03f" stroke-width="8"/>
-        <text x="260" y="74" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="62" font-weight="900" fill="#ffffff" stroke="#0a1629" stroke-width="3">TBF300</text>
-        <rect x="72" y="86" width="376" height="24" fill="#f04923"/>
-        <text x="260" y="142" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="46" font-weight="900" fill="#ffffff" stroke="#0a1629" stroke-width="2">SPORTS</text>
-      </svg>
+    <div class="top-info">
+      <div class="eyebrow">Circuito MT 2026</div>
+      <div class="title">Etapa 2 • Rondonópolis</div>
+      <div class="sub">Resultados por categoria</div>
+      <div class="status" id="statusAtualizacao">Carregando dados…</div>
     </div>
 
-    <div class="event-info">
-      <div class="event-title" id="eventTitle">Circuito MT 2026</div>
-      <div class="event-subtitle" id="eventSubtitle">Etapa 2 • Rondonópolis</div>
-    </div>
-
-    <div class="camera-stage">
-      <div class="camera-box cam-1">
+    <div class="camera-wrap">
+      <div class="camera-box">
         <div class="camera-label" id="cam1Label">Câmera 1</div>
-        <div class="camera-live"><span class="live-dot"></span> Ao vivo</div>
+        <div class="camera-live">Ao vivo</div>
       </div>
 
-      <div class="camera-box cam-2">
+      <div class="camera-box">
         <div class="camera-label" id="cam2Label">Câmera 2</div>
-        <div class="camera-live"><span class="live-dot"></span> Ao vivo</div>
       </div>
     </div>
 
-    <div class="results-wrapper">
-      <div class="result-card">
-        <div class="card-header"><div class="card-title">1ª Divisão Masculina</div><div class="card-badge" id="badge-m1">Circuito</div></div>
-        <div class="table-head"><div>#</div><div>Atleta</div><div style="text-align:right;">Pts</div><div style="text-align:right;">ML</div></div>
-        <div class="rows" id="rows-m1"></div>
-        <div class="card-footer"><span id="status-m1" class="status-wait">Etapa anterior</span><span id="update-m1">Circuito</span></div>
-      </div>
-
-      <div class="result-card">
-        <div class="card-header"><div class="card-title">2ª Divisão Masculina</div><div class="card-badge" id="badge-m2">Circuito</div></div>
-        <div class="table-head"><div>#</div><div>Atleta</div><div style="text-align:right;">Pts</div><div style="text-align:right;">ML</div></div>
-        <div class="rows" id="rows-m2"></div>
-        <div class="card-footer"><span id="status-m2" class="status-wait">Etapa anterior</span><span id="update-m2">Circuito</span></div>
-      </div>
-
-      <div class="result-card">
-        <div class="card-header"><div class="card-title">1ª Divisão Feminina</div><div class="card-badge" id="badge-f1">Circuito</div></div>
-        <div class="table-head"><div>#</div><div>Atleta</div><div style="text-align:right;">Pts</div><div style="text-align:right;">ML</div></div>
-        <div class="rows" id="rows-f1"></div>
-        <div class="card-footer"><span id="status-f1" class="status-wait">Etapa anterior</span><span id="update-f1">Circuito</span></div>
-      </div>
+    <div class="boards">
+      <div class="board-card" id="card-m1"></div>
+      <div class="board-card" id="card-m2"></div>
+      <div class="board-card" id="card-f"></div>
     </div>
   </div>
 
@@ -378,126 +396,151 @@
     const CONFIG = {
       evento: params.get("evento") || "589",
       dia: params.get("dia") || "1",
-      limite: parseInt(params.get("limite") || params.get("limit") || "5", 10),
-      etapa: params.get("etapa") || "Etapa 2",
-      cidade: params.get("cidade") || "Rondonópolis",
-      titulo: params.get("titulo") || "Circuito MT 2026",
-      refreshMs: parseInt(params.get("refresh") || "15000", 10),
+      limite: Number(params.get("limite") || params.get("limit") || "5"),
+      apiBase: (params.get("api") || "").replace(/\/$/, ""),
+      refreshMs: Number(params.get("refresh") || "30000"),
       cam1: params.get("cam1") || "Câmera 1",
-      cam2: params.get("cam2") || "Câmera 2",
-      apiBase: (params.get("api") || "").replace(/\/$/, "")
+      cam2: params.get("cam2") || "Câmera 2"
     };
 
-    const FALLBACK_CIRCUITO = {
-      "masculino-1": [
-        { posicao: 1, atleta: "Michel Belmonte", pontos: 100, maiorLinha: 224 },
-        { posicao: 2, atleta: "Thiago Wandscher", pontos: 85, maiorLinha: 221 },
-        { posicao: 3, atleta: "NILO PONCE", pontos: 75, maiorLinha: 224 },
-        { posicao: 4, atleta: "Matheus Verão", pontos: 65, maiorLinha: 232 },
-        { posicao: 5, atleta: "Romildo Souza", pontos: 60, maiorLinha: 199 }
-      ],
-      "masculino-2": [
-        { posicao: 1, atleta: "Gustavo Buzelle", pontos: 100, maiorLinha: 204 },
-        { posicao: 2, atleta: "RONALDO OLIVEIRA", pontos: 85, maiorLinha: 201 },
-        { posicao: 3, atleta: "Nelson Saga", pontos: 75, maiorLinha: 188 },
-        { posicao: 4, atleta: "GUILHERME SCHEER", pontos: 65, maiorLinha: 225 },
-        { posicao: 5, atleta: "GILBERTO RIBEIRO", pontos: 60, maiorLinha: 192 }
-      ],
-      "feminino": [
-        { posicao: 1, atleta: "Raquel Tenuta", pontos: 100, maiorLinha: 201 },
-        { posicao: 2, atleta: "Dani Ledur", pontos: 85, maiorLinha: 192 },
-        { posicao: 3, atleta: "Agda Nogueira", pontos: 75, maiorLinha: 163 },
-        { posicao: 4, atleta: "Joselia Moreno", pontos: 65, maiorLinha: 201 },
-        { posicao: 5, atleta: "Tereza Belmonte", pontos: 60, maiorLinha: 162 }
-      ]
-    };
-
-    const categorias = [
-      { slug: "masculino-1", rowsId: "rows-m1", statusId: "status-m1", updateId: "update-m1", badgeId: "badge-m1" },
-      { slug: "masculino-2", rowsId: "rows-m2", statusId: "status-m2", updateId: "update-m2", badgeId: "badge-m2" },
-      { slug: "feminino", rowsId: "rows-f1", statusId: "status-f1", updateId: "update-f1", badgeId: "badge-f1" }
-    ];
-
-    const ultimoValido = {};
-
-    document.getElementById("eventTitle").textContent = CONFIG.titulo;
-    document.getElementById("eventSubtitle").textContent = `${CONFIG.etapa} • ${CONFIG.cidade}`;
     document.getElementById("cam1Label").textContent = CONFIG.cam1;
     document.getElementById("cam2Label").textContent = CONFIG.cam2;
 
-    function formatHora(isoString) {
-      if (!isoString) return "--:--:--";
-      const d = new Date(isoString);
-      if (Number.isNaN(d.getTime())) return "--:--:--";
-      return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const categorias = [
+      { key: "masculino-1", nome: "1ª Divisão Masculina", cardId: "card-m1" },
+      { key: "masculino-2", nome: "2ª Divisão Masculina", cardId: "card-m2" },
+      { key: "feminino", nome: "1ª Divisão Feminina", cardId: "card-f" }
+    ];
+
+    const fallbackCircuito = {
+      "masculino-1": [
+        { posicao: 1, atleta: "Michel Belmonte", pontos: 100, maiorLinha: 224 },
+        { posicao: 2, atleta: "Thiago Wandscher", pontos: 85, maiorLinha: 214 },
+        { posicao: 3, atleta: "Nilo Ponce", pontos: 75, maiorLinha: 217 },
+        { posicao: 4, atleta: "Matheus Verão", pontos: 65, maiorLinha: 232 },
+        { posicao: 5, atleta: "Romildo Souza", pontos: 60, maiorLinha: 168 }
+      ],
+      "masculino-2": [
+        { posicao: 1, atleta: "Gustavo Buzelle", pontos: 100, maiorLinha: 170 },
+        { posicao: 2, atleta: "Ronaldo Oliveira", pontos: 85, maiorLinha: 168 },
+        { posicao: 3, atleta: "Nelson Saga", pontos: 75, maiorLinha: 177 },
+        { posicao: 4, atleta: "Gilberto Ribeiro", pontos: 65, maiorLinha: 177 },
+        { posicao: 5, atleta: "Célio Belmonte", pontos: 60, maiorLinha: 208 }
+      ],
+      "feminino": [
+        { posicao: 1, atleta: "Raquel Tenuta", pontos: 100, maiorLinha: 183 },
+        { posicao: 2, atleta: "Josélia Moreno", pontos: 85, maiorLinha: 168 },
+        { posicao: 3, atleta: "Edneia Miranda Saga", pontos: 75, maiorLinha: 158 },
+        { posicao: 4, atleta: "Dani Ledur", pontos: 65, maiorLinha: 144 },
+        { posicao: 5, atleta: "Agda Nogueira", pontos: 60, maiorLinha: 142 }
+      ]
+    };
+
+    function formatMedia(valor) {
+      const num = Number(valor || 0);
+      return num.toFixed(2).replace(".", ",");
     }
 
-    function renderRows(rowsEl, atletas) {
-      rowsEl.innerHTML = atletas.slice(0, CONFIG.limite).map((item, index) => {
-        const posicao = item.posicao || index + 1;
-        const atleta = item.atleta || item.nome || "Atleta";
-        const pontos = item.pontos ?? item.pontosCircuito ?? item.total ?? 0;
-        const maiorLinha = item.maiorLinha ?? item.maior_linha ?? item.ml ?? "-";
-        const top4 = posicao <= 4 ? "top4" : "";
-
-        return `
-          <div class="table-row ${top4}">
-            <div><span class="pos-pill">${posicao}</span></div>
-            <div class="col-name" title="${atleta}">${atleta}</div>
-            <div class="col-total">${pontos}</div>
-            <div class="col-media">${maiorLinha}</div>
-          </div>
-        `;
-      }).join("");
+    function normalizarAtleta(item, index) {
+      return {
+        posicao: Number(item.posicao || item.pos || index + 1),
+        atleta: item.atleta || item.nome || item.nome_evento || item.nome_completo || "Atleta",
+        total: Number(item.total || item.pontos_serie || item.pontos || 0),
+        media: Number(item.media || item.m || 0),
+        maiorLinha: Number(item.maiorLinha || item.maior_linha || item.ml || 0)
+      };
     }
 
-    function usarFallback(cat, motivo = "Classificação após Etapa 1") {
-      const rowsEl = document.getElementById(cat.rowsId);
-      const statusEl = document.getElementById(cat.statusId);
-      const updateEl = document.getElementById(cat.updateId);
-      const badgeEl = document.getElementById(cat.badgeId);
-      const dados = ultimoValido[cat.slug] || FALLBACK_CIRCUITO[cat.slug] || [];
+    function renderCard(categoria, atletas, modo) {
+      const el = document.getElementById(categoria.cardId);
+      const isFallback = modo !== "live";
+      const badge = isFallback ? "Circuito" : "Top 5";
+      const col3 = isFallback ? "Pts" : "Total";
+      const col4 = isFallback ? "ML" : "Média";
+      const subtitulo = isFallback ? "Classificação após a Etapa 1" : "Resultado oficial da Etapa 2";
+      const footerLeft = isFallback ? "Fallback do circuito" : "Atualização automática";
+      const footerRight = isFallback ? "Etapa 1 consolidada" : "Boliche Brasil";
 
-      renderRows(rowsEl, dados);
-      statusEl.textContent = ultimoValido[cat.slug] ? "Última atualização válida" : motivo;
-      statusEl.className = "status-wait";
-      updateEl.textContent = ultimoValido[cat.slug] ? "Boliche Brasil" : "Circuito";
-      badgeEl.textContent = ultimoValido[cat.slug] ? "Ao vivo" : "Etapa 1";
+      const rowsHtml = atletas.length
+        ? atletas.slice(0, CONFIG.limite).map((item, index) => {
+          const a = normalizarAtleta(item, index);
+          const rowTop4 = a.posicao <= 4 ? "top4" : "";
+          return `
+            <div class="table-row ${rowTop4}">
+              <div><span class="pos">${a.posicao}</span></div>
+              <div class="name">${a.atleta}</div>
+              <div class="val">${isFallback ? (item.pontos ?? a.total) : a.total}</div>
+              <div class="avg">${isFallback ? (item.maiorLinha ?? a.maiorLinha) : formatMedia(a.media)}</div>
+            </div>
+          `;
+        }).join("")
+        : `<div class="empty-state">Aguardando dados da categoria</div>`;
+
+      el.innerHTML = `
+        <div class="board-head">
+          <div class="board-title">${categoria.nome}</div>
+          <div class="board-badge">${badge}</div>
+        </div>
+        <div class="board-sub">${subtitulo}</div>
+        <div class="table-head">
+          <div>#</div>
+          <div>Atleta</div>
+          <div style="text-align:right">${col3}</div>
+          <div style="text-align:right">${col4}</div>
+        </div>
+        <div class="rows">${rowsHtml}</div>
+        <div class="card-footer">
+          <div class="dot">${footerLeft}</div>
+          <div>${footerRight}</div>
+        </div>
+      `;
     }
 
-    async function carregarCategoria(cat) {
-      const rowsEl = document.getElementById(cat.rowsId);
-      const statusEl = document.getElementById(cat.statusId);
-      const updateEl = document.getElementById(cat.updateId);
-      const badgeEl = document.getElementById(cat.badgeId);
+    function getApiUrl(categoria) {
+      if (!CONFIG.apiBase) return null;
+      return `${CONFIG.apiBase}/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(categoria.key)}&dia=${encodeURIComponent(CONFIG.dia)}&limite=${encodeURIComponent(CONFIG.limite)}&_=${Date.now()}`;
+    }
 
-      const url = `${CONFIG.apiBase}/api/top?evento=${encodeURIComponent(CONFIG.evento)}&categoria=${encodeURIComponent(cat.slug)}&dia=${encodeURIComponent(CONFIG.dia)}&limite=${encodeURIComponent(CONFIG.limite)}&_=${Date.now()}`;
+    async function carregarCategoria(categoria) {
+      const url = getApiUrl(categoria);
+
+      if (!url) {
+        renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
+        return "fallback";
+      }
 
       try {
-        const resposta = await fetch(url, { cache: "no-store" });
-        if (!resposta.ok) throw new Error("Falha HTTP");
+        const resp = await fetch(url, { cache: "no-store" });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const dados = await resp.json();
 
-        const dados = await resposta.json();
-        const atletas = Array.isArray(dados.atletas) ? dados.atletas : [];
-
-        if (dados.status === "ok" && atletas.length > 0) {
-          ultimoValido[cat.slug] = atletas;
-          renderRows(rowsEl, atletas);
-          statusEl.textContent = "Etapa 2 ao vivo";
-          statusEl.className = "status-ok";
-          updateEl.textContent = formatHora(dados.atualizadoEm);
-          badgeEl.textContent = "Ao vivo";
-          return;
+        if (dados && dados.status === "ok" && Array.isArray(dados.atletas) && dados.atletas.length) {
+          renderCard(categoria, dados.atletas, "live");
+          return "live";
         }
 
-        usarFallback(cat);
+        renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
+        return "fallback";
       } catch (erro) {
-        usarFallback(cat);
+        renderCard(categoria, fallbackCircuito[categoria.key] || [], "fallback");
+        return "fallback";
       }
     }
 
     async function carregarTudo() {
-      await Promise.all(categorias.map(cat => carregarCategoria(cat)));
+      const statusEl = document.getElementById("statusAtualizacao");
+      statusEl.textContent = "Atualizando dados…";
+
+      const modos = await Promise.all(categorias.map(carregarCategoria));
+      const algumLive = modos.includes("live");
+
+      if (algumLive) {
+        statusEl.textContent = `Dia ${CONFIG.dia} • dados oficiais recebidos`;
+      } else if (CONFIG.apiBase) {
+        statusEl.textContent = "Sem dados da Etapa 2 • exibindo classificação do circuito";
+      } else {
+        statusEl.textContent = "Worker não informado • exibindo classificação do circuito";
+      }
     }
 
     carregarTudo();
