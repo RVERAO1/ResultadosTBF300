@@ -5,65 +5,94 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Rodapé Scroll • Circuito MT 2026</title>
   <style>
-    :root{--amarelo:#ffd43b;--verde:#21d18d;--texto:#fff;--muted:rgba(255,255,255,.76);--borda:rgba(255,212,59,.94);--duracao:72s}
+    :root{
+      --amarelo:#ffd43b;
+      --verde:#21d18d;
+      --texto:#fff;
+      --muted:rgba(255,255,255,.76);
+      --borda:rgba(255,212,59,.94);
+      --duracao:72s;
+    }
     *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
     html,body{width:100%;height:100%;overflow:hidden;background:transparent}
-    .ticker{position:fixed;right:0;bottom:0;left:0;height:94px;display:grid;grid-template-columns:275px minmax(0,1fr) 245px;color:var(--texto);background:linear-gradient(90deg,rgba(4,17,31,.98),rgba(7,35,58,.98),rgba(4,17,31,.98));border-top:3px solid var(--borda);border-bottom:3px solid var(--borda);box-shadow:0 -12px 30px rgba(0,0,0,.36);overflow:hidden}
-    .brand,.status{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center}
-    .brand{padding:0 22px;background:linear-gradient(135deg,rgba(0,100,75,.96),rgba(5,24,42,.99));border-right:2px solid rgba(255,212,59,.44)}
-    .brand-kicker,.status-main{font-size:11px;font-weight:900;color:var(--amarelo);letter-spacing:1px;text-transform:uppercase}
-    .brand-title{margin-top:5px;font-size:23px;line-height:1;font-weight:900;text-transform:uppercase;white-space:nowrap}
-    .brand-sub,.status-sub{margin-top:6px;font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;white-space:nowrap}
-    .viewport{display:flex;align-items:center;min-width:0;overflow:hidden;background:linear-gradient(90deg,rgba(4,17,31,.98),rgba(11,32,54,.98))}
-    .track{display:inline-flex;align-items:center;width:max-content;min-width:max-content;white-space:nowrap;will-change:transform;animation:scroll var(--duracao) linear infinite}
+    .ticker{
+      position:fixed;
+      right:0;
+      bottom:0;
+      left:0;
+      height:94px;
+      display:flex;
+      align-items:center;
+      color:var(--texto);
+      background:linear-gradient(90deg,rgba(4,17,31,.98),rgba(7,35,58,.98),rgba(4,17,31,.98));
+      border-top:3px solid var(--borda);
+      border-bottom:3px solid var(--borda);
+      box-shadow:0 -12px 30px rgba(0,0,0,.36);
+      overflow:hidden;
+    }
+    .viewport{display:flex;align-items:center;width:100%;height:88px;overflow:hidden}
+    .track{
+      display:inline-flex;
+      align-items:center;
+      width:max-content;
+      min-width:max-content;
+      white-space:nowrap;
+      will-change:transform;
+      animation:scroll var(--duracao) linear infinite;
+    }
     .group{display:inline-flex;align-items:center;flex:0 0 auto}
-    .category,.ranking,.credits{display:inline-flex;align-items:center;flex:0 0 auto;height:88px;text-transform:uppercase}
-    .category{padding:0 24px 0 30px;font-size:18px;font-weight:900;color:#87f2c3;letter-spacing:.45px}
+    .category,.ranking,.credits{
+      display:inline-flex;
+      align-items:center;
+      flex:0 0 auto;
+      height:88px;
+      text-transform:uppercase;
+    }
+    .category{
+      padding:0 26px 0 32px;
+      font-size:18px;
+      font-weight:900;
+      color:#87f2c3;
+      letter-spacing:.45px;
+    }
     .ranking{gap:8px;padding:0 23px;font-size:18px;font-weight:900;letter-spacing:.3px}
-    .position,.points{color:var(--amarelo)}
+    .position{color:var(--amarelo)}
     .athlete{color:#fff}
     .details{font-size:14px;color:var(--muted)}
     .credits{padding:0 32px;font-size:17px;font-weight:900;color:#fff;letter-spacing:.55px}
-    .separator{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 12px rgba(33,209,141,.75)}
-    .status{align-items:flex-end;padding:0 20px;text-align:right;background:linear-gradient(135deg,rgba(5,24,42,.99),rgba(69,55,6,.96));border-left:2px solid rgba(255,212,59,.44)}
-    .status-main{font-size:13px}
-    .live-dot{display:inline-block;width:8px;height:8px;margin-right:7px;border-radius:50%;background:#ff4050;box-shadow:0 0 10px rgba(255,64,80,.85);vertical-align:1px}
+    .separator{
+      flex:0 0 auto;
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--verde);
+      box-shadow:0 0 12px rgba(33,209,141,.75);
+    }
     @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
     @media(prefers-reduced-motion:reduce){.track{animation-play-state:paused}}
   </style>
 </head>
 <body>
   <footer class="ticker" aria-label="Classificação do Circuito MT 2026">
-    <div class="brand">
-      <div class="brand-kicker">Circuito MT 2026</div>
-      <div class="brand-title">Top 5</div>
-      <div class="brand-sub">Evento 589 • Etapa 2</div>
-    </div>
     <div class="viewport">
-      <div class="track" id="track">
+      <div class="track">
         <div class="group" id="groupA"></div>
         <div class="group" id="groupB" aria-hidden="true"></div>
       </div>
-    </div>
-    <div class="status" aria-live="polite">
-      <div class="status-main" id="statusMain">Carregando</div>
-      <div class="status-sub" id="statusSub">Consultando Worker</div>
     </div>
   </footer>
   <script>
     (() => {
       "use strict";
       const params=new URLSearchParams(window.location.search);
-      const WORKER_PADRAO="https://noisy-sea-5a8a.rverao1.workers.dev";
       const CONFIG={
         evento:params.get("evento")||"589",
         dia:params.get("dia")||"1",
-        apiBase:(params.get("api")||WORKER_PADRAO).replace(/\/$/,""),
+        apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),
         refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),
         duracao:Math.max(20,Number(params.get("duracao"))||72)
       };
       document.documentElement.style.setProperty("--duracao",`${CONFIG.duracao}s`);
-
       const CATEGORIAS=[
         {key:"masculino-1",nome:"1ª Divisão Masculina"},
         {key:"masculino-2",nome:"2ª Divisão Masculina"},
@@ -95,17 +124,13 @@
       const escapeHtml=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
       const numero=value=>{const parsed=Number(String(value??0).replace(",",".").replace(/[^\d.-]/g,""));return Number.isFinite(parsed)?parsed:0};
       const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
-
-      function normalizarAtletas(atletas){
-        return atletas.map((atleta,index)=>({
-          posicao:numero(atleta.posicao||atleta.pos||index+1),
-          atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",
-          total:numero(atleta.total||atleta.pontos_serie||atleta.t),
-          media:numero(atleta.media||atleta.m),
-          pontos:numero(atleta.pontosCircuito??atleta.pontos)
-        })).slice(0,5);
-      }
-
+      const normalizarAtletas=atletas=>atletas.map((atleta,index)=>({
+        posicao:numero(atleta.posicao||atleta.pos||index+1),
+        atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",
+        total:numero(atleta.total||atleta.pontos_serie||atleta.t),
+        media:numero(atleta.media||atleta.m),
+        pontos:numero(atleta.pontosCircuito??atleta.pontos)
+      })).slice(0,5);
       async function buscarCategoria(categoria){
         const endpoint=new URL(`${CONFIG.apiBase}/api/top`);
         endpoint.searchParams.set("evento",CONFIG.evento);
@@ -117,46 +142,26 @@
           const resposta=await fetch(endpoint,{cache:"no-store",headers:{Accept:"application/json"}});
           if(!resposta.ok)throw new Error(`HTTP ${resposta.status}`);
           const dados=await resposta.json();
-          if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||dados.atletas.length===0)throw new Error("Sem resultados oficiais");
+          if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length)throw new Error("Sem resultados oficiais");
           return{categoria,atletas:normalizarAtletas(dados.atletas),live:true};
         }catch(erro){
           return{categoria,atletas:CLASSIFICACAO_ETAPA_1[categoria.key],live:false};
         }
       }
-
       function renderizarCategoria(resultado){
+        const origem=resultado.live?"Evento 589":"Classificação após a Etapa 1";
         const itens=resultado.atletas.map((atleta,index)=>{
-          const posicao=atleta.posicao||index+1;
           const complemento=resultado.live?`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`:`${atleta.pontos} pts no Circuito`;
-          return `<span class="ranking"><span class="position">${escapeHtml(posicao)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`;
+          return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`;
         }).join("");
-        const origem=resultado.live?"Evento 589":"Após a Etapa 1";
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${origem}</span><span class="separator"></span>${itens}`;
       }
-
       function renderizar(resultados){
         const conteudo=resultados.map(renderizarCategoria).join("")+`<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
         document.getElementById("groupA").innerHTML=conteudo;
         document.getElementById("groupB").innerHTML=conteudo;
-        const aoVivo=resultados.filter(resultado=>resultado.live).length;
-        const statusMain=document.getElementById("statusMain");
-        const statusSub=document.getElementById("statusSub");
-        if(aoVivo===CATEGORIAS.length){
-          statusMain.innerHTML='<span class="live-dot"></span>Evento 589';
-          statusSub.textContent="Resultados oficiais";
-        }else if(aoVivo>0){
-          statusMain.innerHTML='<span class="live-dot"></span>Atualização automática';
-          statusSub.textContent="Evento 589 + Etapa 1";
-        }else{
-          statusMain.textContent="Circuito MT 2026";
-          statusSub.textContent="Classificação após Etapa 1";
-        }
       }
-
-      async function atualizar(){
-        const resultados=await Promise.all(CATEGORIAS.map(buscarCategoria));
-        renderizar(resultados);
-      }
+      async function atualizar(){renderizar(await Promise.all(CATEGORIAS.map(buscarCategoria)))}
       atualizar();
       window.setInterval(atualizar,CONFIG.refreshMs);
     })();
