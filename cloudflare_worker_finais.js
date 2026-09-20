@@ -29,17 +29,26 @@ export default {
           event: 589,
           status: "online",
           endpoints: [
-            "/api/top?evento=589&categoria=masculino-1&dia=1&limite=5",
-            "/api/top?evento=589&categoria=masculino-2&dia=1&limite=5",
-            "/api/top?evento=589&categoria=feminino&dia=1&limite=5",
+            "/api/top?evento=589&categoria=masculino-1&dia=2&limite=5",
+            "/api/top?evento=589&categoria=masculino-2&dia=2&limite=5",
+            "/api/top?evento=589&categoria=feminino&dia=2&limite=5",
             "/api/categorias?evento=589"
           ]
         });
       }
 
-      if (url.pathname === "/api/categorias") return handleCategorias(url);
-      if (url.pathname === "/api/top") return handleTop(url);
-      if (url.pathname === "/finais") return handleFinais(url);
+      if (url.pathname === "/api/categorias") {
+        return handleCategorias(url);
+      }
+
+      if (url.pathname === "/api/top") {
+        return handleTop(url);
+      }
+
+      // Mantém compatibilidade com o worker antigo de finais.
+      if (url.pathname === "/finais") {
+        return handleFinais(url);
+      }
 
       return json({ ok: false, error: "Endpoint not found" }, 404);
     } catch (erro) {
@@ -62,7 +71,7 @@ async function handleCategorias(url) {
 async function handleTop(url) {
   const evento = url.searchParams.get("evento") || "589";
   const categoriaChave = url.searchParams.get("categoria") || "masculino-1";
-  const dia = url.searchParams.get("dia") || "1";
+  const dia = url.searchParams.get("dia") || "2";
   const limite = Math.max(1, Math.min(20, Number(url.searchParams.get("limite") || url.searchParams.get("limit") || 5)));
   const categoriaConfig = CATEGORIAS[categoriaChave];
 
@@ -120,7 +129,9 @@ async function handleFinais(url) {
   const categoria = Number(url.searchParams.get("categoria"));
   const evento = url.searchParams.get("evento") || "582";
 
-  if (!categoria) return json({ ok: false, error: "Categoria invalida" }, 400);
+  if (!categoria) {
+    return json({ ok: false, error: "Categoria invalida" }, 400);
+  }
 
   const target = new URL(`${API_BASE}/evento-categoria-fase`);
   target.searchParams.set("id_evento", evento);
@@ -128,9 +139,7 @@ async function handleFinais(url) {
   target.searchParams.set("expand", "eventoCategoriaPartidas,atleta1,atleta2");
   target.searchParams.set("sort", "num_ordem");
 
-  const upstream = await fetch(target.toString(), {
-    headers: { Accept: "application/json, text/plain, */*" }
-  });
+  const upstream = await fetch(target.toString(), { headers: { Accept: "application/json, text/plain, */*" } });
   const body = await upstream.text();
 
   return new Response(body, {
@@ -146,6 +155,7 @@ async function buscarCategorias(evento) {
   if (Array.isArray(dados?.items)) return dados.items;
   if (Array.isArray(dados?.data)) return dados.data;
   if (Array.isArray(dados)) return dados;
+
   return [];
 }
 
@@ -179,7 +189,9 @@ async function fetchJson(url) {
     }
   });
 
-  if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status} ao acessar Boliche Brasil`);
+  if (!resposta.ok) {
+    throw new Error(`Erro HTTP ${resposta.status} ao acessar Boliche Brasil`);
+  }
 
   const texto = await resposta.text();
 
@@ -202,10 +214,12 @@ function extrairTabela(dados) {
 function normalizarTabela(tabela) {
   return tabela
     .map((item, index) => {
-      const total = numero(item.pontos_serie || item.total || item.t || item.pontos);
-      const linhas = numero(item.l || item.qtd_linhas);
-      const mediaInformada = numero(item.media || item.m);
-      const media = mediaInformada || (linhas > 0 ? total / linhas : 0);
+      const pontosAtuais = numero(item.pontos_serie ?? item.total ?? item.t ?? item.pontos);
+      const temAnterior = item.anterior !== null && item.anterior !== undefined && item.anterior !== "";
+      const totalAnterior = temAnterior ? numero(item.anterior) : 0;
+      const total = temAnterior ? totalAnterior + pontosAtuais : pontosAtuais;
+      const linhas = numero(item.l ?? item.qtd_linhas);
+      const media = numero(item.media ?? item.m) || (linhas > 0 ? total / linhas : 0);
       const maiorLinha = numero(item.maior_linha || item.maiorLinha || item.ml);
 
       return {
@@ -215,7 +229,9 @@ function normalizarTabela(tabela) {
         total,
         media,
         maiorLinha,
-        temResultado: temResultadoOficial(item, { total, media, maiorLinha }),
+        pontosAtuais,
+        totalAnterior,
+        temResultado: temResultadoOficial(item, { total, linhas, maiorLinha, temAnterior }),
         original: item
       };
     })
@@ -233,9 +249,8 @@ function normalizarTabela(tabela) {
 }
 
 function temResultadoOficial(item, placar) {
-  // O Boliche Brasil usa 1 ponto/1 linha como marcador provisório quando
-  // somente os inscritos e suas divisões foram cadastrados.
-  if (placar.total > 1 || placar.media > 1 || placar.maiorLinha > 1) return true;
+  if (placar.temAnterior && (placar.total > 1 || placar.maiorLinha > 1 || placar.linhas > 1)) return true;
+  if (placar.total > 1 || placar.maiorLinha > 1 || placar.linhas > 1) return true;
 
   const linhas = extrairLinhas(item.linhas);
   return linhas.some(linha => numero(linha.v ?? linha.valor ?? linha.pontos) > 1);
@@ -300,8 +315,8 @@ function limparXml(valor) {
     .trim();
 }
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
+function json(payload, status = 200) {
+  return new Response(JSON.stringify(payload), {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json; charset=utf-8" }
   });
