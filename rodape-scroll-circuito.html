@@ -170,6 +170,11 @@
         }
       }
       async function atualizar(){renderizar(await Promise.all(CATEGORIAS.map(buscarCategoria)))}
+      renderizar(CATEGORIAS.map(categoria=>({
+        categoria,
+        atletas:CLASSIFICACAO_ETAPA_1[categoria.key],
+        live:false
+      })));
       atualizar();
       window.setInterval(atualizar,CONFIG.refreshMs);
     })();
