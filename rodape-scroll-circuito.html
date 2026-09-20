@@ -87,7 +87,7 @@
       const params=new URLSearchParams(window.location.search);
       const CONFIG={
         evento:params.get("evento")||"589",
-        dia:params.get("dia")||"1",
+        dia:params.get("dia")||"2",
         apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),
         refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),
         duracao:Math.max(20,Number(params.get("duracao"))||72)
