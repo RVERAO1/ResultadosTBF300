@@ -37,7 +37,12 @@
       min-width:max-content;
       white-space:nowrap;
       will-change:transform;
-      animation:scroll var(--duracao) linear infinite;
+      transform:translate3d(0,0,0);
+      animation:none;
+    }
+    .track.running{
+      animation:scroll var(--duracao) linear infinite !important;
+      animation-play-state:running !important;
     }
     .group{display:inline-flex;align-items:center;flex:0 0 auto}
     .category,.ranking,.credits{
@@ -68,8 +73,7 @@
       background:var(--verde);
       box-shadow:0 0 12px rgba(33,209,141,.75);
     }
-    @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-    @media(prefers-reduced-motion:reduce){.track{animation-play-state:paused}}
+    @keyframes scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
   </style>
 </head>
 <body>
@@ -160,6 +164,10 @@
         const conteudo=resultados.map(renderizarCategoria).join("")+`<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
         document.getElementById("groupA").innerHTML=conteudo;
         document.getElementById("groupB").innerHTML=conteudo;
+        const track=document.querySelector(".track");
+        if(!track.classList.contains("running")){
+          window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>track.classList.add("running")));
+        }
       }
       async function atualizar(){renderizar(await Promise.all(CATEGORIAS.map(buscarCategoria)))}
       atualizar();
