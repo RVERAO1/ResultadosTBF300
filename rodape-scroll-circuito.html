@@ -25,6 +25,7 @@
     .credits{padding:0 32px;font-size:17px;font-weight:900;color:#fff;letter-spacing:.55px}
     .separator{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 12px rgba(33,209,141,.75)}
     .results-dock{position:fixed;right:0;bottom:0;left:0;z-index:20;height:245px;padding:9px 22px 5px;overflow:hidden;background:linear-gradient(180deg,rgba(2,15,31,.91),rgba(1,12,27,.98));border-top:2px solid rgba(217,185,67,.9);box-shadow:0 -18px 48px rgba(0,0,0,.5);transform:translateY(105%);opacity:0;visibility:hidden;transition:transform .9s cubic-bezier(.18,.82,.23,1),opacity .45s ease,visibility .9s;pointer-events:none}
+    .results-dock{border-top:0}
     body.modo-placar .results-dock{transform:translateY(0);opacity:1;visibility:visible}
     .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;height:202px}
     .result-card{min-width:0;overflow:hidden;border:2px solid rgba(217,185,67,.92);border-radius:18px;background:linear-gradient(145deg,rgba(9,31,55,.97),rgba(10,27,49,.95));box-shadow:inset 0 0 30px rgba(22,76,105,.12),0 8px 24px rgba(0,0,0,.24)}
@@ -59,10 +60,10 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261007-evento590-dock-v7-teste-1min";
+      const BUILD_ID="20261007-evento590-linha-completa-v8";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
-      const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),rodapeMs:numeroPositivo("rodapeMin",1,.01)*60*1000,placarMs:numeroPositivo("placarMin",1,.01)*60*1000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")!=="0"};
+      const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
       document.documentElement.style.setProperty("--duracao",`${CONFIG.duracao}s`);
       const CATEGORIAS=[{key:"masculino-1",nome:"1ª Divisão Masculina"},{key:"masculino-2",nome:"2ª Divisão Masculina"},{key:"feminino",nome:"1ª Divisão Feminina"}];
       const CLASSIFICACAO_ETAPA_2={
@@ -75,12 +76,30 @@
       const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
       const linhasDoDia=dia=>dia===2?[7,8,9,10,11]:[1,2,3,4,5,6];
       const normalizarJogos=(jogos,dia)=>{const mapa=new Map((Array.isArray(jogos)?jogos:[]).map((jogo,index)=>[numero(jogo?.linha)||linhasDoDia(dia)[index],numero(jogo?.pontos??jogo?.valor??jogo)]));return linhasDoDia(dia).map(linha=>({linha,pontos:mapa.get(linha)||null}))};
-      const normalizarAtletas=(atletas,diaResposta)=>atletas.map((atleta,index)=>{const dia=numero(atleta.dia)||diaResposta||1;return{posicao:numero(atleta.posicao||atleta.pos||index+1),atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",dia,total:numero(atleta.total||atleta.pontos_serie||atleta.t),media:numero(atleta.media||atleta.m),jogos:normalizarJogos(atleta.jogos,dia)}});
+      const normalizarAtletas=(atletas,diaResposta)=>atletas.map((atleta,index)=>{const dia=numero(atleta.dia)||diaResposta||1;return{id:atleta.id,posicao:numero(atleta.posicao||atleta.pos||index+1),atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",dia,total:numero(atleta.total||atleta.pontos_serie||atleta.t),media:numero(atleta.media||atleta.m),jogos:normalizarJogos(atleta.jogos,dia)}});
       let resultadosAtuais=CATEGORIAS.map(categoria=>({categoria,atletas:[],live:false,dia:null}));
       let cycleStartedAt=Date.now();let modoAtual="rodape";let grupoAtual=-1;
+      const chaveEstado=`tbf300:linhas:v1:${CONFIG.apiBase}:${CONFIG.evento}`;
+      let estado={ultimaLinha:0,inicioPlacar:0};
+      try{const salvo=JSON.parse(localStorage.getItem(chaveEstado)||"null");if(salvo)estado={ultimaLinha:numero(salvo.ultimaLinha),inicioPlacar:numero(salvo.inicioPlacar)}}catch(erro){}
+      const salvarEstado=()=>{try{localStorage.setItem(chaveEstado,JSON.stringify(estado))}catch(erro){}};
+      let assinaturaCandidata="";let confirmacoes=0;let linhaConfirmada=0;let atualizando=false;
+      function detectarLinhaCompleta(resultados){
+        if(resultados.length!==CATEGORIAS.length||resultados.some(resultado=>!resultado.live||resultado.demo||!resultado.consultaValida||!resultado.listaCompleta))return null;
+        const dia=Math.max(...resultados.map(resultado=>resultado.dia||1));
+        const participantes=resultados.map(resultado=>resultado.atletas.filter(atleta=>atleta.dia===dia&&atleta.jogos.some(jogo=>jogo.pontos>1)));
+        // Uma categoria sem lançamentos ainda não permite confirmar a linha global.
+        if(participantes.some(atletas=>!atletas.length))return null;
+        let linha=0;
+        for(const numeroLinha of linhasDoDia(dia)){if(!participantes.every(atletas=>atletas.every(atleta=>atleta.jogos.some(jogo=>jogo.linha===numeroLinha&&jogo.pontos>1))))break;linha=numeroLinha}
+        if(!linha)return null;
+        const nomes=participantes.map(atletas=>atletas.map(atleta=>String(atleta.id||atleta.atleta)).sort().join("|")).join(";");
+        return{linha,assinatura:`${dia}:${linha}:${nomes}`}
+      }
+      function confirmarLinha(resultados){const candidata=detectarLinhaCompleta(resultados);if(!candidata){assinaturaCandidata="";confirmacoes=0;linhaConfirmada=0;return}confirmacoes=candidata.assinatura===assinaturaCandidata?confirmacoes+1:1;assinaturaCandidata=candidata.assinatura;linhaConfirmada=confirmacoes>=2?candidata.linha:0}
       async function buscarCategoria(categoria){
         const controller=new AbortController();const timeout=window.setTimeout(()=>controller.abort(),25000);
-        const consultar=async(evento,demo=false)=>{const endpoint=new URL(`${CONFIG.apiBase}/api/top`);endpoint.searchParams.set("evento",evento);endpoint.searchParams.set("categoria",categoria.key);endpoint.searchParams.set("dia",CONFIG.dia);endpoint.searchParams.set("limite","20");endpoint.searchParams.set("_",Date.now().toString());const resposta=await fetch(endpoint,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});if(!resposta.ok)throw new Error(`HTTP ${resposta.status}`);const dados=await resposta.json();if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length)throw new Error("Sem resultados oficiais");const dia=numero(dados.dia)||1;return{categoria,atletas:normalizarAtletas(dados.atletas,dia),live:true,dia,demo}};
+        const consultar=async(evento,demo=false)=>{const endpoint=new URL(`${CONFIG.apiBase}/api/top`);endpoint.searchParams.set("evento",evento);endpoint.searchParams.set("categoria",categoria.key);endpoint.searchParams.set("dia",CONFIG.dia);endpoint.searchParams.set("limite","20");endpoint.searchParams.set("_",Date.now().toString());const resposta=await fetch(endpoint,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});if(!resposta.ok)throw new Error(`HTTP ${resposta.status}`);const dados=await resposta.json();if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length)throw new Error("Sem resultados oficiais");const dia=numero(dados.dia)||1;return{categoria,atletas:normalizarAtletas(dados.atletas,dia),live:true,dia,demo,consultaValida:true,listaCompleta:numero(dados.resultadosValidos)<=dados.atletas.length}};
         try{return await consultar(CONFIG.evento)}catch(erro){if(CONFIG.testeVisual&&CONFIG.evento==="590"){try{return await consultar("589",true)}catch(erroDemo){}}return{categoria,atletas:[],live:false,dia:null,demo:false}}finally{window.clearTimeout(timeout)}
       }
       function renderizarCategoriaTicker(resultado){
@@ -109,10 +128,13 @@
       function aplicarCiclo(){
         const temResultados=temResultadosParaExibir();
         if(CONFIG.forcarPlacar){if(!temResultados){definirModo("rodape");return}definirModo("placar");aplicarGrupo(Math.floor((Date.now()-cycleStartedAt)/30000));return}
-        const total=CONFIG.rodapeMs+CONFIG.placarMs;const decorrido=(Date.now()-cycleStartedAt)%total;const exibir=decorrido>=CONFIG.rodapeMs&&temResultados;
-        definirModo(exibir?"placar":"rodape");if(exibir)aplicarGrupo(Math.floor((decorrido-CONFIG.rodapeMs)/30000));else grupoAtual=-1
+        const agora=Date.now();
+        if(estado.inicioPlacar&&agora-estado.inicioPlacar>=CONFIG.placarMs){estado.inicioPlacar=0;salvarEstado()}
+        if(!estado.inicioPlacar&&linhaConfirmada>estado.ultimaLinha&&temResultados){estado.ultimaLinha=linhaConfirmada;estado.inicioPlacar=agora;grupoAtual=-1;salvarEstado()}
+        const exibir=!!estado.inicioPlacar&&temResultados;
+        definirModo(exibir?"placar":"rodape");if(exibir)aplicarGrupo(Math.floor((agora-estado.inicioPlacar)/30000));else grupoAtual=-1
       }
-      async function atualizar(){const novos=await Promise.all(CATEGORIAS.map(buscarCategoria));resultadosAtuais=novos.map((novo,indice)=>{const anterior=resultadosAtuais[indice];return anterior?.live&&(!novo.live||(anterior.dia||0)>(novo.dia||0))?anterior:novo});renderizarTicker();renderizarQuadros();aplicarCiclo()}
+      async function atualizar(){if(atualizando)return;atualizando=true;try{const novos=await Promise.all(CATEGORIAS.map(buscarCategoria));resultadosAtuais=novos.map((novo,indice)=>{const anterior=resultadosAtuais[indice];return anterior?.live&&(!novo.live||(anterior.dia||0)>(novo.dia||0))?{...anterior,consultaValida:false}:novo});confirmarLinha(resultadosAtuais);renderizarTicker();renderizarQuadros();aplicarCiclo()}finally{atualizando=false}}
       async function verificarVersao(){try{const resposta=await fetch(`${window.location.pathname}?_versao=${Date.now()}`,{cache:"no-store"});const html=await resposta.text();const versao=html.match(/const BUILD_ID="([^"]+)"/);if(versao&&versao[1]!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",versao[1]);window.location.replace(destino.toString())}}catch(erro){}}
       if(params.get("_build")!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",BUILD_ID);window.location.replace(destino.toString());return}
       cycleStartedAt=Date.now();renderizarTicker();renderizarQuadros();aplicarCiclo();atualizar();window.setInterval(atualizar,CONFIG.refreshMs);window.setInterval(aplicarCiclo,500);window.setInterval(verificarVersao,60000)
