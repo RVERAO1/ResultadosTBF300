@@ -6,22 +6,27 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Rodapé Scroll • Circuito MT 2026 • Etapa 3</title>
+  <title>Circuito MT 2026 • Rodapé e Placar</title>
   <style>
     :root{
       --amarelo:#ffd43b;
       --verde:#21d18d;
+      --azul:#5b8cff;
       --texto:#fff;
       --muted:rgba(255,255,255,.76);
-      --duracao:78s;
+      --duracao:72s;
+      --accent:#21d18d;
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
-    html,body{width:100%;height:100%;overflow:hidden;background:transparent}
+    html,body{width:100%;height:100%;overflow:hidden;background:transparent!important}
+    body{color:var(--texto)}
+
     .ticker{
       position:fixed;
       right:0;
       bottom:0;
       left:0;
+      z-index:10;
       height:94px;
       display:flex;
       align-items:center;
@@ -30,7 +35,11 @@
       border:0;
       box-shadow:none;
       overflow:hidden;
+      opacity:1;
+      visibility:visible;
+      transition:opacity .45s ease,visibility .45s ease;
     }
+    body.modo-placar .ticker{opacity:0;visibility:hidden;pointer-events:none}
     .viewport{display:flex;align-items:center;width:100%;height:88px;overflow:hidden}
     .track{
       display:inline-flex;
@@ -55,30 +64,86 @@
       text-transform:uppercase;
       text-shadow:0 2px 5px rgba(0,0,0,.95),0 0 2px rgba(0,0,0,.9);
     }
-    .category{
-      padding:0 26px 0 32px;
-      font-size:18px;
-      font-weight:900;
-      color:#87f2c3;
-      letter-spacing:.45px;
-    }
+    .category{padding:0 26px 0 32px;font-size:18px;font-weight:900;color:#87f2c3;letter-spacing:.45px}
     .ranking{gap:8px;padding:0 23px;font-size:18px;font-weight:900;letter-spacing:.3px}
     .position{color:var(--amarelo)}
     .athlete{color:#fff}
     .details{font-size:14px;color:var(--muted)}
     .credits{padding:0 32px;font-size:17px;font-weight:900;color:#fff;letter-spacing:.55px}
-    .separator{
-      flex:0 0 auto;
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--verde);
-      box-shadow:0 0 12px rgba(33,209,141,.75);
+    .separator{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 12px rgba(33,209,141,.75)}
+
+    .scoreboard-stage{
+      position:fixed;
+      inset:0;
+      z-index:20;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:4vh 4vw;
+      background:transparent;
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .5s ease,visibility .5s ease;
     }
+    body.modo-placar .scoreboard-stage{opacity:1;visibility:visible}
+    .scoreboard{
+      position:relative;
+      width:min(1180px,92vw);
+      min-height:min(650px,82vh);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      border:2px solid var(--accent);
+      border-radius:22px;
+      background:linear-gradient(145deg,rgba(3,17,35,.96),rgba(6,29,50,.91) 58%,rgba(3,14,29,.96));
+      box-shadow:0 22px 70px rgba(0,0,0,.58),0 0 34px color-mix(in srgb,var(--accent) 28%,transparent);
+    }
+    .scoreboard::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:linear-gradient(110deg,color-mix(in srgb,var(--accent) 12%,transparent),transparent 34%),repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 2px,transparent 2px 12px);
+    }
+    .scoreboard-head,.scoreboard-content,.scoreboard-foot{position:relative;z-index:1}
+    .scoreboard-head{display:flex;align-items:flex-start;justify-content:space-between;padding:30px 38px 22px;border-bottom:1px solid rgba(255,255,255,.14)}
+    .brand-kicker{color:var(--accent);font-size:17px;font-weight:900;letter-spacing:4px;text-transform:uppercase}
+    .brand-title{margin-top:5px;font-size:42px;font-weight:950;line-height:1;text-transform:uppercase;letter-spacing:.5px}
+    .event-badge{padding:10px 16px;border:1px solid color-mix(in srgb,var(--accent) 70%,white);border-radius:999px;color:#fff;background:color-mix(in srgb,var(--accent) 15%,transparent);font-size:15px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase}
+    .scoreboard-content{flex:1;padding:23px 38px 18px}
+    .category-line{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:18px}
+    .category-title{font-size:31px;font-weight:950;text-transform:uppercase;letter-spacing:.4px}
+    .source-label{color:var(--muted);font-size:14px;font-weight:800;text-align:right;text-transform:uppercase;letter-spacing:1px}
+    .score-table{width:100%;border-collapse:collapse;table-layout:fixed}
+    .score-table th{padding:0 12px 10px;color:rgba(255,255,255,.62);font-size:12px;font-weight:900;letter-spacing:1.2px;text-align:left;text-transform:uppercase}
+    .score-table td{height:64px;padding:0 12px;border-top:1px solid rgba(255,255,255,.12);font-size:22px;font-weight:800}
+    .score-table tbody tr:first-child{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent 72%)}
+    .score-table .col-pos{width:84px;color:var(--accent);font-size:24px;font-weight:950}
+    .score-table .col-athlete{width:auto}
+    .score-table .col-number{width:150px;text-align:right}
+    .score-table th.col-number{text-align:right}
+    .score-table .total{color:var(--accent);font-size:26px;font-weight:950}
+    .scoreboard-foot{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 38px;border-top:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.8);font-size:13px;font-weight:850;letter-spacing:.6px;text-transform:uppercase}
+    .scoreboard-foot .support{text-align:right}
+    .panel-enter{animation:panelEnter .42s ease both}
+    .accent-a{--accent:#27d998}
+    .accent-b{--accent:#6a91ff}
+    .accent-f{--accent:#ffd65a}
+
     @keyframes scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+    @keyframes panelEnter{from{opacity:0;transform:translateY(12px) scale(.992)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @media(max-width:900px){
+      .scoreboard{min-height:76vh}
+      .scoreboard-head,.scoreboard-content,.scoreboard-foot{padding-left:24px;padding-right:24px}
+      .brand-title{font-size:32px}
+      .category-title{font-size:25px}
+      .score-table td{height:56px;font-size:18px}
+      .score-table .col-number{width:120px}
+    }
   </style>
 </head>
-<body>
+<body class="modo-rodape">
   <footer class="ticker" aria-label="Classificação do Circuito MT 2026">
     <div class="viewport">
       <div class="track">
@@ -87,28 +152,39 @@
       </div>
     </div>
   </footer>
+
+  <section class="scoreboard-stage" aria-live="polite" aria-label="Placar do Circuito MT 2026">
+    <article class="scoreboard accent-a" id="scoreboard"></article>
+  </section>
+
   <script>
-    (()=>{
+    (() => {
       "use strict";
-      const BUILD_ID="20261007-evento590-v1";
+
+      const BUILD_ID="20261007-evento590-cycle-v2";
       const params=new URLSearchParams(window.location.search);
+      const numeroPositivo=(nome,padrao,minimo)=>{
+        const valor=Number(params.get(nome));
+        return Number.isFinite(valor)&&valor>=minimo?valor:padrao;
+      };
       const CONFIG={
         evento:params.get("evento")||"590",
         dia:params.get("dia")||"auto",
         apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),
         refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),
-        duracao:Math.max(20,Number(params.get("duracao"))||78),
-        timeoutMs:25000
+        duracao:Math.max(20,Number(params.get("duracao"))||72),
+        rodapeMs:numeroPositivo("rodapeMin",45,.01)*60*1000,
+        placarMs:numeroPositivo("placarMin",5,.01)*60*1000,
+        trocaMs:numeroPositivo("trocaSeg",20,1)*1000
       };
       document.documentElement.style.setProperty("--duracao",`${CONFIG.duracao}s`);
 
       const CATEGORIAS=[
-        {key:"masculino-1",nome:"Divisão A Masculina"},
-        {key:"masculino-2",nome:"Divisão B Masculina"},
-        {key:"feminino",nome:"Categoria Feminina"}
+        {key:"masculino-1",nome:"Divisão A Masculina",curto:"Divisão A",accent:"accent-a"},
+        {key:"masculino-2",nome:"Divisão B Masculina",curto:"Divisão B",accent:"accent-b"},
+        {key:"feminino",nome:"Categoria Feminina",curto:"Feminino",accent:"accent-f"}
       ];
-
-      const CLASSIFICACAO_APOS_ETAPA_2={
+      const CLASSIFICACAO_ETAPA_2={
         "masculino-1":[
           {posicao:1,atleta:"Michel Belmonte",pontos:155},
           {posicao:2,atleta:"Antonio Toledo",pontos:140},
@@ -132,30 +208,30 @@
         ]
       };
 
-      const escapeHtml=value=>String(value??"")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
+      const escapeHtml=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
       const numero=value=>{
         const parsed=Number(String(value??0).replace(",",".").replace(/[^\d.-]/g,""));
         return Number.isFinite(parsed)?parsed:0;
       };
-
-      const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      });
-
+      const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
       const normalizarAtletas=atletas=>atletas.map((atleta,index)=>({
         posicao:numero(atleta.posicao||atleta.pos||index+1),
         atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",
         total:numero(atleta.total||atleta.pontos_serie||atleta.t),
         media:numero(atleta.media||atleta.m),
+        maiorLinha:numero(atleta.maiorLinha||atleta.maior_linha||atleta.high_game||atleta.ml),
         pontos:numero(atleta.pontosCircuito??atleta.pontos)
       })).slice(0,5);
+
+      let resultadosAtuais=CATEGORIAS.map(categoria=>({
+        categoria,
+        atletas:CLASSIFICACAO_ETAPA_2[categoria.key],
+        live:false,
+        dia:null
+      }));
+      let modoAtual="rodape";
+      let categoriaPlacarAtual=-1;
+      let cycleStartedAt=Date.now();
 
       async function buscarCategoria(categoria){
         const endpoint=new URL(`${CONFIG.apiBase}/api/top`);
@@ -165,54 +241,34 @@
         endpoint.searchParams.set("limite","5");
         endpoint.searchParams.set("_",Date.now().toString());
         const controller=new AbortController();
-        const timeout=window.setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
-
+        const timeout=window.setTimeout(()=>controller.abort(),25000);
         try{
-          const resposta=await fetch(endpoint,{
-            cache:"no-store",
-            headers:{Accept:"application/json"},
-            signal:controller.signal
-          });
+          const resposta=await fetch(endpoint,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
           if(!resposta.ok)throw new Error(`HTTP ${resposta.status}`);
           const dados=await resposta.json();
-          if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length){
-            throw new Error("Sem resultados oficiais");
-          }
-          return{
-            categoria,
-            atletas:normalizarAtletas(dados.atletas),
-            live:true,
-            dia:numero(dados.dia)
-          };
+          if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length)throw new Error("Sem resultados oficiais");
+          return{categoria,atletas:normalizarAtletas(dados.atletas),live:true,dia:numero(dados.dia)||null};
         }catch(erro){
-          return{
-            categoria,
-            atletas:CLASSIFICACAO_APOS_ETAPA_2[categoria.key],
-            live:false,
-            dia:0
-          };
+          return{categoria,atletas:CLASSIFICACAO_ETAPA_2[categoria.key],live:false,dia:null};
         }finally{
           window.clearTimeout(timeout);
         }
       }
 
-      function renderizarCategoria(resultado){
-        const origem=resultado.live
-          ? `Evento ${CONFIG.evento} • Dia ${resultado.dia}`
-          : "Classificação após a Etapa 2";
+      function renderizarCategoriaTicker(resultado){
+        const origem=resultado.live?`Evento 590 • Dia ${resultado.dia||"em andamento"}`:"Circuito após 2 etapas";
         const itens=resultado.atletas.map((atleta,index)=>{
           const complemento=resultado.live
-            ? `${atleta.total} pontos • média ${formatarMedia(atleta.media)}`
-            : `${atleta.pontos} pts no Circuito`;
+            ?`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`
+            :`${atleta.pontos} pts no Circuito`;
           return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`;
         }).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`;
       }
 
-      function renderizar(resultados){
-        const evento=`<span class="credits">Etapa 3 • Campo Novo dos Parecis • 10 e 11 de outubro</span><span class="separator"></span>`;
-        const creditos=`<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
-        const conteudo=resultados.map(renderizarCategoria).join("")+evento+creditos;
+      function renderizarTicker(){
+        const conteudo=resultadosAtuais.map(renderizarCategoriaTicker).join("")+
+          `<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
         document.getElementById("groupA").innerHTML=conteudo;
         document.getElementById("groupB").innerHTML=conteudo;
         const track=document.querySelector(".track");
@@ -221,9 +277,67 @@
         }
       }
 
+      function linhasPlacar(resultado){
+        return resultado.atletas.map((atleta,index)=>{
+          if(resultado.live){
+            return `<tr><td class="col-pos">${escapeHtml(atleta.posicao||index+1)}º</td><td class="col-athlete">${escapeHtml(atleta.atleta)}</td><td class="col-number total">${escapeHtml(atleta.total)}</td><td class="col-number">${escapeHtml(formatarMedia(atleta.media))}</td><td class="col-number">${escapeHtml(atleta.maiorLinha||"—")}</td></tr>`;
+          }
+          return `<tr><td class="col-pos">${escapeHtml(atleta.posicao||index+1)}º</td><td class="col-athlete">${escapeHtml(atleta.atleta)}</td><td class="col-number total">${escapeHtml(atleta.pontos)}</td></tr>`;
+        }).join("");
+      }
+
+      function renderizarPlacarCategoria(indice){
+        const resultado=resultadosAtuais[indice]||resultadosAtuais[0];
+        if(!resultado)return;
+        categoriaPlacarAtual=indice;
+        const fonte=resultado.live
+          ?`Resultados do evento 590 • dia ${resultado.dia||"em andamento"}`
+          :"Classificação do Circuito após a 2ª etapa";
+        const cabecalho=resultado.live
+          ?`<tr><th class="col-pos">Pos.</th><th class="col-athlete">Atleta</th><th class="col-number">Total</th><th class="col-number">Média</th><th class="col-number">Maior linha</th></tr>`
+          :`<tr><th class="col-pos">Pos.</th><th class="col-athlete">Atleta</th><th class="col-number">Pontos no Circuito</th></tr>`;
+        const scoreboard=document.getElementById("scoreboard");
+        scoreboard.className=`scoreboard ${resultado.categoria.accent} panel-enter`;
+        scoreboard.innerHTML=`
+          <header class="scoreboard-head">
+            <div><div class="brand-kicker">Circuito MT 2026</div><div class="brand-title">Top 5</div></div>
+            <div class="event-badge">Evento 590 • Etapa 3</div>
+          </header>
+          <div class="scoreboard-content">
+            <div class="category-line"><h1 class="category-title">${escapeHtml(resultado.categoria.nome)}</h1><div class="source-label">${escapeHtml(fonte)}</div></div>
+            <table class="score-table"><thead>${cabecalho}</thead><tbody>${linhasPlacar(resultado)}</tbody></table>
+          </div>
+          <footer class="scoreboard-foot">
+            <span>Campo Novo dos Parecis • 10 e 11 de outubro</span>
+            <span class="support">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span>
+          </footer>`;
+      }
+
+      function aplicarCiclo(){
+        const cicloTotal=CONFIG.rodapeMs+CONFIG.placarMs;
+        const decorrido=(Date.now()-cycleStartedAt)%cicloTotal;
+        if(decorrido<CONFIG.rodapeMs){
+          if(modoAtual!=="rodape"){
+            modoAtual="rodape";
+            categoriaPlacarAtual=-1;
+            document.body.classList.remove("modo-placar");
+            document.body.classList.add("modo-rodape");
+          }
+          return;
+        }
+        const indice=Math.floor((decorrido-CONFIG.rodapeMs)/CONFIG.trocaMs)%CATEGORIAS.length;
+        if(modoAtual!=="placar"){
+          modoAtual="placar";
+          document.body.classList.remove("modo-rodape");
+          document.body.classList.add("modo-placar");
+        }
+        if(indice!==categoriaPlacarAtual)renderizarPlacarCategoria(indice);
+      }
+
       async function atualizar(){
-        const resultados=await Promise.all(CATEGORIAS.map(buscarCategoria));
-        renderizar(resultados);
+        resultadosAtuais=await Promise.all(CATEGORIAS.map(buscarCategoria));
+        renderizarTicker();
+        if(modoAtual==="placar"&&categoriaPlacarAtual>=0)renderizarPlacarCategoria(categoriaPlacarAtual);
       }
 
       async function verificarVersao(){
@@ -246,14 +360,12 @@
         return;
       }
 
-      renderizar(CATEGORIAS.map(categoria=>({
-        categoria,
-        atletas:CLASSIFICACAO_APOS_ETAPA_2[categoria.key],
-        live:false,
-        dia:0
-      })));
+      cycleStartedAt=Date.now();
+      renderizarTicker();
+      aplicarCiclo();
       atualizar();
       window.setInterval(atualizar,CONFIG.refreshMs);
+      window.setInterval(aplicarCiclo,500);
       window.setInterval(verificarVersao,60000);
     })();
   </script>
