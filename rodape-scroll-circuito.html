@@ -59,7 +59,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261007-evento590-dock-v5-teste-1min";
+      const BUILD_ID="20261007-evento590-dock-v6-teste-1min";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),rodapeMs:numeroPositivo("rodapeMin",1,.01)*60*1000,placarMs:numeroPositivo("placarMin",1,.01)*60*1000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")!=="0"};
@@ -75,7 +75,7 @@
       const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
       const linhasDoDia=dia=>dia===2?[7,8,9,10,11]:[1,2,3,4,5,6];
       const normalizarJogos=(jogos,dia)=>{const mapa=new Map((Array.isArray(jogos)?jogos:[]).map((jogo,index)=>[numero(jogo?.linha)||linhasDoDia(dia)[index],numero(jogo?.pontos??jogo?.valor??jogo)]));return linhasDoDia(dia).map(linha=>({linha,pontos:mapa.get(linha)||null}))};
-      const normalizarAtletas=(atletas,diaResposta)=>atletas.map((atleta,index)=>{const dia=numero(atleta.dia)||diaResposta||1;return{posicao:numero(atleta.posicao||atleta.pos||index+1),atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",dia,total:numero(atleta.total||atleta.pontos_serie||atleta.t),media:numero(atleta.media||atleta.m),jogos:normalizarJogos(atleta.jogos,dia)}}).slice(0,5);
+      const normalizarAtletas=(atletas,diaResposta)=>atletas.map((atleta,index)=>{const dia=numero(atleta.dia)||diaResposta||1;return{posicao:numero(atleta.posicao||atleta.pos||index+1),atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",dia,total:numero(atleta.total||atleta.pontos_serie||atleta.t),media:numero(atleta.media||atleta.m),jogos:normalizarJogos(atleta.jogos,dia)}});
       let resultadosAtuais=CATEGORIAS.map(categoria=>({categoria,atletas:[],live:false,dia:null}));
       let cycleStartedAt=Date.now();let modoAtual="rodape";let grupoAtual=-1;
       async function buscarCategoria(categoria){
@@ -85,7 +85,7 @@
       }
       function renderizarCategoriaTicker(resultado){
         const fallback=CLASSIFICACAO_ETAPA_2[resultado.categoria.key];const usarAoVivo=resultado.live&&!resultado.demo;const atletas=(usarAoVivo?resultado.atletas:fallback).slice(0,5);const origem=usarAoVivo?`Evento ${CONFIG.evento} • Dia ${resultado.dia}`:"Circuito após 2 etapas";
-        const itens=atletas.map((atleta,index)=>{const complemento=resultado.live?`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`:`${atleta.pontos} pts no Circuito`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
+        const itens=atletas.map((atleta,index)=>{const complemento=usarAoVivo?`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`:`${atleta.pontos} pts no Circuito`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`
       }
       function renderizarTicker(){
