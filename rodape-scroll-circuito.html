@@ -59,10 +59,10 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261007-evento590-dock-v1";
+      const BUILD_ID="20261007-evento590-dock-v2-teste-1min";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
-      const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),rodapeMs:numeroPositivo("rodapeMin",45,.01)*60*1000,placarMs:numeroPositivo("placarMin",5,.01)*60*1000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar"};
+      const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),rodapeMs:numeroPositivo("rodapeMin",1,.01)*60*1000,placarMs:numeroPositivo("placarMin",1,.01)*60*1000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar"};
       document.documentElement.style.setProperty("--duracao",`${CONFIG.duracao}s`);
       const CATEGORIAS=[{key:"masculino-1",nome:"1ª Divisão Masculina"},{key:"masculino-2",nome:"2ª Divisão Masculina"},{key:"feminino",nome:"1ª Divisão Feminina"}];
       const CLASSIFICACAO_ETAPA_2={
