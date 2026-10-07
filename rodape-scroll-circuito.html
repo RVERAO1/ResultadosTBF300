@@ -267,7 +267,8 @@
       }
 
       function renderizarTicker(){
-        const conteudo=resultadosAtuais.map(renderizarCategoriaTicker).join("")+
+        const evento=`<span class="credits">Etapa 3 • Campo Novo dos Parecis • 10 e 11 de outubro</span><span class="separator"></span>`;
+        const conteudo=resultadosAtuais.map(renderizarCategoriaTicker).join("")+evento+
           `<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
         document.getElementById("groupA").innerHTML=conteudo;
         document.getElementById("groupB").innerHTML=conteudo;
