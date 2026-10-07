@@ -21,7 +21,7 @@ As rotas públicas de leitura e a transmissão funcionam sem esse segredo; os co
 - Somente rodapé: impede o acionamento do placar enquanto estiver selecionado.
 - Ocultar tudo: torna esta página transparente. Não interrompe o vídeo, áudio ou outros elementos do Prism.
 - Mensagem: acrescenta texto ou substitui a classificação no scroll, mantendo os créditos.
-- Imagem: URL HTTPS ou envio de PNG/JPG/WebP até 500 KB; até 10 uploads. Prévia local antes de aplicar. Imagens ficam atrás do placar/rodapé.
+- Imagem: URL HTTPS ou envio de PNG/JPG/WebP até 1.500 KB; até 10 uploads. Prévia local antes de aplicar. Imagens ficam atrás do placar/rodapé.
 
 Os comandos são persistidos em um Durable Object SQLite no Worker, com revisão para evitar sobrescrita de comandos simultâneos. A fonte consulta a Central a cada 5 segundos. Falhas de conexão preservam a última configuração conhecida; não é possível garantir um comando remoto enquanto o dispositivo do Prism estiver sem internet. Dados esportivos continuam sendo atualizados separadamente pelo Worker.
 

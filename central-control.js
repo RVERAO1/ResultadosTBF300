@@ -1,5 +1,5 @@
 const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',updatedAt:null};
-const MAX_IMAGE = 500 * 1024;
+const MAX_IMAGE = 1500 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 const reply = (data,status=200) => new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8'}});
 const encoder = new TextEncoder();
@@ -72,6 +72,7 @@ export class CentralControl {
           const previous={...DEFAULT,...await tx.get('control')};
           if(body.revision!==previous.revision)return null;
           const next={...previous,...patch,revision:previous.revision+1,updatedAt:new Date().toISOString()};
+          if(next.overlayEnabled&&!next.overlayUrl)throw Error('Envie uma imagem ou informe um endereço HTTPS antes de ligar o overlay.');
           await tx.put('control',next);return next;
         });
         return state?reply(state):reply({error:'Outro comando foi aplicado. Atualize o painel e tente novamente.'},409);
@@ -81,7 +82,7 @@ export class CentralControl {
         const png=bytes.length>=8&&[137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v);
         const jpeg=bytes.length>=3&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
         const webp=bytes.length>=12&&new TextDecoder().decode(bytes.slice(0,4))==='RIFF'&&new TextDecoder().decode(bytes.slice(8,12))==='WEBP';
-        if(!(type==='image/png'&&png||type==='image/jpeg'&&jpeg||type==='image/webp'&&webp))return reply({error:'Use PNG, JPG ou WebP válido (até 500 KB). SVG não é permitido.'},400);
+        if(!(type==='image/png'&&png||type==='image/jpeg'&&jpeg||type==='image/webp'&&webp))return reply({error:'Use PNG, JPG ou WebP válido (até 1.500 KB). SVG não é permitido.'},400);
         if((await this.ctx.storage.list({prefix:'image:',limit:10})).size>=10)return reply({error:'Limite de 10 imagens enviadas. Use uma URL HTTPS para outras imagens.'},409);
         const id=crypto.randomUUID();const imageUrl=`${url.origin}/api/control/image?v=${id}`;
         await this.ctx.storage.put(`image:${id}`,{bytes:bytes.buffer,type});
