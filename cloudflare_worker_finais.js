@@ -1,4 +1,9 @@
 const API_BASE = "https://restboliche.bigmidia.com/cbbol/api";
+const EVENTO_PADRAO = "590";
+const DIAS_EVENTO = [1, 2];
+const CACHE_TTL_MS = 5000;
+const FETCH_TIMEOUT_MS = 20000;
+const memoria = new Map();
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -8,9 +13,9 @@ const CORS_HEADERS = {
 };
 
 const CATEGORIAS = {
-  "masculino-1": { nome: "1ª Divisão Masculina", genero: 0, divisao: 1 },
-  "masculino-2": { nome: "2ª Divisão Masculina", genero: 0, divisao: 2 },
-  "feminino": { nome: "1ª Divisão Feminina", genero: 1, divisao: 1 }
+  "masculino-1": { nome: "Divisão A Masculina", genero: 0, divisao: 1 },
+  "masculino-2": { nome: "Divisão B Masculina", genero: 0, divisao: 2 },
+  "feminino": { nome: "Categoria Feminina", genero: 1, divisao: 1 }
 };
 
 export default {
@@ -26,39 +31,33 @@ export default {
         return json({
           ok: true,
           service: "TBF300 Circuito MT Proxy",
-          event: 589,
+          event: Number(EVENTO_PADRAO),
+          stage: 3,
+          location: "Campo Novo dos Parecis",
+          dates: ["2026-10-10", "2026-10-11"],
           status: "online",
           endpoints: [
-            "/api/top?evento=589&categoria=masculino-1&dia=2&limite=5",
-            "/api/top?evento=589&categoria=masculino-2&dia=2&limite=5",
-            "/api/top?evento=589&categoria=feminino&dia=2&limite=5",
-            "/api/categorias?evento=589"
+            `/api/top?evento=${EVENTO_PADRAO}&categoria=masculino-1&dia=auto&limite=5`,
+            `/api/top?evento=${EVENTO_PADRAO}&categoria=masculino-2&dia=auto&limite=5`,
+            `/api/top?evento=${EVENTO_PADRAO}&categoria=feminino&dia=auto&limite=5`,
+            `/api/categorias?evento=${EVENTO_PADRAO}`
           ]
         });
       }
 
-      if (url.pathname === "/api/categorias") {
-        return handleCategorias(url);
-      }
-
-      if (url.pathname === "/api/top") {
-        return handleTop(url);
-      }
-
-      // Mantém compatibilidade com o worker antigo de finais.
-      if (url.pathname === "/finais") {
-        return handleFinais(url);
-      }
+      if (url.pathname === "/api/categorias") return handleCategorias(url);
+      if (url.pathname === "/api/top") return handleTop(url);
+      if (url.pathname === "/finais") return handleFinais(url);
 
       return json({ ok: false, error: "Endpoint not found" }, 404);
     } catch (erro) {
-      return json({ status: "erro", mensagem: erro.message }, 500);
+      return json({ status: "erro", mensagem: mensagemErro(erro) }, 500);
     }
   }
 };
 
 async function handleCategorias(url) {
-  const evento = url.searchParams.get("evento") || "589";
+  const evento = url.searchParams.get("evento") || EVENTO_PADRAO;
   const categorias = await buscarCategorias(evento);
 
   return json({
@@ -69,10 +68,10 @@ async function handleCategorias(url) {
 }
 
 async function handleTop(url) {
-  const evento = url.searchParams.get("evento") || "589";
+  const evento = url.searchParams.get("evento") || EVENTO_PADRAO;
   const categoriaChave = url.searchParams.get("categoria") || "masculino-1";
-  const dia = url.searchParams.get("dia") || "2";
-  const limite = Math.max(1, Math.min(20, Number(url.searchParams.get("limite") || url.searchParams.get("limit") || 5)));
+  const diaSolicitado = String(url.searchParams.get("dia") || "auto").toLowerCase();
+  const limite = limitar(url.searchParams.get("limite") || url.searchParams.get("limit") || 5, 1, 20);
   const categoriaConfig = CATEGORIAS[categoriaChave];
 
   if (!categoriaConfig) {
@@ -84,54 +83,167 @@ async function handleTop(url) {
     }, 400);
   }
 
+  const dias = resolverDias(diaSolicitado);
+  if (!dias) {
+    return json({
+      status: "erro",
+      mensagem: "Dia inválido. Use 1, 2 ou auto.",
+      categoria: categoriaConfig.nome,
+      atletas: []
+    }, 400);
+  }
+
   const categorias = await buscarCategorias(evento);
   const categoriaApi = encontrarCategoria(categorias, categoriaConfig);
 
   if (!categoriaApi) {
     return json({
       status: "aguardando",
-      mensagem: "Categoria ainda não encontrada no Boliche Brasil.",
+      mensagem: "As categorias do evento 590 ainda não foram publicadas no Boliche Brasil.",
       categoria: categoriaConfig.nome,
       evento,
-      dia,
+      diaSolicitado,
+      diasConsultados: dias,
       atletas: [],
       atualizadoEm: new Date().toISOString()
     });
   }
 
-  const ctg = categoriaApi.id;
-  const tabelaUrl = `${API_BASE}/evento-atleta/tabela?id_evento=${encodeURIComponent(evento)}&dia=${encodeURIComponent(dia)}&ctg=${encodeURIComponent(ctg)}`;
-  const dados = await fetchJson(tabelaUrl);
-  const tabela = extrairTabela(dados);
-  const atletas = normalizarTabela(tabela).slice(0, limite);
-  const somenteInscricoes = tabela.length > 0 && atletas.length === 0;
+  const consultas = await Promise.all(dias.map(dia => consultarDia(evento, categoriaApi.id, dia)));
+  const consolidado = consolidarDias(consultas);
+  const atletas = consolidado.atletas.slice(0, limite);
+  const inscritosEncontrados = Math.max(0, ...consultas.map(consulta => consulta.quantidadeTabela));
 
   return json({
     status: atletas.length > 0 ? "ok" : "aguardando",
-    mensagem: somenteInscricoes
-      ? "Inscritos e divisões encontrados; resultados oficiais ainda não lançados."
-      : atletas.length === 0
-        ? "Resultados oficiais ainda não disponíveis."
-        : undefined,
+    mensagem: atletas.length > 0
+      ? undefined
+      : inscritosEncontrados > 0
+        ? "Inscritos e divisões encontrados; resultados oficiais ainda não lançados."
+        : "Resultados oficiais ainda não disponíveis.",
     categoria: categoriaConfig.nome,
     evento,
-    dia,
-    ctg,
-    inscritosEncontrados: tabela.length,
-    resultadosValidos: atletas.length,
-    url: tabelaUrl,
+    diaSolicitado,
+    dia: consolidado.dia,
+    diasConsultados: dias,
+    ctg: categoriaApi.id,
+    inscritosEncontrados,
+    resultadosValidos: consolidado.atletas.length,
+    progresso: consolidado.progresso,
+    consultas: consultas.map(resumirConsulta),
     atletas,
     atualizadoEm: new Date().toISOString()
   });
+}
+
+async function consultarDia(evento, categoriaId, dia) {
+  const tabelaUrl = `${API_BASE}/evento-atleta/tabela?id_evento=${encodeURIComponent(evento)}&dia=${dia}&ctg=${encodeURIComponent(categoriaId)}`;
+
+  try {
+    const dados = await fetchJson(tabelaUrl);
+    const tabela = extrairTabela(dados);
+    const atletas = normalizarTabela(tabela, dia);
+
+    return {
+      dia,
+      url: tabelaUrl,
+      quantidadeTabela: tabela.length,
+      atletas,
+      erro: null
+    };
+  } catch (erro) {
+    return {
+      dia,
+      url: tabelaUrl,
+      quantidadeTabela: 0,
+      atletas: [],
+      erro: mensagemErro(erro)
+    };
+  }
+}
+
+function consolidarDias(consultas) {
+  const dia1 = consultas.find(consulta => consulta.dia === 1);
+  const dia2 = consultas.find(consulta => consulta.dia === 2);
+
+  if (dia2?.atletas.length) {
+    const atletas = dia1?.atletas.length
+      ? mesclarAtletas(dia1.atletas, dia2.atletas)
+      : ordenarAtletas(dia2.atletas);
+
+    return {
+      dia: 2,
+      atletas,
+      progresso: calcularProgresso(atletas)
+    };
+  }
+
+  if (dia1?.atletas.length) {
+    const atletas = ordenarAtletas(dia1.atletas);
+    return {
+      dia: 1,
+      atletas,
+      progresso: calcularProgresso(atletas)
+    };
+  }
+
+  const consultaValida = consultas
+    .filter(consulta => consulta.atletas.length)
+    .sort((a, b) => b.dia - a.dia)[0];
+  const atletas = consultaValida ? ordenarAtletas(consultaValida.atletas) : [];
+
+  return {
+    dia: consultaValida?.dia || null,
+    atletas,
+    progresso: calcularProgresso(atletas)
+  };
+}
+
+function mesclarAtletas(atletasDia1, atletasDia2) {
+  const atletas = new Map();
+
+  for (const atleta of atletasDia1) atletas.set(chaveAtleta(atleta), atleta);
+  for (const atleta of atletasDia2) atletas.set(chaveAtleta(atleta), atleta);
+
+  return ordenarAtletas([...atletas.values()]);
+}
+
+function chaveAtleta(atleta) {
+  if (atleta.id) return `id:${atleta.id}`;
+  return `nome:${semAcentos(atleta.atleta).toLowerCase().replace(/\s+/g, " ").trim()}`;
+}
+
+function ordenarAtletas(atletas) {
+  return [...atletas]
+    .sort((a, b) => {
+      if (b.total !== a.total) return b.total - a.total;
+      if (b.media !== a.media) return b.media - a.media;
+      return b.maiorLinha - a.maiorLinha;
+    })
+    .map((atleta, index) => ({ ...atleta, posicao: index + 1 }));
+}
+
+function calcularProgresso(atletas) {
+  return {
+    atletasComResultado: atletas.length,
+    maiorNumeroDeLinhas: atletas.reduce((maior, atleta) => Math.max(maior, atleta.linhas), 0)
+  };
+}
+
+function resumirConsulta(consulta) {
+  return {
+    dia: consulta.dia,
+    registrosRecebidos: consulta.quantidadeTabela,
+    resultadosValidos: consulta.atletas.length,
+    erro: consulta.erro
+  };
 }
 
 async function handleFinais(url) {
   const categoria = Number(url.searchParams.get("categoria"));
   const evento = url.searchParams.get("evento") || "582";
 
-  if (!categoria) {
-    return json({ ok: false, error: "Categoria invalida" }, 400);
-  }
+  if (!categoria) return json({ ok: false, error: "Categoria invalida" }, 400);
 
   const target = new URL(`${API_BASE}/evento-categoria-fase`);
   target.searchParams.set("id_evento", evento);
@@ -139,7 +251,7 @@ async function handleFinais(url) {
   target.searchParams.set("expand", "eventoCategoriaPartidas,atleta1,atleta2");
   target.searchParams.set("sort", "num_ordem");
 
-  const upstream = await fetch(target.toString(), { headers: { Accept: "application/json, text/plain, */*" } });
+  const upstream = await fetchComTimeout(target.toString());
   const body = await upstream.text();
 
   return new Response(body, {
@@ -155,7 +267,6 @@ async function buscarCategorias(evento) {
   if (Array.isArray(dados?.items)) return dados.items;
   if (Array.isArray(dados?.data)) return dados.data;
   if (Array.isArray(dados)) return dados;
-
   return [];
 }
 
@@ -171,7 +282,7 @@ function encontrarCategoria(categorias, config) {
       allevents === 1 &&
       equipes === 0;
   }) || categorias.find(categoria => {
-    const descricao = String(categoria.descricao || "").toLowerCase();
+    const descricao = semAcentos(String(categoria.descricao || "")).toLowerCase();
     const genero = Number(categoria.genero);
     const divisao = Number(categoria.divisao);
 
@@ -181,8 +292,18 @@ function encontrarCategoria(categorias, config) {
   });
 }
 
+function resolverDias(valor) {
+  if (valor === "auto") return [...DIAS_EVENTO];
+  const dia = Number(valor);
+  return DIAS_EVENTO.includes(dia) ? [dia] : null;
+}
+
 async function fetchJson(url) {
-  const resposta = await fetch(url, {
+  const agora = Date.now();
+  const cache = memoria.get(url);
+  if (cache && cache.expiraEm > agora) return cache.valor;
+
+  const resposta = await fetchComTimeout(url, {
     headers: {
       Accept: "application/json, text/plain, */*",
       "User-Agent": "TBF300Sports-CloudflareWorker"
@@ -194,11 +315,26 @@ async function fetchJson(url) {
   }
 
   const texto = await resposta.text();
+  let dados;
 
   try {
-    return JSON.parse(texto);
+    dados = JSON.parse(texto);
   } catch (erro) {
-    return parseXmlBasico(texto);
+    dados = parseXmlBasico(texto);
+  }
+
+  memoria.set(url, { valor: dados, expiraEm: agora + CACHE_TTL_MS });
+  return dados;
+}
+
+async function fetchComTimeout(url, opcoes = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, { ...opcoes, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -211,7 +347,7 @@ function extrairTabela(dados) {
   return [];
 }
 
-function normalizarTabela(tabela) {
+function normalizarTabela(tabela, dia) {
   return tabela
     .map((item, index) => {
       const pontosAtuais = numero(item.pontos_serie ?? item.total ?? item.t ?? item.pontos);
@@ -220,38 +356,32 @@ function normalizarTabela(tabela) {
       const total = temAnterior ? totalAnterior + pontosAtuais : pontosAtuais;
       const linhas = numero(item.l ?? item.qtd_linhas);
       const media = numero(item.media ?? item.m) || (linhas > 0 ? total / linhas : 0);
-      const maiorLinha = numero(item.maior_linha || item.maiorLinha || item.ml);
+      const maiorLinha = numero(item.maior_linha ?? item.maiorLinha ?? item.ml);
 
       return {
+        id: numero(item.id),
         posicao: numero(item.posicao || item.pos || index + 1),
         atleta: item.nome_evento || item.nome_completo || item.atleta || item.nome || "Atleta",
+        dia,
         linhas,
         total,
         media,
         maiorLinha,
-        pontosAtuais,
+        pontosDia: pontosAtuais,
         totalAnterior,
-        temResultado: temResultadoOficial(item, { total, linhas, maiorLinha, temAnterior }),
-        original: item
+        temResultado: temResultadoOficial(item, pontosAtuais)
       };
     })
     .filter(item => item.atleta && item.atleta !== "Atleta")
     .filter(item => item.temResultado)
-    .sort((a, b) => {
-      if (b.total !== a.total) return b.total - a.total;
-      if (b.media !== a.media) return b.media - a.media;
-      return b.maiorLinha - a.maiorLinha;
-    })
-    .map((item, index) => {
+    .map(item => {
       const { temResultado, ...atleta } = item;
-      return { ...atleta, posicao: index + 1 };
+      return atleta;
     });
 }
 
-function temResultadoOficial(item, placar) {
-  if (placar.temAnterior && (placar.total > 1 || placar.maiorLinha > 1 || placar.linhas > 1)) return true;
-  if (placar.total > 1 || placar.maiorLinha > 1 || placar.linhas > 1) return true;
-
+function temResultadoOficial(item, pontosAtuais) {
+  if (pontosAtuais > 1) return true;
   const linhas = extrairLinhas(item.linhas);
   return linhas.some(linha => numero(linha.v ?? linha.valor ?? linha.pontos) > 1);
 }
@@ -278,6 +408,21 @@ function numero(valor) {
   );
 
   return Number.isFinite(convertido) ? convertido : 0;
+}
+
+function limitar(valor, minimo, maximo) {
+  const convertido = Number(valor);
+  if (!Number.isFinite(convertido)) return minimo;
+  return Math.max(minimo, Math.min(maximo, convertido));
+}
+
+function semAcentos(valor) {
+  return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function mensagemErro(erro) {
+  if (erro?.name === "AbortError") return "Tempo limite ao consultar o Boliche Brasil.";
+  return erro?.message || "Erro desconhecido.";
 }
 
 function parseXmlBasico(xml) {
