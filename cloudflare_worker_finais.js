@@ -354,7 +354,8 @@ function normalizarTabela(tabela, dia) {
       const temAnterior = item.anterior !== null && item.anterior !== undefined && item.anterior !== "";
       const totalAnterior = temAnterior ? numero(item.anterior) : 0;
       const total = temAnterior ? totalAnterior + pontosAtuais : pontosAtuais;
-      const linhas = numero(item.l ?? item.qtd_linhas);
+      const jogos = normalizarJogos(item, dia);
+      const linhas = numero(item.l ?? item.qtd_linhas) || jogos.filter(jogo => jogo.pontos > 1).length;
       const media = numero(item.media ?? item.m) || (linhas > 0 ? total / linhas : 0);
       const maiorLinha = numero(item.maior_linha ?? item.maiorLinha ?? item.ml);
 
@@ -367,6 +368,7 @@ function normalizarTabela(tabela, dia) {
         total,
         media,
         maiorLinha,
+        jogos,
         pontosDia: pontosAtuais,
         totalAnterior,
         temResultado: temResultadoOficial(item, pontosAtuais)
@@ -396,6 +398,32 @@ function extrairLinhas(valor) {
   } catch (erro) {
     return [];
   }
+}
+
+function normalizarJogos(item, dia) {
+  const inicio = dia === 2 ? 7 : 1;
+  const quantidade = dia === 2 ? 5 : 6;
+  const linhasRecebidas = extrairLinhas(item.linhas);
+
+  return Array.from({ length: quantidade }, (_, indice) => {
+    const numeroLinha = inicio + indice;
+    const linhaRecebida = linhasRecebidas[indice];
+    const valorRecebido = linhaRecebida && typeof linhaRecebida === "object"
+      ? linhaRecebida.v ?? linhaRecebida.valor ?? linhaRecebida.pontos ?? linhaRecebida.score
+      : linhaRecebida;
+    const valorCampo = item[`l${numeroLinha}`] ??
+      item[`L${numeroLinha}`] ??
+      item[`linha${numeroLinha}`] ??
+      item[`linha_${numeroLinha}`] ??
+      item[`l${indice + 1}`] ??
+      item[`L${indice + 1}`];
+    const pontos = numero(valorRecebido ?? valorCampo);
+
+    return {
+      linha: numeroLinha,
+      pontos: pontos > 1 ? pontos : null
+    };
+  });
 }
 
 function numero(valor) {
