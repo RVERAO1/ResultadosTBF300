@@ -1,3 +1,5 @@
+import { routeControl } from "./central-control.js";
+export { CentralControl } from "./central-control.js";
 const API_BASE = "https://restboliche.bigmidia.com/cbbol/api";
 const EVENTO_PADRAO = "590";
 const DIAS_EVENTO = [1, 2];
@@ -19,7 +21,8 @@ const CATEGORIAS = {
 };
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
+    if (new URL(request.url).pathname.startsWith('/api/control/')) return routeControl(request, env);
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
@@ -71,7 +74,8 @@ async function handleTop(url) {
   const evento = url.searchParams.get("evento") || EVENTO_PADRAO;
   const categoriaChave = url.searchParams.get("categoria") || "masculino-1";
   const diaSolicitado = String(url.searchParams.get("dia") || "auto").toLowerCase();
-  const limite = limitar(url.searchParams.get("limite") || url.searchParams.get("limit") || 5, 1, 20);
+  const limiteSolicitado = url.searchParams.get("limite") || url.searchParams.get("limit") || 5;
+  const limite = limiteSolicitado === 'todos' ? Infinity : limitar(limiteSolicitado, 1, 500);
   const categoriaConfig = CATEGORIAS[categoriaChave];
 
   if (!categoriaConfig) {

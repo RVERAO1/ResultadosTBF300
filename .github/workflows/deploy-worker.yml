@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - cloudflare_worker_finais.js
+      - central-control.js
       - wrangler.jsonc
       - .github/workflows/deploy-worker.yml
   workflow_dispatch:
@@ -21,6 +22,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Validate control and scoreboard
+        run: |
+          node tests/rodape.test.cjs
+          node tests/central.test.cjs
+
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
         with:
@@ -28,3 +34,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.133.0"
           command: deploy
+          secrets: |
+            ${{ secrets.CENTRAL_PASSWORD != '' && 'CENTRAL_PASSWORD' || '' }}
+        env:
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
