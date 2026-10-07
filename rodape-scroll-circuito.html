@@ -6,15 +6,14 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Rodapé Scroll • Circuito MT 2026</title>
+  <title>Rodapé Scroll • Circuito MT 2026 • Etapa 3</title>
   <style>
     :root{
       --amarelo:#ffd43b;
       --verde:#21d18d;
       --texto:#fff;
       --muted:rgba(255,255,255,.76);
-      --borda:rgba(255,212,59,.94);
-      --duracao:72s;
+      --duracao:78s;
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
     html,body{width:100%;height:100%;overflow:hidden;background:transparent}
@@ -44,8 +43,8 @@
       animation:none;
     }
     .track.running{
-      animation:scroll var(--duracao) linear infinite !important;
-      animation-play-state:running !important;
+      animation:scroll var(--duracao) linear infinite!important;
+      animation-play-state:running!important;
     }
     .group{display:inline-flex;align-items:center;flex:0 0 auto}
     .category,.ranking,.credits{
@@ -89,49 +88,67 @@
     </div>
   </footer>
   <script>
-    (() => {
+    (()=>{
       "use strict";
-      const BUILD_ID="20260920-prism-3";
+      const BUILD_ID="20261007-evento590-v1";
       const params=new URLSearchParams(window.location.search);
       const CONFIG={
-        evento:params.get("evento")||"589",
-        dia:params.get("dia")||"2",
+        evento:params.get("evento")||"590",
+        dia:params.get("dia")||"auto",
         apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),
         refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),
-        duracao:Math.max(20,Number(params.get("duracao"))||72)
+        duracao:Math.max(20,Number(params.get("duracao"))||78),
+        timeoutMs:25000
       };
       document.documentElement.style.setProperty("--duracao",`${CONFIG.duracao}s`);
+
       const CATEGORIAS=[
-        {key:"masculino-1",nome:"1ª Divisão Masculina"},
-        {key:"masculino-2",nome:"2ª Divisão Masculina"},
-        {key:"feminino",nome:"1ª Divisão Feminina"}
+        {key:"masculino-1",nome:"Divisão A Masculina"},
+        {key:"masculino-2",nome:"Divisão B Masculina"},
+        {key:"feminino",nome:"Categoria Feminina"}
       ];
-      const CLASSIFICACAO_ETAPA_1={
+
+      const CLASSIFICACAO_APOS_ETAPA_2={
         "masculino-1":[
-          {posicao:1,atleta:"Michel Belmonte",pontos:100},
-          {posicao:2,atleta:"Thiago Wandscher",pontos:85},
-          {posicao:3,atleta:"Nilo Ponce",pontos:75},
-          {posicao:4,atleta:"Matheus Verão",pontos:65},
-          {posicao:5,atleta:"Romildo Souza",pontos:60}
+          {posicao:1,atleta:"Michel Belmonte",pontos:155},
+          {posicao:2,atleta:"Antonio Toledo",pontos:140},
+          {posicao:3,atleta:"Matheus Verão",pontos:140},
+          {posicao:4,atleta:"Nilo Ponce",pontos:135},
+          {posicao:5,atleta:"Gui Ponce",pontos:115}
         ],
         "masculino-2":[
-          {posicao:1,atleta:"Gustavo Buzelle",pontos:100},
-          {posicao:2,atleta:"Ronaldo Oliveira",pontos:85},
-          {posicao:3,atleta:"Nelson Saga",pontos:75},
-          {posicao:4,atleta:"Guilherme Scheer",pontos:65},
-          {posicao:5,atleta:"Gilberto Ribeiro",pontos:60}
+          {posicao:1,atleta:"Gustavo Buzelle",pontos:185},
+          {posicao:2,atleta:"Célio Belmonte",pontos:155},
+          {posicao:3,atleta:"Nelson Saga",pontos:150},
+          {posicao:4,atleta:"Gilberto Ribeiro",pontos:125},
+          {posicao:5,atleta:"Ronaldo Oliveira",pontos:120}
         ],
         "feminino":[
-          {posicao:1,atleta:"Raquel Tenuta",pontos:100},
-          {posicao:2,atleta:"Dani Ledur",pontos:85},
-          {posicao:3,atleta:"Agda Nogueira",pontos:75},
-          {posicao:4,atleta:"Josélia Moreno",pontos:65},
-          {posicao:5,atleta:"Tereza Belmonte",pontos:60}
+          {posicao:1,atleta:"Raquel Tenuta",pontos:185},
+          {posicao:2,atleta:"Joselia Moreno",pontos:165},
+          {posicao:3,atleta:"Agda Nogueira",pontos:150},
+          {posicao:4,atleta:"Danielle Ledur",pontos:145},
+          {posicao:5,atleta:"Ednéia Miranda Saga",pontos:120}
         ]
       };
-      const escapeHtml=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-      const numero=value=>{const parsed=Number(String(value??0).replace(",",".").replace(/[^\d.-]/g,""));return Number.isFinite(parsed)?parsed:0};
-      const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+      const escapeHtml=value=>String(value??"")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+      const numero=value=>{
+        const parsed=Number(String(value??0).replace(",",".").replace(/[^\d.-]/g,""));
+        return Number.isFinite(parsed)?parsed:0;
+      };
+
+      const formatarMedia=value=>numero(value).toLocaleString("pt-BR",{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      });
+
       const normalizarAtletas=atletas=>atletas.map((atleta,index)=>({
         posicao:numero(atleta.posicao||atleta.pos||index+1),
         atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",
@@ -139,6 +156,7 @@
         media:numero(atleta.media||atleta.m),
         pontos:numero(atleta.pontosCircuito??atleta.pontos)
       })).slice(0,5);
+
       async function buscarCategoria(categoria){
         const endpoint=new URL(`${CONFIG.apiBase}/api/top`);
         endpoint.searchParams.set("evento",CONFIG.evento);
@@ -146,26 +164,55 @@
         endpoint.searchParams.set("dia",CONFIG.dia);
         endpoint.searchParams.set("limite","5");
         endpoint.searchParams.set("_",Date.now().toString());
+        const controller=new AbortController();
+        const timeout=window.setTimeout(()=>controller.abort(),CONFIG.timeoutMs);
+
         try{
-          const resposta=await fetch(endpoint,{cache:"no-store",headers:{Accept:"application/json"}});
+          const resposta=await fetch(endpoint,{
+            cache:"no-store",
+            headers:{Accept:"application/json"},
+            signal:controller.signal
+          });
           if(!resposta.ok)throw new Error(`HTTP ${resposta.status}`);
           const dados=await resposta.json();
-          if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length)throw new Error("Sem resultados oficiais");
-          return{categoria,atletas:normalizarAtletas(dados.atletas),live:true};
+          if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length){
+            throw new Error("Sem resultados oficiais");
+          }
+          return{
+            categoria,
+            atletas:normalizarAtletas(dados.atletas),
+            live:true,
+            dia:numero(dados.dia)
+          };
         }catch(erro){
-          return{categoria,atletas:CLASSIFICACAO_ETAPA_1[categoria.key],live:false};
+          return{
+            categoria,
+            atletas:CLASSIFICACAO_APOS_ETAPA_2[categoria.key],
+            live:false,
+            dia:0
+          };
+        }finally{
+          window.clearTimeout(timeout);
         }
       }
+
       function renderizarCategoria(resultado){
-        const origem=resultado.live?"Evento 589":"Classificação após a Etapa 1";
+        const origem=resultado.live
+          ? `Evento ${CONFIG.evento} • Dia ${resultado.dia}`
+          : "Classificação após a Etapa 2";
         const itens=resultado.atletas.map((atleta,index)=>{
-          const complemento=resultado.live?`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`:`${atleta.pontos} pts no Circuito`;
+          const complemento=resultado.live
+            ? `${atleta.total} pontos • média ${formatarMedia(atleta.media)}`
+            : `${atleta.pontos} pts no Circuito`;
           return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`;
         }).join("");
-        return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${origem}</span><span class="separator"></span>${itens}`;
+        return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`;
       }
+
       function renderizar(resultados){
-        const conteudo=resultados.map(renderizarCategoria).join("")+`<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
+        const evento=`<span class="credits">Etapa 3 • Campo Novo dos Parecis • 10 e 11 de outubro</span><span class="separator"></span>`;
+        const creditos=`<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;
+        const conteudo=resultados.map(renderizarCategoria).join("")+evento+creditos;
         document.getElementById("groupA").innerHTML=conteudo;
         document.getElementById("groupB").innerHTML=conteudo;
         const track=document.querySelector(".track");
@@ -173,7 +220,12 @@
           window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>track.classList.add("running")));
         }
       }
-      async function atualizar(){renderizar(await Promise.all(CATEGORIAS.map(buscarCategoria)))}
+
+      async function atualizar(){
+        const resultados=await Promise.all(CATEGORIAS.map(buscarCategoria));
+        renderizar(resultados);
+      }
+
       async function verificarVersao(){
         try{
           const resposta=await fetch(`${window.location.pathname}?_versao=${Date.now()}`,{cache:"no-store"});
@@ -186,16 +238,19 @@
           }
         }catch(erro){}
       }
+
       if(params.get("_build")!==BUILD_ID){
         const destino=new URL(window.location.href);
         destino.searchParams.set("_build",BUILD_ID);
         window.location.replace(destino.toString());
         return;
       }
+
       renderizar(CATEGORIAS.map(categoria=>({
         categoria,
-        atletas:CLASSIFICACAO_ETAPA_1[categoria.key],
-        live:false
+        atletas:CLASSIFICACAO_APOS_ETAPA_2[categoria.key],
+        live:false,
+        dia:0
       })));
       atualizar();
       window.setInterval(atualizar,CONFIG.refreshMs);
