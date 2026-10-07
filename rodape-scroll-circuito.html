@@ -24,30 +24,30 @@
     .position{color:var(--amarelo)}.athlete{color:#fff}.details{font-size:14px;color:var(--muted)}
     .credits{padding:0 32px;font-size:17px;font-weight:900;color:#fff;letter-spacing:.55px}
     .separator{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 12px rgba(33,209,141,.75)}
-    .results-dock{position:fixed;right:0;bottom:0;left:0;z-index:20;height:430px;padding:20px 26px 12px;overflow:hidden;background:linear-gradient(180deg,rgba(2,15,31,.91),rgba(1,12,27,.98));border-top:2px solid rgba(217,185,67,.9);box-shadow:0 -18px 48px rgba(0,0,0,.5);transform:translateY(105%);opacity:0;visibility:hidden;transition:transform .9s cubic-bezier(.18,.82,.23,1),opacity .45s ease,visibility .9s;pointer-events:none}
+    .results-dock{position:fixed;right:0;bottom:0;left:0;z-index:20;height:245px;padding:9px 22px 5px;overflow:hidden;background:linear-gradient(180deg,rgba(2,15,31,.91),rgba(1,12,27,.98));border-top:2px solid rgba(217,185,67,.9);box-shadow:0 -18px 48px rgba(0,0,0,.5);transform:translateY(105%);opacity:0;visibility:hidden;transition:transform .9s cubic-bezier(.18,.82,.23,1),opacity .45s ease,visibility .9s;pointer-events:none}
     body.modo-placar .results-dock{transform:translateY(0);opacity:1;visibility:visible}
-    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;height:354px}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;height:202px}
     .result-card{min-width:0;overflow:hidden;border:2px solid rgba(217,185,67,.92);border-radius:18px;background:linear-gradient(145deg,rgba(9,31,55,.97),rgba(10,27,49,.95));box-shadow:inset 0 0 30px rgba(22,76,105,.12),0 8px 24px rgba(0,0,0,.24)}
-    .card-head{height:80px;padding:15px 18px 10px;border-bottom:1px solid rgba(255,255,255,.09)}
-    .card-title{color:#e6c54d;font-size:20px;font-weight:950;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .card-subtitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;color:rgba(255,255,255,.68);font-size:10px;font-weight:850;letter-spacing:1px;text-transform:uppercase}
+    .card-head{height:52px;padding:7px 13px 5px;border-bottom:1px solid rgba(255,255,255,.09)}
+    .card-title{color:#e6c54d;font-size:17px;font-weight:950;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .card-subtitle{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:4px;color:rgba(255,255,255,.68);font-size:8px;font-weight:850;letter-spacing:.75px;text-transform:uppercase}
     .live-dot{display:inline-flex;align-items:center;gap:6px;color:#7ce6bb;white-space:nowrap}.live-dot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--verde);box-shadow:0 0 8px rgba(33,209,141,.8)}
     .waiting{color:#e6c54d}.waiting::before{background:#e6c54d;box-shadow:0 0 8px rgba(230,197,77,.7)}
-    .results-table{width:100%;border-collapse:separate;border-spacing:0 5px;table-layout:fixed;padding:0 12px}
-    .results-table th{height:27px;color:rgba(255,255,255,.68);background:rgba(18,96,95,.42);font-size:10px;font-weight:900;letter-spacing:.5px;text-align:center;text-transform:uppercase}
+    .results-table{width:100%;border-collapse:separate;border-spacing:0 3px;table-layout:fixed;padding:0 8px}
+    .results-table th{height:21px;color:rgba(255,255,255,.68);background:rgba(18,96,95,.42);font-size:9px;font-weight:900;letter-spacing:.4px;text-align:center;text-transform:uppercase}
     .results-table th:first-child{border-radius:9px 0 0 9px}.results-table th:last-child{border-radius:0 9px 9px 0}
     .results-table th.name,.results-table td.name{text-align:left}
     .results-table tbody tr{background:rgba(255,255,255,.055)}
-    .results-table td{height:41px;padding:0 3px;color:#fff;font-size:13px;font-weight:800;text-align:center;border-top:1px solid rgba(255,255,255,.035);border-bottom:1px solid rgba(255,255,255,.035)}
+    .results-table td{height:36px;padding:0 3px;color:#fff;font-size:12px;font-weight:800;text-align:center;border-top:1px solid rgba(255,255,255,.035);border-bottom:1px solid rgba(255,255,255,.035)}
     .results-table td:first-child{border-radius:10px 0 0 10px}.results-table td:last-child{border-radius:0 10px 10px 0}
-    .results-table .pos{width:42px}.results-table .name{width:31%;padding-left:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .results-table .game{width:7.2%;color:rgba(255,255,255,.86)}.results-table .total{width:9%;color:#f0d15a;font-size:14px;font-weight:950}.results-table .average{width:10%;color:#8aeac4}
-    .pos-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border-radius:8px;color:#122033;background:linear-gradient(145deg,#f0d15a,#bd972e);font-size:14px;font-weight:950}
+    .results-table .pos{width:38px}.results-table .name{width:31%;padding-left:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .results-table .game{width:7.2%;color:rgba(255,255,255,.86)}.results-table .total{width:9%;color:#f0d15a;font-size:13px;font-weight:950}.results-table .average{width:10%;color:#8aeac4}
+    .pos-badge{display:inline-flex;align-items:center;justify-content:center;width:27px;height:25px;border-radius:7px;color:#122033;background:linear-gradient(145deg,#f0d15a,#bd972e);font-size:12px;font-weight:950}
     .empty-row td{color:rgba(255,255,255,.25)}.empty-row .name{font-weight:650}
-    .dock-foot{height:42px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 6px;color:rgba(255,255,255,.8);font-size:12px;font-weight:850;letter-spacing:.65px;text-transform:uppercase}
+    .dock-foot{height:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 5px;color:rgba(255,255,255,.8);font-size:9px;font-weight:850;letter-spacing:.55px;text-transform:uppercase}
     .dock-foot .event{color:#e6c54d}.dock-foot .support{text-align:right}
     @keyframes scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
-    @media(max-width:1250px){.results-dock{height:390px;padding:14px 12px 8px}.cards{height:326px;gap:8px}.card-head{height:72px;padding:12px 12px 8px}.card-title{font-size:16px}.results-table{padding:0 6px;border-spacing:0 4px}.results-table td{height:38px;font-size:11px}.results-table th{font-size:8px}.results-table .pos{width:35px}.pos-badge{width:25px;height:25px;font-size:12px}.dock-foot{height:36px;font-size:9px}}
+    @media(max-width:1250px){.results-dock{height:235px;padding:7px 10px 4px}.cards{height:196px;gap:7px}.card-head{height:50px;padding:6px 8px 4px}.card-title{font-size:14px}.card-subtitle{font-size:7px}.results-table{padding:0 4px;border-spacing:0 2px}.results-table td{height:35px;font-size:10px}.results-table th{font-size:7px}.results-table .pos{width:32px}.pos-badge{width:23px;height:23px;font-size:11px}.dock-foot{height:26px;font-size:8px}}
   </style>
 </head>
 <body class="modo-rodape">
@@ -59,7 +59,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261007-evento590-dock-v2-teste-1min";
+      const BUILD_ID="20261007-evento590-dock-v3-teste-1min";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),rodapeMs:numeroPositivo("rodapeMin",1,.01)*60*1000,placarMs:numeroPositivo("placarMin",1,.01)*60*1000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar"};
@@ -77,15 +77,15 @@
       const normalizarJogos=(jogos,dia)=>{const mapa=new Map((Array.isArray(jogos)?jogos:[]).map((jogo,index)=>[numero(jogo?.linha)||linhasDoDia(dia)[index],numero(jogo?.pontos??jogo?.valor??jogo)]));return linhasDoDia(dia).map(linha=>({linha,pontos:mapa.get(linha)||null}))};
       const normalizarAtletas=(atletas,diaResposta)=>atletas.map((atleta,index)=>{const dia=numero(atleta.dia)||diaResposta||1;return{posicao:numero(atleta.posicao||atleta.pos||index+1),atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",dia,total:numero(atleta.total||atleta.pontos_serie||atleta.t),media:numero(atleta.media||atleta.m),jogos:normalizarJogos(atleta.jogos,dia)}}).slice(0,5);
       let resultadosAtuais=CATEGORIAS.map(categoria=>({categoria,atletas:[],live:false,dia:null}));
-      let cycleStartedAt=Date.now();let modoAtual="rodape";
+      let cycleStartedAt=Date.now();let modoAtual="rodape";let grupoAtual=-1;
       async function buscarCategoria(categoria){
-        const endpoint=new URL(`${CONFIG.apiBase}/api/top`);endpoint.searchParams.set("evento",CONFIG.evento);endpoint.searchParams.set("categoria",categoria.key);endpoint.searchParams.set("dia",CONFIG.dia);endpoint.searchParams.set("limite","5");endpoint.searchParams.set("_",Date.now().toString());
+        const endpoint=new URL(`${CONFIG.apiBase}/api/top`);endpoint.searchParams.set("evento",CONFIG.evento);endpoint.searchParams.set("categoria",categoria.key);endpoint.searchParams.set("dia",CONFIG.dia);endpoint.searchParams.set("limite","20");endpoint.searchParams.set("_",Date.now().toString());
         const controller=new AbortController();const timeout=window.setTimeout(()=>controller.abort(),25000);
         try{const resposta=await fetch(endpoint,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});if(!resposta.ok)throw new Error(`HTTP ${resposta.status}`);const dados=await resposta.json();if(dados?.status!=="ok"||!Array.isArray(dados.atletas)||!dados.atletas.length)throw new Error("Sem resultados oficiais");const dia=numero(dados.dia)||1;return{categoria,atletas:normalizarAtletas(dados.atletas,dia),live:true,dia}}
         catch(erro){return{categoria,atletas:[],live:false,dia:null}}finally{window.clearTimeout(timeout)}
       }
       function renderizarCategoriaTicker(resultado){
-        const fallback=CLASSIFICACAO_ETAPA_2[resultado.categoria.key];const atletas=resultado.live?resultado.atletas:fallback;const origem=resultado.live?`Evento ${CONFIG.evento} • Dia ${resultado.dia}`:"Circuito após 2 etapas";
+        const fallback=CLASSIFICACAO_ETAPA_2[resultado.categoria.key];const atletas=(resultado.live?resultado.atletas:fallback).slice(0,5);const origem=resultado.live?`Evento ${CONFIG.evento} • Dia ${resultado.dia}`:"Circuito após 2 etapas";
         const itens=atletas.map((atleta,index)=>{const complemento=resultado.live?`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`:`${atleta.pontos} pts no Circuito`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`
       }
@@ -95,18 +95,24 @@
       }
       function diaAtualDoEvento(){return Math.max(1,...resultadosAtuais.filter(resultado=>resultado.live).map(resultado=>resultado.dia||1))}
       function valorJogo(atleta,linha,diaExibicao){if(!atleta||atleta.dia!==diaExibicao)return "—";const jogo=atleta.jogos.find(item=>item.linha===linha);return jogo?.pontos||"—"}
-      function linhasTabela(resultado,diaExibicao){
-        const linhas=linhasDoDia(diaExibicao);
-        if(!resultado.live)return Array.from({length:5},(_,index)=>`<tr class="empty-row"><td><span class="pos-badge">${index+1}</span></td><td class="name">Aguardando resultado</td>${linhas.map(()=>"<td>—</td>").join("")}<td class="total">—</td><td class="average">—</td></tr>`).join("");
-        return resultado.atletas.map((atleta,index)=>`<tr><td><span class="pos-badge">${escapeHtml(atleta.posicao||index+1)}</span></td><td class="name">${escapeHtml(atleta.atleta)}</td>${linhas.map(linha=>`<td class="game">${escapeHtml(valorJogo(atleta,linha,diaExibicao))}</td>`).join("")}<td class="total">${escapeHtml(atleta.total)}</td><td class="average">${escapeHtml(formatarMedia(atleta.media))}</td></tr>`).join("")
+      function linhasTabela(resultado,diaExibicao,numeroGrupo){
+        const linhas=linhasDoDia(diaExibicao);const inicio=numeroGrupo*3;const atletas=resultado.atletas.slice(inicio,inicio+3);
+        return Array.from({length:3},(_,indice)=>{const atleta=atletas[indice];const posicao=atleta?.posicao||inicio+indice+1;if(!atleta)return `<tr class="empty-row"><td><span class="pos-badge">${posicao}</span></td><td class="name">—</td>${linhas.map(()=>"<td>—</td>").join("")}<td class="total">—</td><td class="average">—</td></tr>`;return `<tr><td><span class="pos-badge">${escapeHtml(posicao)}</span></td><td class="name">${escapeHtml(atleta.atleta)}</td>${linhas.map(linha=>`<td class="game">${escapeHtml(valorJogo(atleta,linha,diaExibicao))}</td>`).join("")}<td class="total">${escapeHtml(atleta.total)}</td><td class="average">${escapeHtml(formatarMedia(atleta.media))}</td></tr>`}).join("")
       }
       function renderizarQuadros(){
         const diaExibicao=diaAtualDoEvento();const linhas=linhasDoDia(diaExibicao);
-        document.getElementById("cards").innerHTML=resultadosAtuais.map(resultado=>{const situacao=resultado.live?`Atualização automática • Dia ${diaExibicao}`:"Aguardando resultados da Etapa 3";const classe=resultado.live?"live-dot":"live-dot waiting";return `<article class="result-card"><header class="card-head"><h2 class="card-title">${escapeHtml(resultado.categoria.nome)}</h2><div class="card-subtitle"><span>Top 5 • Dia ${diaExibicao} • T/M acumulados</span><span class="${classe}">${escapeHtml(situacao)}</span></div></header><table class="results-table"><thead><tr><th class="pos">#</th><th class="name">Atleta</th>${linhas.map(linha=>`<th class="game">L${linha}</th>`).join("")}<th class="total" title="Total acumulado">T</th><th class="average" title="Média acumulada">M</th></tr></thead><tbody>${linhasTabela(resultado,diaExibicao)}</tbody></table></article>`}).join("")
+        document.getElementById("cards").innerHTML=resultadosAtuais.map(resultado=>{const totalGrupos=Math.max(1,Math.ceil(resultado.atletas.length/3));const numeroGrupo=((grupoAtual<0?0:grupoAtual)%totalGrupos);const inicio=numeroGrupo*3+1;const fim=Math.min(inicio+2,resultado.atletas.length||inicio+2);const situacao=resultado.live?`Atualização automática • Dia ${diaExibicao}`:"Aguardando categoria";const classe=resultado.live?"live-dot":"live-dot waiting";return `<article class="result-card"><header class="card-head"><h2 class="card-title">${escapeHtml(resultado.categoria.nome)}</h2><div class="card-subtitle"><span>${inicio}º ao ${fim}º • Dia ${diaExibicao} • T/M acumulados</span><span class="${classe}">${escapeHtml(situacao)}</span></div></header><table class="results-table"><thead><tr><th class="pos">#</th><th class="name">Atleta</th>${linhas.map(linha=>`<th class="game">L${linha}</th>`).join("")}<th class="total" title="Total acumulado">T</th><th class="average" title="Média acumulada">M</th></tr></thead><tbody>${linhasTabela(resultado,diaExibicao,numeroGrupo)}</tbody></table></article>`}).join("")
       }
       function definirModo(modo){if(modoAtual===modo)return;modoAtual=modo;document.body.classList.toggle("modo-placar",modo==="placar");document.body.classList.toggle("modo-rodape",modo!=="placar")}
-      function aplicarCiclo(){if(CONFIG.forcarPlacar){definirModo("placar");return}const total=CONFIG.rodapeMs+CONFIG.placarMs;const decorrido=(Date.now()-cycleStartedAt)%total;definirModo(decorrido<CONFIG.rodapeMs?"rodape":"placar")}
-      async function atualizar(){resultadosAtuais=await Promise.all(CATEGORIAS.map(buscarCategoria));renderizarTicker();renderizarQuadros()}
+      function temResultadosParaExibir(){return resultadosAtuais.some(resultado=>resultado.live&&resultado.atletas.length>0)}
+      function aplicarGrupo(novoGrupo){if(novoGrupo===grupoAtual)return;grupoAtual=novoGrupo;renderizarQuadros()}
+      function aplicarCiclo(){
+        const temResultados=temResultadosParaExibir();
+        if(CONFIG.forcarPlacar){if(!temResultados){definirModo("rodape");return}definirModo("placar");aplicarGrupo(Math.floor((Date.now()-cycleStartedAt)/30000));return}
+        const total=CONFIG.rodapeMs+CONFIG.placarMs;const decorrido=(Date.now()-cycleStartedAt)%total;const exibir=decorrido>=CONFIG.rodapeMs&&temResultados;
+        definirModo(exibir?"placar":"rodape");if(exibir)aplicarGrupo(Math.floor((decorrido-CONFIG.rodapeMs)/30000));else grupoAtual=-1
+      }
+      async function atualizar(){resultadosAtuais=await Promise.all(CATEGORIAS.map(buscarCategoria));renderizarTicker();renderizarQuadros();aplicarCiclo()}
       async function verificarVersao(){try{const resposta=await fetch(`${window.location.pathname}?_versao=${Date.now()}`,{cache:"no-store"});const html=await resposta.text();const versao=html.match(/const BUILD_ID="([^"]+)"/);if(versao&&versao[1]!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",versao[1]);window.location.replace(destino.toString())}}catch(erro){}}
       if(params.get("_build")!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",BUILD_ID);window.location.replace(destino.toString());return}
       cycleStartedAt=Date.now();renderizarTicker();renderizarQuadros();aplicarCiclo();atualizar();window.setInterval(atualizar,CONFIG.refreshMs);window.setInterval(aplicarCiclo,500);window.setInterval(verificarVersao,60000)
