@@ -59,7 +59,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261007-evento590-dock-v6-teste-1min";
+      const BUILD_ID="20261007-evento590-dock-v7-teste-1min";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"590",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),rodapeMs:numeroPositivo("rodapeMin",1,.01)*60*1000,placarMs:numeroPositivo("placarMin",1,.01)*60*1000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")!=="0"};
@@ -100,7 +100,8 @@
       }
       function renderizarQuadros(){
         const diaExibicao=diaAtualDoEvento();const linhas=linhasDoDia(diaExibicao);
-        document.getElementById("cards").innerHTML=resultadosAtuais.map(resultado=>{const totalGrupos=Math.max(1,Math.ceil(resultado.atletas.length/3));const numeroGrupo=((grupoAtual<0?0:grupoAtual)%totalGrupos);const inicio=numeroGrupo*3+1;const fim=inicio+2;const situacao=resultado.demo?"Teste visual • API evento 589":resultado.live?`Atualização automática • Dia ${diaExibicao}`:"Aguardando categoria";const classe=resultado.live?"live-dot":"live-dot waiting";return `<article class="result-card"><header class="card-head"><h2 class="card-title">${escapeHtml(resultado.categoria.nome)}</h2><div class="card-subtitle"><span>${inicio}º ao ${fim}º • Dia ${diaExibicao} • T/M acumulados</span><span class="${classe}">${escapeHtml(situacao)}</span></div></header><table class="results-table"><thead><tr><th class="pos">#</th><th class="name">Atleta</th>${linhas.map(linha=>`<th class="game">L${linha}</th>`).join("")}<th class="total" title="Total acumulado">T</th><th class="average" title="Média acumulada">M</th></tr></thead><tbody>${linhasTabela(resultado,diaExibicao,numeroGrupo)}</tbody></table></article>`}).join("")
+        const totalGrupos=Math.max(1,...resultadosAtuais.map(resultado=>Math.ceil(resultado.atletas.length/3)));const numeroGrupo=((grupoAtual<0?0:grupoAtual)%totalGrupos);const inicio=numeroGrupo*3+1;const fim=inicio+2;
+        document.getElementById("cards").innerHTML=resultadosAtuais.map(resultado=>{const situacao=resultado.demo?"Teste visual • API evento 589":resultado.live?`Atualização automática • Dia ${diaExibicao}`:"Aguardando categoria";const classe=resultado.live?"live-dot":"live-dot waiting";return `<article class="result-card"><header class="card-head"><h2 class="card-title">${escapeHtml(resultado.categoria.nome)}</h2><div class="card-subtitle"><span>${inicio}º ao ${fim}º • Dia ${diaExibicao} • T/M acumulados</span><span class="${classe}">${escapeHtml(situacao)}</span></div></header><table class="results-table"><thead><tr><th class="pos">#</th><th class="name">Atleta</th>${linhas.map(linha=>`<th class="game">L${linha}</th>`).join("")}<th class="total" title="Total acumulado">T</th><th class="average" title="Média acumulada">M</th></tr></thead><tbody>${linhasTabela(resultado,diaExibicao,numeroGrupo)}</tbody></table></article>`}).join("")
       }
       function definirModo(modo){if(modoAtual===modo)return;modoAtual=modo;document.body.classList.toggle("modo-placar",modo==="placar");document.body.classList.toggle("modo-rodape",modo!=="placar")}
       function temResultadosParaExibir(){return resultadosAtuais.some(resultado=>resultado.live&&resultado.atletas.length>0)}
