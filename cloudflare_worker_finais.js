@@ -1,7 +1,7 @@
 import { routeControl } from "./central-control.js";
 export { CentralControl } from "./central-control.js";
 const API_BASE = "https://restboliche.bigmidia.com/cbbol/api";
-const EVENTO_PADRAO = "590";
+const EVENTO_PADRAO = "591";
 const DIAS_EVENTO = [1, 2];
 const CACHE_TTL_MS = 5000;
 const FETCH_TIMEOUT_MS = 20000;
@@ -35,9 +35,9 @@ export default {
           ok: true,
           service: "TBF300 Circuito MT Proxy",
           event: Number(EVENTO_PADRAO),
-          stage: 3,
-          location: "Campo Novo dos Parecis",
-          dates: ["2026-10-10", "2026-10-11"],
+          stage: 4,
+          location: "Cuiabá",
+          dates: ["2026-11-07", "2026-11-08"],
           status: "online",
           endpoints: [
             `/api/top?evento=${EVENTO_PADRAO}&categoria=masculino-1&dia=auto&limite=5`,
@@ -103,7 +103,7 @@ async function handleTop(url) {
   if (!categoriaApi) {
     return json({
       status: "aguardando",
-      mensagem: "As categorias do evento 590 ainda não foram publicadas no Boliche Brasil.",
+      mensagem: "As categorias do evento ${evento} ainda não foram publicadas no Boliche Brasil.",
       categoria: categoriaConfig.nome,
       evento,
       diaSolicitado,
