@@ -103,7 +103,7 @@ async function handleTop(url) {
   if (!categoriaApi) {
     return json({
       status: "aguardando",
-      mensagem: "As categorias do evento ${evento} ainda não foram publicadas no Boliche Brasil.",
+      mensagem: `As categorias do evento ${evento} ainda não foram publicadas no Boliche Brasil.`,
       categoria: categoriaConfig.nome,
       evento,
       diaSolicitado,
