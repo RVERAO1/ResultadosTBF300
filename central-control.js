@@ -84,9 +84,15 @@ export class CentralControl {
         const jpeg=bytes.length>=3&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
         const webp=bytes.length>=12&&new TextDecoder().decode(bytes.slice(0,4))==='RIFF'&&new TextDecoder().decode(bytes.slice(8,12))==='WEBP';
         if(!(type==='image/png'&&png||type==='image/jpeg'&&jpeg||type==='image/webp'&&webp))return reply({error:'Use PNG, JPG ou WebP válido (até 1.500 KB). SVG não é permitido.'},400);
-        if((await this.ctx.storage.list({prefix:'image:',limit:10})).size>=10)return reply({error:'Limite de 10 imagens enviadas. Use uma URL HTTPS para outras imagens.'},409);
+        const existentes=await this.ctx.storage.list({prefix:'image:',limit:20});
+        if(existentes.size>=10){
+          const atual=await this.state();let ativa='';
+          try{ativa=new URL(atual.overlayUrl||'').searchParams.get('v')||''}catch{}
+          const removivel=[...existentes.keys()].find(key=>key!==`image:${ativa}`);
+          if(removivel)await this.ctx.storage.delete(removivel);
+        }
         const id=crypto.randomUUID();const imageUrl=`${url.origin}/api/control/image?v=${id}`;
-        await this.ctx.storage.put(`image:${id}`,{bytes:bytes.buffer,type});
+        await this.ctx.storage.put(`image:${id}`,{bytes:bytes.buffer,type,uploadedAt:new Date().toISOString()});
         return reply({url:imageUrl});
       }
       return reply({error:'Endpoint não encontrado.'},404);
