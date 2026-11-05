@@ -63,7 +63,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261105-circuito-etapa4-scroll-v3";
+      const BUILD_ID="20261105-circuito-etapa4-scroll-v4";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -101,7 +101,7 @@
         if(consultandoControle)return;consultandoControle=true;const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),4500);
         try{const url=new URL(`${CONFIG.apiBase}/api/control/state`);if(!CONFIG.forcarPlacar){url.searchParams.set("client",clienteId);url.searchParams.set("revision",controle.revision);url.searchParams.set("mode",controle.mode==="oculto"?"oculto":modoAtual);url.searchParams.set("imageReady",imagemCarregada?"1":"0")}
           const resposta=await fetch(url,{cache:"no-store",signal:abort.signal});if(!resposta.ok)return;const novo=await resposta.json();if(!["auto","rodape","placar","oculto"].includes(novo.mode)||!Number.isFinite(novo.revision))return;
-          if(novo.revision!==controle.revision){if(novo.mode!==controle.mode&&novo.mode==="placar")inicioManual=Date.now();controle=novo;document.documentElement.style.setProperty("--duracao",`${Math.max(40,Math.min(180,Number(controle.scrollDuration)||72))}s`);try{localStorage.setItem(chaveControle,JSON.stringify(controle))}catch(erro){}aplicarImagem();renderizarTicker();aplicarCiclo()}
+          if(novo.revision!==controle.revision){if(novo.mode!==controle.mode&&novo.mode==="placar")inicioManual=Date.now();controle=novo;ajustarVelocidadeScroll();try{localStorage.setItem(chaveControle,JSON.stringify(controle))}catch(erro){}aplicarImagem();renderizarTicker();aplicarCiclo()}
         }catch(erro){}finally{clearTimeout(timeout);consultandoControle=false}
       }
       const chaveEstado=`tbf300:linhas:v1:${CONFIG.apiBase}:${CONFIG.evento}`;
@@ -133,6 +133,15 @@
         const itens=atletas.map((atleta,index)=>{const complemento=`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`
       }
+      function ajustarVelocidadeScroll(){
+        const track=document.querySelector(".track"),grupo=document.getElementById("groupA");if(!track||!grupo)return;
+        const base=Math.max(40,Math.min(180,Number(controle.scrollDuration)||CONFIG.duracao));
+        const largura=Math.max(1920,grupo.scrollWidth||1920);
+        const duracao=Math.max(20,base*(largura/1920));
+        document.documentElement.style.setProperty("--duracao",`${duracao.toFixed(1)}s`);
+        track.classList.remove("running");void track.offsetWidth;
+        window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>track.classList.add("running")));
+      }
       function renderizarTicker(){
         const temResultados=resultadosAtuais.some(resultado=>resultado.live&&!resultado.demo&&resultado.atletas.length>0);
         const apoio=`<span class="credits">Realização BolicheMT • Apoio SECEL-MT • Transmissão TBF300 Sports</span><span class="separator"></span>`;
@@ -148,7 +157,7 @@
         const conteudo=temResultados?resultadosAtuais.map(renderizarCategoriaTicker).join("")+apoio:fallback+apoio;
         const mensagem=controle.message?`<span class="credits">${escapeHtml(controle.message)}</span><span class="separator"></span>`:"";
         const final=mensagem&&controle.messageMode==="replace"?mensagem+apoio:conteudo+mensagem;
-        document.getElementById("groupA").innerHTML=final;document.getElementById("groupB").innerHTML=final;const track=document.querySelector(".track");if(!track.classList.contains("running"))window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>track.classList.add("running")))
+        document.getElementById("groupA").innerHTML=final;document.getElementById("groupB").innerHTML=final;ajustarVelocidadeScroll()
       }
       function diaAtualDoEvento(){return Math.max(1,...resultadosAtuais.filter(resultado=>resultado.live).map(resultado=>resultado.dia||1))}
       function valorJogo(atleta,linha,diaExibicao){if(!atleta||atleta.dia!==diaExibicao)return "—";const jogo=atleta.jogos.find(item=>item.linha===linha);return jogo?.pontos||"—"}
@@ -178,7 +187,7 @@
       async function atualizar(){if(atualizando)return;atualizando=true;try{const novos=await Promise.all(CATEGORIAS.map(buscarCategoria));resultadosAtuais=novos.map((novo,indice)=>{const anterior=resultadosAtuais[indice];return anterior?.live&&(!novo.live||(anterior.dia||0)>(novo.dia||0))?{...anterior,consultaValida:false}:novo});confirmarLinha(resultadosAtuais);renderizarTicker();renderizarQuadros();aplicarCiclo()}finally{atualizando=false}}
       async function verificarVersao(){try{const resposta=await fetch(`${window.location.pathname}?_versao=${Date.now()}`,{cache:"no-store"});const html=await resposta.text();const versao=html.match(/const BUILD_ID="([^"]+)"/);if(versao&&versao[1]!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",versao[1]);window.location.replace(destino.toString())}}catch(erro){}}
       if(params.get("_build")!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",BUILD_ID);window.location.replace(destino.toString());return}
-      cycleStartedAt=Date.now();document.documentElement.style.setProperty("--duracao",`${Math.max(40,Math.min(180,Number(controle.scrollDuration)||CONFIG.duracao))}s`);aplicarImagem();renderizarTicker();renderizarQuadros();aplicarCiclo();atualizar();consultarControle();window.setInterval(consultarControle,5000);window.setInterval(atualizar,CONFIG.refreshMs);window.setInterval(aplicarCiclo,500);window.setInterval(verificarVersao,60000)
+      cycleStartedAt=Date.now();aplicarImagem();renderizarTicker();renderizarQuadros();aplicarCiclo();atualizar();consultarControle();window.setInterval(consultarControle,5000);window.setInterval(atualizar,CONFIG.refreshMs);window.setInterval(aplicarCiclo,500);window.setInterval(verificarVersao,60000)
     })();
   </script>
 </body>
