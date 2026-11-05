@@ -22,7 +22,7 @@ function harness() {
     `globalThis.test={detectarLinhaCompleta,normalizarAtletas,renderizarCategoriaTicker,
       confirmarLinha,aplicarCiclo,setResults:r=>resultadosAtuais=r,
       state:()=>({...estado,modoAtual,grupoAtual}),renderizarQuadros,
-      setControl:c=>{controle={...controle,...c}},renderizarTicker,aplicarImagem};`);
+      setControl:c=>{controle={...controle,...c}},renderizarTicker,aplicarImagem,aplicarPosicaoScroll};`);
   vm.runInNewContext(script, context);
   return {...context.test,nodes};
 }
