@@ -63,7 +63,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261101-circuito-etapa4-v1";
+      const BUILD_ID="20261105-circuito-etapa4-fallback-v2";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -128,16 +128,26 @@
         try{return await consultar(CONFIG.evento)}catch(erro){return{categoria,atletas:[],live:false,dia:null,demo:false}}finally{window.clearTimeout(timeout)}
       }
       function renderizarCategoriaTicker(resultado){
-        if(!resultado.live||resultado.demo||!resultado.atletas.length){
-          return `<span class="category">${escapeHtml(resultado.categoria.nome)} • Etapa 4</span><span class="separator"></span><span class="credits">Aguardando resultados oficiais em Cuiabá</span><span class="separator"></span>`;
-        }
+        if(!resultado.live||resultado.demo||!resultado.atletas.length)return "";
         const atletas=resultado.atletas.slice(0,5);const origem=`Evento ${CONFIG.evento} • Dia ${resultado.dia}`;
         const itens=atletas.map((atleta,index)=>{const complemento=`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`
       }
       function renderizarTicker(){
-        const evento=`<span class="credits">Etapa 4 • Cuiabá • 07 e 08 de novembro</span><span class="separator"></span>`;const apoio=`<span class="credits">Realização BolicheMT - Apoio SECEL-MT - Transmissão TBF300 Sports</span><span class="separator"></span>`;const conteudo=resultadosAtuais.map(renderizarCategoriaTicker).join("")+evento+apoio;
-        const mensagem=controle.message?`<span class="credits">${escapeHtml(controle.message)}</span><span class="separator"></span>`:"";const final=mensagem&&controle.messageMode==="replace"?mensagem+apoio:conteudo+mensagem;
+        const temResultados=resultadosAtuais.some(resultado=>resultado.live&&!resultado.demo&&resultado.atletas.length>0);
+        const apoio=`<span class="credits">Realização BolicheMT • Apoio SECEL-MT • Transmissão TBF300 Sports</span><span class="separator"></span>`;
+        const fallback=[
+          "CIRCUITO MT 2026 • 4ª ETAPA • CUIABÁ • 07 E 08/11 • BOLICHE BEIRA RIO • TRANSMISSÃO TBF300 SPORTS",
+          "30 ATLETAS CONFIRMADOS • MASCULINO A: 13 • MASCULINO B: 9 • FEMININO: 8",
+          "FINAIS • MODELO STEPLADDER PWBA • JOGO 1: 4º x 3º • JOGO 2: VENCEDOR DO JOGO 1 x 2º • JOGO 3: VENCEDOR DO JOGO 2 x 1º • MELHOR DE 3 PARTIDAS",
+          "REGRAS DAS FINAIS • AS TRÊS DIVISÕES DISPUTAM CADA FASE SIMULTANEAMENTE • A PRÓXIMA FASE SÓ COMEÇA APÓS A CONCLUSÃO DAS TRÊS DIVISÕES • QUEM VENCER POR 2 A 0 AGUARDA OS DEMAIS CONFRONTOS • EMPATE NA PARTIDA: VITÓRIA DO MELHOR CLASSIFICADO NO RANKING DO CIRCUITO",
+          "RANKING APÓS A 3ª ETAPA • MASCULINO A • 1º MATHEUS VERÃO 240 • 2º ANTONIO TOLEDO 225 • 3º GUI PONCE 180 • 4º MOREIRA ÁVILA 175 • 5º MICHEL BELMONTE 155 • 6º NILO PONCE 135 • 7º ROMILDO SOUZA 110 • 8º THIAGO WANDSCHER 85",
+          "RANKING APÓS A 3ª ETAPA • MASCULINO B • 1º GUSTAVO BUZELLE 250 • 2º GILBERTO RIBEIRO 225 • 3º NELSON SAGA 205 • 4º NELSON MARQUES 195 • 5º RONALDO OLIVEIRA 180 • 6º CÉLIO BELMONTE 155 • 7º ADELMO NOIMANN 125 • 8º GUILHERME SCHEER 110",
+          "RANKING APÓS A 3ª ETAPA • FEMININO • 1ª RAQUEL TENUTA 285 • 2ª EDNÉIA MIRANDA SAGA 205 • 3ª JOSÉLIA MORENO 165 • 4ª AGDA NOGUEIRA 150 • 5ª DANIELLE LEDUR 145 • 6ª ADRIANA TAVEIRA 100 • 7ª TEREZA BELMONTE 60 • 8ª BET TEIXEIRA 55"
+        ].map(texto=>`<span class="credits">${escapeHtml(texto)}</span><span class="separator"></span>`).join("");
+        const conteudo=temResultados?resultadosAtuais.map(renderizarCategoriaTicker).join("")+apoio:fallback+apoio;
+        const mensagem=controle.message?`<span class="credits">${escapeHtml(controle.message)}</span><span class="separator"></span>`:"";
+        const final=mensagem&&controle.messageMode==="replace"?mensagem+apoio:conteudo+mensagem;
         document.getElementById("groupA").innerHTML=final;document.getElementById("groupB").innerHTML=final;const track=document.querySelector(".track");if(!track.classList.contains("running"))window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>track.classList.add("running")))
       }
       function diaAtualDoEvento(){return Math.max(1,...resultadosAtuais.filter(resultado=>resultado.live).map(resultado=>resultado.dia||1))}
