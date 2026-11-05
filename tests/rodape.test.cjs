@@ -8,7 +8,7 @@ let now = 1000000;
 function harness() {
   const nodes = new Map();
   const node = key => {
-    if (!nodes.has(key)) nodes.set(key, {innerHTML:'',style:{},classList:{contains:()=>true,add:()=>{},toggle:()=>{}}});
+    if (!nodes.has(key)) nodes.set(key, {innerHTML:'',style:{},offsetWidth:1000,scrollWidth:1920,classList:{contains:()=>true,add:()=>{},remove:()=>{},toggle:()=>{}}});
     return nodes.get(key);
   };
   const context = {URLSearchParams, URL, Map, Number, String, Math, JSON,
