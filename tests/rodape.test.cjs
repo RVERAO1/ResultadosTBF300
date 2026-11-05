@@ -18,7 +18,7 @@ function harness() {
     window:{location:{search:`?_build=${build}`,replace:()=>{throw Error('Unexpected redirect')}},requestAnimationFrame:f=>f()}
   };
   let script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-  script = script.replace(/cycleStartedAt=Date\.now\(\);aplicarImagem\(\);[\s\S]*?window\.setInterval\(verificarVersao,60000\)/,
+  script = script.replace(/cycleStartedAt=Date\.now\(\);[\s\S]*?window\.setInterval\(verificarVersao,60000\)/,
     `globalThis.test={detectarLinhaCompleta,normalizarAtletas,renderizarCategoriaTicker,
       confirmarLinha,aplicarCiclo,setResults:r=>resultadosAtuais=r,
       state:()=>({...estado,modoAtual,grupoAtual}),renderizarQuadros,
