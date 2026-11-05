@@ -71,4 +71,4 @@ t.setControl({overlayEnabled:false});t.aplicarImagem();assert.equal(t.nodes.get(
 t.setControl({overlayEnabled:true});t.aplicarImagem();assert.equal(t.nodes.get('overlayImage').style.display,'block');
 console.log('OK: ausência, linha incompleta, falha API, lista truncada, dias 1/2, confirmação dupla, 3 minutos, paginação 30s, atleta 9, sincronização, recarga e sem repetição.');
 
-assert.ok(!html.includes('pointer-events:none}\\\\n    body.overlay-ativo'),'CSS do overlay não pode conter \\n literal');
+assert.ok(!html.includes('}\\\\n    body.overlay-ativo'),'CSS do overlay não pode conter barra-n literal');
