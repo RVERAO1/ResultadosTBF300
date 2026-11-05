@@ -1,5 +1,5 @@
 // Estado persistente da Central de Controle
-const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,updatedAt:null};
+const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,updatedAt:null};
 const MAX_IMAGE = 1500 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 const reply = (data,status=200) => new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8'}});
@@ -16,6 +16,7 @@ function validatePatch(body){
   if('message' in body){if(typeof body.message!=='string'||body.message.length>400)throw Error('A mensagem deve ter até 400 caracteres.');patch.message=body.message.trim()}
   if('messageMode' in body){if(!['append','replace'].includes(body.messageMode))throw Error('Tipo de mensagem inválido.');patch.messageMode=body.messageMode}
   if('scrollDuration' in body){const valor=Number(body.scrollDuration);if(!Number.isFinite(valor)||valor<40||valor>180)throw Error('Velocidade inválida. Use duração entre 40 e 180 segundos.');patch.scrollDuration=Math.round(valor)}
+  if('scrollOffsetY' in body){const valor=Number(body.scrollOffsetY);if(!Number.isFinite(valor)||valor<-120||valor>240)throw Error('Posição inválida. Use um valor entre -120 e 240 pixels.');patch.scrollOffsetY=Math.round(valor)}
   if('overlayEnabled' in body){if(typeof body.overlayEnabled!=='boolean')throw Error('Estado da imagem inválido.');patch.overlayEnabled=body.overlayEnabled}
   if('overlayFit' in body){if(!['contain','cover','fill'].includes(body.overlayFit))throw Error('Ajuste inválido.');patch.overlayFit=body.overlayFit}
   if('overlayUrl' in body){if(typeof body.overlayUrl!=='string'||body.overlayUrl.length>2048)throw Error('Endereço inválido.');if(body.overlayUrl){const url=new URL(body.overlayUrl);if(url.protocol!=='https:'||url.username||url.password)throw Error('Use uma URL HTTPS sem credenciais.')}patch.overlayUrl=body.overlayUrl}
