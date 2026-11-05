@@ -14,7 +14,7 @@
     body{color:var(--texto)}
     .overlay-image{position:fixed;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;pointer-events:none;display:none}
     body.controle-oculto .ticker,body.controle-oculto .results-dock,body.controle-oculto .overlay-image{opacity:0!important;visibility:hidden!important;pointer-events:none}
-    .ticker{position:fixed;right:0;bottom:var(--scroll-offset-y,0px);left:0;z-index:10;height:94px;display:flex;align-items:center;overflow:hidden;color:var(--texto);background:transparent;opacity:1;visibility:visible;transform:translateY(0);transition:opacity .45s ease,transform .7s cubic-bezier(.22,.8,.25,1),visibility .7s}
+    .ticker{position:fixed;right:0;bottom:0;left:0;z-index:10;height:94px;display:flex;align-items:center;overflow:hidden;color:var(--texto);background:transparent;opacity:1;visibility:visible;transform:translateY(var(--scroll-translate-y,0px));transition:opacity .45s ease,transform .35s ease,visibility .7s}
     body.modo-placar .ticker{opacity:0;visibility:hidden;transform:translateY(115%);pointer-events:none}\n    body.overlay-ativo .ticker{opacity:0!important;visibility:hidden!important;transform:translateY(115%)!important;pointer-events:none!important}
     .viewport{display:flex;align-items:center;width:100%;height:88px;overflow:hidden}
     .track{display:inline-flex;align-items:center;width:max-content;min-width:max-content;white-space:nowrap;will-change:transform;transform:translate3d(0,0,0);animation:none}
@@ -63,7 +63,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261105-circuito-etapa4-position-v6";
+      const BUILD_ID="20261105-circuito-etapa4-position-v7";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -88,14 +88,14 @@
       const clienteId=window.crypto?.randomUUID?.()||`fonte-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       let consultandoControle=false;let inicioManual=Date.now();let imagemCarregada=false;let imagemSolicitada="";
       function aplicarImagem(){
-        const imagem=document.getElementById("overlayImage");document.body.classList.toggle("controle-oculto",controle.mode==="oculto");document.body.classList.toggle("overlay-ativo",!!(controle.overlayEnabled&&controle.overlayUrl));
+        const imagem=document.getElementById("overlayImage");document.body.classList.toggle("controle-oculto",controle.mode==="oculto");
         imagem.style.objectFit=controle.overlayFit||"contain";
-        if(!controle.overlayEnabled||!controle.overlayUrl){imagem.style.display="none";return}
-        if(imagemSolicitada===controle.overlayUrl){imagem.style.display=imagemCarregada?"block":"none";return}
+        if(!controle.overlayEnabled||!controle.overlayUrl){imagem.style.display="none";document.body.classList.remove("overlay-ativo");return}
+        if(imagemSolicitada===controle.overlayUrl){imagem.style.display=imagemCarregada?"block":"none";document.body.classList.toggle("overlay-ativo",!!(imagemCarregada&&controle.overlayEnabled));return}
         const destino=controle.overlayUrl;try{if(new URL(destino).protocol!=="https:")return}catch(erro){return}
         imagemSolicitada=destino;imagemCarregada=false;imagem.style.display="none";
-        imagem.onload=()=>{if(imagemSolicitada!==destino)return;imagemCarregada=true;imagem.style.display=controle.overlayEnabled?"block":"none"};
-        imagem.onerror=()=>{imagemCarregada=false;imagem.style.display="none"};imagem.src=destino;
+        imagem.onload=()=>{if(imagemSolicitada!==destino)return;imagemCarregada=true;imagem.style.display=controle.overlayEnabled?"block":"none";document.body.classList.toggle("overlay-ativo",!!controle.overlayEnabled)};
+        imagem.onerror=()=>{imagemCarregada=false;imagem.style.display="none";document.body.classList.remove("overlay-ativo")};imagem.src=destino;
       }
       async function consultarControle(){
         if(consultandoControle)return;consultandoControle=true;const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),4500);
