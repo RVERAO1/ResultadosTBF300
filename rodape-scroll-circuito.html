@@ -63,7 +63,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261105-circuito-etapa4-position-v8";
+      const BUILD_ID="20261105-circuito-etapa4-position-v9";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -94,7 +94,7 @@
         imagem.style.objectFit=controle.overlayFit||"contain";
         const mostrarTicker=()=>{document.body.classList.remove("overlay-ativo");if(ticker)ticker.style.display="flex"};
         const ocultarTicker=()=>{document.body.classList.add("overlay-ativo");if(ticker)ticker.style.display="none"};
-        if(!controle.overlayEnabled||!controle.overlayUrl){imagem.style.display="none";imagemCarregada=false;mostrarTicker();return}
+        if(!controle.overlayEnabled||!controle.overlayUrl){imagem.style.display="none";mostrarTicker();return}
         if(imagemSolicitada===controle.overlayUrl){
           imagem.style.display=imagemCarregada?"block":"none";
           if(imagemCarregada)ocultarTicker();else mostrarTicker();
