@@ -10,6 +10,7 @@ global.crypto=webcrypto;
  const secret='fixture-password-do-not-use-in-production';
  const central=new CentralControl({storage},{CENTRAL_PASSWORD:secret});
  const req=(path,method='GET',body,token,headers={})=>new Request('https://worker.example/api/control/'+path,{method,headers:{...(token?{Authorization:'Bearer '+token}:{}),...headers},...(body===undefined?{}:{body:typeof body==='string'||body instanceof Uint8Array?body:JSON.stringify(body)})});
+ let preflight=await central.fetch(req('state','OPTIONS'));assert.equal(preflight.status,204);assert.ok((preflight.headers.get('Access-Control-Allow-Methods')||'').includes('DELETE'));
  let response=await central.fetch(req('state'));assert.equal(response.status,200);assert.equal((await response.json()).mode,'auto');
  response=await central.fetch(req('state','PUT',{mode:'oculto',revision:0}));assert.equal(response.status,401);
  const unconfigured=new CentralControl({storage},{});response=await unconfigured.fetch(req('login','POST',{password:secret}));assert.equal(response.status,503);
