@@ -1,4 +1,4 @@
-// Estado persistente da Central de Controle - upload fragmentado de imagens v2
+// Estado persistente da Central de Controle - biblioteca de 5 imagens
 const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,updatedAt:null};
 const IMAGE_CHUNK = 96 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
@@ -73,6 +73,23 @@ export class CentralControl {
         return new Response(merged,{headers:{...cors,'Content-Type':meta.type,'Content-Length':String(total)}});
       }
       if(!await this.authorized(request))return reply({error:'Autenticação necessária.'},401);
+      if(path==='/api/control/images'&&request.method==='GET'){
+        const metas=await this.ctx.storage.list({prefix:'image-meta:',limit:50});
+        const images=[...metas.entries()].map(([key,meta])=>({id:key.slice('image-meta:'.length),type:meta.type,size:meta.size||0,uploadedAt:meta.uploadedAt||'',url:`${url.origin}/api/control/image?v=${key.slice('image-meta:'.length)}`})).sort((a,b)=>String(b.uploadedAt).localeCompare(String(a.uploadedAt))).slice(0,5);
+        return reply({images});
+      }
+      if(path==='/api/control/image'&&request.method==='DELETE'){
+        const id=url.searchParams.get('v');if(!id||!/^[a-f0-9-]{36}$/.test(id))return reply({error:'Imagem inválida.'},400);
+        const meta=await this.ctx.storage.get(`image-meta:${id}`);
+        const legacy=await this.ctx.storage.get(`image:${id}`);
+        if(!meta&&!legacy)return reply({error:'Imagem não encontrada.'},404);
+        const atual=await this.state();let ativa='';
+        try{ativa=new URL(atual.overlayUrl||'').searchParams.get('v')||''}catch{}
+        if(ativa===id&&atual.overlayEnabled)return reply({error:'Oculte ou troque a imagem que está no ar antes de excluí-la.'},409);
+        const keys=[];if(meta){keys.push(`image-meta:${id}`);for(let i=0;i<(meta.chunks||0);i++)keys.push(`image-chunk:${id}:${i}`)}if(legacy)keys.push(`image:${id}`);
+        if(keys.length)await this.ctx.storage.delete(keys);
+        return reply({ok:true});
+      }
       if(path==='/api/control/status'&&request.method==='GET')return reply({state:await this.state(),clients:[...this.clients.values()].filter(info=>Date.now()-info.at<60000),now:Date.now()});
       if(path==='/api/control/state'&&request.method==='PUT'){
         const body=await readJSON(request);const patch=validatePatch(body);
@@ -92,10 +109,10 @@ export class CentralControl {
         const webp=bytes.length>=12&&new TextDecoder().decode(bytes.slice(0,4))==='RIFF'&&new TextDecoder().decode(bytes.slice(8,12))==='WEBP';
         if(!(type==='image/png'&&png||type==='image/jpeg'&&jpeg||type==='image/webp'&&webp))return reply({error:'Use PNG, JPG ou WebP válido. SVG não é permitido.'},400);
         const metas=await this.ctx.storage.list({prefix:'image-meta:',limit:20});
-        if(metas.size>=10){
+        if(metas.size>=5){
           const atual=await this.state();let ativa='';
           try{ativa=new URL(atual.overlayUrl||'').searchParams.get('v')||''}catch{}
-          const removivel=[...metas.keys()].find(key=>key!==`image-meta:${ativa}`);
+          const ordenadas=[...metas.entries()].sort((a,b)=>String(a[1]?.uploadedAt||'').localeCompare(String(b[1]?.uploadedAt||'')));const removivel=ordenadas.map(([key])=>key).find(key=>key!==`image-meta:${ativa}`);
           if(removivel){
             const rid=removivel.split(':')[1];const meta=metas.get(removivel);
             const keys=[removivel];for(let i=0;i<(meta?.chunks||0);i++)keys.push(`image-chunk:${rid}:${i}`);
