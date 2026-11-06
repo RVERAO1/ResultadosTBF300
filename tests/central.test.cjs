@@ -29,6 +29,8 @@ global.crypto=webcrypto;
  const png=Uint8Array.from([137,80,78,71,13,10,26,10]);
  response=await central.fetch(req('image','POST',png,token,{'Content-Type':'image/png'}));assert.equal(response.status,200);const imageUrl=(await response.json()).url;
  response=await central.fetch(new Request(imageUrl));assert.equal(response.status,200);assert.equal(response.headers.get('Content-Type'),'image/png');
+ response=await central.fetch(req('images','GET',undefined,token));assert.equal(response.status,200);let library=await response.json();assert.ok(library.images.length>=1);const listed=library.images.find(x=>x.url===imageUrl);assert.ok(listed);
+ response=await central.fetch(req('image?v='+new URL(imageUrl).searchParams.get('v'),'DELETE',undefined,token));assert.equal(response.status,200);
  const second=new CentralControl({storage},{CENTRAL_PASSWORD:secret});response=await second.fetch(req('state'));assert.equal((await response.json()).message,'Boa competição!');
  response=await central.fetch(req('state?client=source-123&revision=2&mode=rodape&imageReady=1'));assert.equal(response.status,200);
  response=await central.fetch(req('status','GET',undefined,token));const status=await response.json();assert.equal(status.clients.length,1);assert.equal(status.clients[0].revision,2);
