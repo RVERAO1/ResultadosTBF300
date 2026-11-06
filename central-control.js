@@ -1,6 +1,6 @@
-// Estado persistente da Central de Controle - posição, overlay e scroll v10
+// Estado persistente da Central de Controle - upload fragmentado de imagens
 const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,updatedAt:null};
-const MAX_IMAGE = 1500 * 1024;
+const IMAGE_CHUNK = 96 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 const reply = (data,status=200) => new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8'}});
 const encoder = new TextEncoder();
@@ -64,8 +64,13 @@ export class CentralControl {
       }
       if(path==='/api/control/image'&&request.method==='GET'){
         const id=url.searchParams.get('v');if(!id||!/^[a-f0-9-]{36}$/.test(id))return reply({error:'Imagem não encontrada.'},404);
-        const image=await this.ctx.storage.get(`image:${id}`);if(!image)return reply({error:'Imagem não encontrada.'},404);
-        return new Response(image.bytes,{headers:{...cors,'Content-Type':image.type}});
+        const legacy=await this.ctx.storage.get(`image:${id}`);
+        if(legacy?.bytes)return new Response(legacy.bytes,{headers:{...cors,'Content-Type':legacy.type}});
+        const meta=await this.ctx.storage.get(`image-meta:${id}`);if(!meta)return reply({error:'Imagem não encontrada.'},404);
+        const parts=[];let total=0;
+        for(let i=0;i<meta.chunks;i++){const part=await this.ctx.storage.get(`image-chunk:${id}:${i}`);if(!part)return reply({error:'Imagem incompleta.'},500);const bytes=part instanceof Uint8Array?part:new Uint8Array(part);parts.push(bytes);total+=bytes.byteLength}
+        const merged=new Uint8Array(total);let offset=0;for(const part of parts){merged.set(part,offset);offset+=part.byteLength}
+        return new Response(merged,{headers:{...cors,'Content-Type':meta.type,'Content-Length':String(total)}});
       }
       if(!await this.authorized(request))return reply({error:'Autenticação necessária.'},401);
       if(path==='/api/control/status'&&request.method==='GET')return reply({state:await this.state(),clients:[...this.clients.values()].filter(info=>Date.now()-info.at<60000),now:Date.now()});
@@ -81,21 +86,27 @@ export class CentralControl {
         return state?reply(state):reply({error:'Outro comando foi aplicado. Atualize o painel e tente novamente.'},409);
       }
       if(path==='/api/control/image'&&request.method==='POST'){
-        const bytes=await limitedBody(request,MAX_IMAGE);const type=request.headers.get('Content-Type')||'';
+        const bytes=new Uint8Array(await request.arrayBuffer());const type=request.headers.get('Content-Type')||'';
         const png=bytes.length>=8&&[137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v);
         const jpeg=bytes.length>=3&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
         const webp=bytes.length>=12&&new TextDecoder().decode(bytes.slice(0,4))==='RIFF'&&new TextDecoder().decode(bytes.slice(8,12))==='WEBP';
-        if(!(type==='image/png'&&png||type==='image/jpeg'&&jpeg||type==='image/webp'&&webp))return reply({error:'Use PNG, JPG ou WebP válido (até 1.500 KB). SVG não é permitido.'},400);
-        const existentes=await this.ctx.storage.list({prefix:'image:',limit:20});
-        if(existentes.size>=10){
+        if(!(type==='image/png'&&png||type==='image/jpeg'&&jpeg||type==='image/webp'&&webp))return reply({error:'Use PNG, JPG ou WebP válido. SVG não é permitido.'},400);
+        const metas=await this.ctx.storage.list({prefix:'image-meta:',limit:20});
+        if(metas.size>=10){
           const atual=await this.state();let ativa='';
           try{ativa=new URL(atual.overlayUrl||'').searchParams.get('v')||''}catch{}
-          const removivel=[...existentes.keys()].find(key=>key!==`image:${ativa}`);
-          if(removivel)await this.ctx.storage.delete(removivel);
+          const removivel=[...metas.keys()].find(key=>key!==`image-meta:${ativa}`);
+          if(removivel){
+            const rid=removivel.split(':')[1];const meta=metas.get(removivel);
+            const keys=[removivel];for(let i=0;i<(meta?.chunks||0);i++)keys.push(`image-chunk:${rid}:${i}`);
+            await this.ctx.storage.delete(keys);
+          }
         }
         const id=crypto.randomUUID();const imageUrl=`${url.origin}/api/control/image?v=${id}`;
-        await this.ctx.storage.put(`image:${id}`,{bytes:bytes.buffer,type,uploadedAt:new Date().toISOString()});
-        return reply({url:imageUrl});
+        const chunks=Math.ceil(bytes.byteLength/IMAGE_CHUNK);
+        await this.ctx.storage.put(`image-meta:${id}`,{type,chunks,size:bytes.byteLength,uploadedAt:new Date().toISOString()});
+        for(let i=0;i<chunks;i++){const start=i*IMAGE_CHUNK,end=Math.min(bytes.byteLength,start+IMAGE_CHUNK);await this.ctx.storage.put(`image-chunk:${id}:${i}`,bytes.slice(start,end))}
+        return reply({url:imageUrl,size:bytes.byteLength});
       }
       return reply({error:'Endpoint não encontrado.'},404);
     }catch(error){return reply({error:error.message==='too-large'?'Arquivo ou comando excede o limite.':error instanceof SyntaxError?'JSON inválido.':error.message},400)}
