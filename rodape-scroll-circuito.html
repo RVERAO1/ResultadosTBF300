@@ -177,7 +177,6 @@
         if(!ticker)return;
         ticker.style.bottom="0px";
         ticker.style.transform=`translate3d(0,${-offset}px,0)`;
-        ticker.dataset.scrollOffset=String(offset);
       }
       function ajustarVelocidadeScroll(){
         const track=document.querySelector(".track"),grupo=document.getElementById("groupA");if(!track||!grupo)return;
