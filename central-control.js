@@ -1,5 +1,5 @@
-// Estado persistente da Central de Controle - biblioteca de imagens e áudio YouTube v2
-const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,audioEnabled:false,audioPlaylistId:'',audioPlaying:false,audioVolume:35,audioMuted:false,audioLoop:true,audioAction:'',audioActionSeq:0,updatedAt:null};
+// Estado persistente da Central de Controle - biblioteca de imagens e áudio YouTube v3
+const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,audioEnabled:false,audioPlaylistId:'',audioVideoId:'',audioPlaying:false,audioVolume:35,audioMuted:false,audioLoop:true,audioAction:'',audioActionSeq:0,updatedAt:null};
 const IMAGE_CHUNK = 96 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 const reply = (data,status=200) => new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8'}});
@@ -22,6 +22,7 @@ function validatePatch(body){
   if('overlayUrl' in body){if(typeof body.overlayUrl!=='string'||body.overlayUrl.length>2048)throw Error('Endereço inválido.');if(body.overlayUrl){const url=new URL(body.overlayUrl);if(url.protocol!=='https:'||url.username||url.password)throw Error('Use uma URL HTTPS sem credenciais.')}patch.overlayUrl=body.overlayUrl}
   if('audioEnabled' in body){if(typeof body.audioEnabled!=='boolean')throw Error('Estado do áudio inválido.');patch.audioEnabled=body.audioEnabled}
   if('audioPlaylistId' in body){if(typeof body.audioPlaylistId!=='string'||body.audioPlaylistId.length>120||body.audioPlaylistId&&!/^[A-Za-z0-9_-]{10,120}$/.test(body.audioPlaylistId))throw Error('Playlist do YouTube inválida.');patch.audioPlaylistId=body.audioPlaylistId}
+  if('audioVideoId' in body){if(typeof body.audioVideoId!=='string'||body.audioVideoId.length>32||body.audioVideoId&&!/^[A-Za-z0-9_-]{11}$/.test(body.audioVideoId))throw Error('Vídeo do YouTube inválido.');patch.audioVideoId=body.audioVideoId}
   if('audioPlaying' in body){if(typeof body.audioPlaying!=='boolean')throw Error('Estado de reprodução inválido.');patch.audioPlaying=body.audioPlaying}
   if('audioVolume' in body){const valor=Number(body.audioVolume);if(!Number.isFinite(valor)||valor<0||valor>100)throw Error('Volume inválido.');patch.audioVolume=Math.round(valor)}
   if('audioMuted' in body){if(typeof body.audioMuted!=='boolean')throw Error('Estado de mudo inválido.');patch.audioMuted=body.audioMuted}
