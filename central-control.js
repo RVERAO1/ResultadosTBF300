@@ -1,4 +1,4 @@
-// Estado persistente da Central de Controle - biblioteca de imagens e áudio YouTube
+// Estado persistente da Central de Controle - biblioteca de imagens e áudio YouTube v2
 const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,audioEnabled:false,audioPlaylistId:'',audioPlaying:false,audioVolume:35,audioMuted:false,audioLoop:true,audioAction:'',audioActionSeq:0,updatedAt:null};
 const IMAGE_CHUNK = 96 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
@@ -48,6 +48,7 @@ export class CentralControl {
   }
   async state(){return{...DEFAULT,...await this.ctx.storage.get('control')}}
   async fetch(request){
+    if(request.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
     const url=new URL(request.url);const path=url.pathname;
     try{
       if(path==='/api/control/state'&&request.method==='GET'){
