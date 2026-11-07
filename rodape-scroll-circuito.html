@@ -65,7 +65,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261107-circuito-etapa4-sem-evento591-v1";
+      const BUILD_ID="20261107-circuito-etapa4-placar-15s-v1";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -278,13 +278,13 @@
       function aplicarCiclo(){
         const temResultados=temResultadosParaExibir();
         if(controle.mode==="oculto"||controle.mode==="rodape"){definirModo("rodape");grupoAtual=-1;return}
-        if(controle.mode==="placar"){if(!temResultados){definirModo("rodape");return}definirModo("placar");aplicarGrupo(Math.floor((Date.now()-inicioManual)/30000));return}
-        if(CONFIG.forcarPlacar){if(!temResultados){definirModo("rodape");return}definirModo("placar");aplicarGrupo(Math.floor((Date.now()-cycleStartedAt)/30000));return}
+        if(controle.mode==="placar"){if(!temResultados){definirModo("rodape");return}definirModo("placar");aplicarGrupo(Math.floor((Date.now()-inicioManual)/15000));return}
+        if(CONFIG.forcarPlacar){if(!temResultados){definirModo("rodape");return}definirModo("placar");aplicarGrupo(Math.floor((Date.now()-cycleStartedAt)/15000));return}
         const agora=Date.now();
         if(estado.inicioPlacar&&agora-estado.inicioPlacar>=CONFIG.placarMs){estado.inicioPlacar=0;salvarEstado()}
         if(!estado.inicioPlacar&&linhaConfirmada>estado.ultimaLinha&&temResultados){estado.ultimaLinha=linhaConfirmada;estado.inicioPlacar=agora;grupoAtual=-1;salvarEstado()}
         const exibir=!!estado.inicioPlacar&&temResultados;
-        definirModo(exibir?"placar":"rodape");if(exibir)aplicarGrupo(Math.floor((agora-estado.inicioPlacar)/30000));else grupoAtual=-1
+        definirModo(exibir?"placar":"rodape");if(exibir)aplicarGrupo(Math.floor((agora-estado.inicioPlacar)/15000));else grupoAtual=-1
       }
       async function atualizar(){if(atualizando)return;atualizando=true;try{const novos=await Promise.all(CATEGORIAS.map(buscarCategoria));resultadosAtuais=novos.map((novo,indice)=>{const anterior=resultadosAtuais[indice];return anterior?.live&&(!novo.live||(anterior.dia||0)>(novo.dia||0))?{...anterior,consultaValida:false}:novo});confirmarLinha(resultadosAtuais);renderizarTicker();renderizarQuadros();aplicarCiclo()}finally{atualizando=false}}
       async function verificarVersao(){try{const resposta=await fetch(`${window.location.pathname}?_versao=${Date.now()}`,{cache:"no-store"});const html=await resposta.text();const versao=html.match(/const BUILD_ID="([^"]+)"/);if(versao&&versao[1]!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",versao[1]);window.location.replace(destino.toString())}}catch(erro){}}
