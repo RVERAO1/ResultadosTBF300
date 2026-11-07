@@ -75,3 +75,6 @@ assert.ok(!html.includes('}\\\\n    body.overlay-ativo'),'CSS do overlay não po
 
 assert.ok(html.includes('youtube.com/iframe_api'),'Fonte deve carregar YouTube IFrame API');
 assert.ok(html.includes('function aplicarAudio()'),'Fonte deve conter controle de áudio');
+
+assert.ok(html.includes('tickerSignature'), 'Fonte deve controlar assinatura do ticker');
+assert.ok(html.includes('mudouConteudo'), 'Ticker não deve reiniciar sem mudança de conteúdo');
