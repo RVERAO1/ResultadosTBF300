@@ -56,7 +56,7 @@
 </head>
 <body class="modo-rodape">
   <img class="overlay-image" id="overlayImage" alt="">
-  <div id="youtubePlayerHost" style="position:fixed;left:-10000px;top:-10000px;width:200px;height:200px;opacity:.01;pointer-events:none" aria-hidden="true"><div id="youtubePlayer"></div></div>
+  <div id="youtubePlayerHost" style="position:fixed;left:0;top:0;width:200px;height:200px;opacity:.001;pointer-events:none;z-index:-1" aria-hidden="true"><div id="youtubePlayer"></div></div>
   <footer class="ticker" aria-label="Classificação do Circuito MT 2026"><div class="viewport"><div class="track"><div class="group" id="groupA"></div><div class="group" id="groupB" aria-hidden="true"></div></div></div></footer>
   <section class="results-dock" aria-live="polite" aria-label="Resultados do Circuito MT 2026">
     <div class="cards" id="cards"></div>
@@ -65,7 +65,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261107-circuito-etapa4-youtube-audio-v1";
+      const BUILD_ID="20261107-circuito-etapa4-youtube-audio-v2";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -109,9 +109,11 @@
           youtubePlayer.setVolume(Math.max(0,Math.min(100,Number(controle.audioVolume)||0)));
           if(controle.audioMuted)youtubePlayer.mute();else youtubePlayer.unMute();
           youtubePlayer.setLoop(controle.audioLoop!==false);
-          if(controle.audioEnabled&&controle.audioPlaylistId&&youtubePlaylistCarregada!==controle.audioPlaylistId){
+          const novaPlaylist=controle.audioEnabled&&controle.audioPlaylistId&&youtubePlaylistCarregada!==controle.audioPlaylistId;
+          if(novaPlaylist){
             youtubePlaylistCarregada=controle.audioPlaylistId;
-            youtubePlayer.cuePlaylist({listType:"playlist",list:controle.audioPlaylistId,index:0,startSeconds:0});
+            if(controle.audioPlaying)youtubePlayer.loadPlaylist({listType:"playlist",list:controle.audioPlaylistId,index:0,startSeconds:0});
+            else youtubePlayer.cuePlaylist({listType:"playlist",list:controle.audioPlaylistId,index:0,startSeconds:0});
           }
           if(Number(controle.audioActionSeq||0)!==ultimoAudioActionSeq){
             ultimoAudioActionSeq=Number(controle.audioActionSeq||0);
@@ -119,7 +121,8 @@
             if(controle.audioAction==="previous")youtubePlayer.previousVideo();
           }
           if(!controle.audioEnabled||!controle.audioPlaylistId){youtubePlayer.pauseVideo();return}
-          if(controle.audioPlaying)youtubePlayer.playVideo();else youtubePlayer.pauseVideo();
+          if(controle.audioPlaying&&!novaPlaylist)youtubePlayer.playVideo();
+          if(!controle.audioPlaying)youtubePlayer.pauseVideo();
         }catch(erro){}
       }
       function aplicarImagem(){
