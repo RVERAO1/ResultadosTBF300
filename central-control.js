@@ -1,5 +1,5 @@
-// Estado persistente da Central de Controle - biblioteca de 5 imagens v2
-const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,updatedAt:null};
+// Estado persistente da Central de Controle - biblioteca de imagens e áudio YouTube
+const DEFAULT = {revision:0,mode:'auto',message:'',messageMode:'append',overlayEnabled:false,overlayUrl:'',overlayFit:'contain',scrollDuration:72,scrollOffsetY:0,audioEnabled:false,audioPlaylistId:'',audioPlaying:false,audioVolume:35,audioMuted:false,audioLoop:true,audioAction:'',audioActionSeq:0,updatedAt:null};
 const IMAGE_CHUNK = 96 * 1024;
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, OPTIONS','Access-Control-Allow-Headers':'Content-Type, Authorization','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
 const reply = (data,status=200) => new Response(JSON.stringify(data),{status,headers:{...cors,'Content-Type':'application/json; charset=utf-8'}});
@@ -20,6 +20,14 @@ function validatePatch(body){
   if('overlayEnabled' in body){if(typeof body.overlayEnabled!=='boolean')throw Error('Estado da imagem inválido.');patch.overlayEnabled=body.overlayEnabled}
   if('overlayFit' in body){if(!['contain','cover','fill'].includes(body.overlayFit))throw Error('Ajuste inválido.');patch.overlayFit=body.overlayFit}
   if('overlayUrl' in body){if(typeof body.overlayUrl!=='string'||body.overlayUrl.length>2048)throw Error('Endereço inválido.');if(body.overlayUrl){const url=new URL(body.overlayUrl);if(url.protocol!=='https:'||url.username||url.password)throw Error('Use uma URL HTTPS sem credenciais.')}patch.overlayUrl=body.overlayUrl}
+  if('audioEnabled' in body){if(typeof body.audioEnabled!=='boolean')throw Error('Estado do áudio inválido.');patch.audioEnabled=body.audioEnabled}
+  if('audioPlaylistId' in body){if(typeof body.audioPlaylistId!=='string'||body.audioPlaylistId.length>120||body.audioPlaylistId&&!/^[A-Za-z0-9_-]{10,120}$/.test(body.audioPlaylistId))throw Error('Playlist do YouTube inválida.');patch.audioPlaylistId=body.audioPlaylistId}
+  if('audioPlaying' in body){if(typeof body.audioPlaying!=='boolean')throw Error('Estado de reprodução inválido.');patch.audioPlaying=body.audioPlaying}
+  if('audioVolume' in body){const valor=Number(body.audioVolume);if(!Number.isFinite(valor)||valor<0||valor>100)throw Error('Volume inválido.');patch.audioVolume=Math.round(valor)}
+  if('audioMuted' in body){if(typeof body.audioMuted!=='boolean')throw Error('Estado de mudo inválido.');patch.audioMuted=body.audioMuted}
+  if('audioLoop' in body){if(typeof body.audioLoop!=='boolean')throw Error('Estado de repetição inválido.');patch.audioLoop=body.audioLoop}
+  if('audioAction' in body){if(!['','next','previous'].includes(body.audioAction))throw Error('Comando de áudio inválido.');patch.audioAction=body.audioAction}
+  if('audioActionSeq' in body){const valor=Number(body.audioActionSeq);if(!Number.isInteger(valor)||valor<0)throw Error('Sequência de áudio inválida.');patch.audioActionSeq=valor}
   if(!Object.keys(patch).length)throw Error('Nenhuma alteração informada.');
   return patch;
 }
@@ -46,7 +54,7 @@ export class CentralControl {
         const state=await this.state();const client=url.searchParams.get('client');
         if(client&&/^[a-zA-Z0-9-]{8,64}$/.test(client)){
           for(const [id,info]of this.clients)if(Date.now()-info.at>60000)this.clients.delete(id);
-          if(this.clients.size<30||this.clients.has(client))this.clients.set(client,{at:Date.now(),revision:Number(url.searchParams.get('revision'))||0,mode:url.searchParams.get('mode')||'',imageReady:url.searchParams.get('imageReady')==='1'});
+          if(this.clients.size<30||this.clients.has(client))this.clients.set(client,{at:Date.now(),revision:Number(url.searchParams.get('revision'))||0,mode:url.searchParams.get('mode')||'',imageReady:url.searchParams.get('imageReady')==='1',audioReady:url.searchParams.get('audioReady')==='1',audioState:url.searchParams.get('audioState')||''});
         }
         return reply({...state,configured:!!this.env.CENTRAL_PASSWORD&&this.env.CENTRAL_PASSWORD.length>=16});
       }
