@@ -22,6 +22,7 @@ global.crypto=webcrypto;
  response=await central.fetch(req('state','PUT',{mode:'invalid',revision:1},token));assert.equal(response.status,400);
  response=await central.fetch(req('state','PUT',{message:'x'.repeat(401),revision:1},token));assert.equal(response.status,400);
  response=await central.fetch(req('state','PUT',{audioVolume:101,revision:1},token));assert.equal(response.status,400);
+ response=await central.fetch(req('state','PUT',{audioVideoId:'bad',revision:1},token));assert.equal(response.status,400);
  response=await central.fetch(req('state','PUT',{overlayUrl:'javascript:alert(1)',revision:1},token));assert.equal(response.status,400);
  response=await central.fetch(req('state','PUT',{message:'Boa competição!',mode:'auto',revision:1},token));assert.equal(response.status,200);
  response=await central.fetch(req('state','PUT',{mode:'oculto',revision:2},token+'bad'));assert.equal(response.status,401);
