@@ -60,12 +60,12 @@
   <footer class="ticker" aria-label="Classificação do Circuito MT 2026"><div class="viewport"><div class="track"><div class="group" id="groupA"></div><div class="group" id="groupB" aria-hidden="true"></div></div></div></footer>
   <section class="results-dock" aria-live="polite" aria-label="Resultados do Circuito MT 2026">
     <div class="cards" id="cards"></div>
-    <footer class="dock-foot"><span class="event">Circuito MT 2026 • Evento 591 • Etapa 4 • Cuiabá</span><span class="support">Realização BolicheMT - Transmissão TBF300 Sports</span></footer>
+    <footer class="dock-foot"><span class="event">Circuito MT 2026 • Etapa 4 • Cuiabá</span><span class="support">Realização BolicheMT - Transmissão TBF300 Sports</span></footer>
   </section>
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261107-circuito-etapa4-scroll-continuo-v1";
+      const BUILD_ID="20261107-circuito-etapa4-sem-evento591-v1";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
