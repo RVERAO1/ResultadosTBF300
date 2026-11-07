@@ -72,3 +72,6 @@ t.setControl({overlayEnabled:true});t.aplicarImagem();assert.equal(t.nodes.get('
 console.log('OK: ausência, linha incompleta, falha API, lista truncada, dias 1/2, confirmação dupla, 3 minutos, paginação 30s, atleta 9, sincronização, recarga e sem repetição.');
 
 assert.ok(!html.includes('}\\\\n    body.overlay-ativo'),'CSS do overlay não pode conter barra-n literal');
+
+assert.ok(html.includes('youtube.com/iframe_api'),'Fonte deve carregar YouTube IFrame API');
+assert.ok(html.includes('function aplicarAudio()'),'Fonte deve conter controle de áudio');
