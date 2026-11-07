@@ -56,6 +56,7 @@
 </head>
 <body class="modo-rodape">
   <img class="overlay-image" id="overlayImage" alt="">
+  <div id="youtubePlayerHost" style="position:fixed;left:-10000px;top:-10000px;width:200px;height:200px;opacity:.01;pointer-events:none" aria-hidden="true"><div id="youtubePlayer"></div></div>
   <footer class="ticker" aria-label="Classificação do Circuito MT 2026"><div class="viewport"><div class="track"><div class="group" id="groupA"></div><div class="group" id="groupB" aria-hidden="true"></div></div></div></footer>
   <section class="results-dock" aria-live="polite" aria-label="Resultados do Circuito MT 2026">
     <div class="cards" id="cards"></div>
@@ -64,7 +65,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261105-circuito-etapa4-position-v11";
+      const BUILD_ID="20261107-circuito-etapa4-youtube-audio-v1";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -83,11 +84,44 @@
       const normalizarAtletas=(atletas,diaResposta)=>atletas.map((atleta,index)=>{const dia=numero(atleta.dia)||diaResposta||1;return{id:atleta.id,posicao:numero(atleta.posicao||atleta.pos||index+1),atleta:atleta.atleta||atleta.nome_evento||atleta.nome_completo||atleta.nome||"Atleta",dia,total:numero(atleta.total||atleta.pontos_serie||atleta.t),media:numero(atleta.media||atleta.m),jogos:normalizarJogos(atleta.jogos,dia)}});
       let resultadosAtuais=CATEGORIAS.map(categoria=>({categoria,atletas:[],live:false,dia:null}));
       let cycleStartedAt=Date.now();let modoAtual="rodape";let grupoAtual=-1;
-      let controle={revision:-1,mode:"auto",message:"",messageMode:"append",overlayEnabled:false,overlayUrl:"",overlayFit:"contain",scrollDuration:72,scrollOffsetY:0};
+      let controle={revision:-1,mode:"auto",message:"",messageMode:"append",overlayEnabled:false,overlayUrl:"",overlayFit:"contain",scrollDuration:72,scrollOffsetY:0,audioEnabled:false,audioPlaylistId:"",audioPlaying:false,audioVolume:35,audioMuted:false,audioLoop:true,audioAction:"",audioActionSeq:0};
       const chaveControle=`tbf300:controle:${CONFIG.apiBase}:${CONFIG.evento}`;
       try{const salvo=JSON.parse(localStorage.getItem(chaveControle)||"null");if(salvo&&["auto","rodape","placar","oculto"].includes(salvo.mode))controle=salvo}catch(erro){}
       const clienteId=window.crypto?.randomUUID?.()||`fonte-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      let consultandoControle=false;let inicioManual=Date.now();let imagemCarregada=false;let imagemSolicitada="";
+      let consultandoControle=false;let inicioManual=Date.now();let imagemCarregada=false;let imagemSolicitada="";let youtubePlayer=null,youtubeReady=false,youtubePlaylistCarregada="",ultimoAudioActionSeq=-1,audioPlayerState="";
+      function carregarYoutubeApi(){
+        if(window.YT&&window.YT.Player){criarYoutubePlayer();return}
+        if(document.getElementById("youtube-iframe-api"))return;
+        const script=document.createElement("script");script.id="youtube-iframe-api";script.src="https://www.youtube.com/iframe_api";document.head.appendChild(script);
+        window.onYouTubeIframeAPIReady=criarYoutubePlayer;
+      }
+      function criarYoutubePlayer(){
+        if(youtubePlayer||!window.YT?.Player)return;
+        youtubePlayer=new YT.Player("youtubePlayer",{width:200,height:200,playerVars:{controls:0,playsinline:1,origin:window.location.origin},events:{
+          onReady:()=>{youtubeReady=true;aplicarAudio()},
+          onStateChange:event=>{audioPlayerState=String(event.data)},
+          onAutoplayBlocked:()=>{audioPlayerState="blocked"}
+        }});
+      }
+      function aplicarAudio(){
+        if(!youtubeReady||!youtubePlayer)return;
+        try{
+          youtubePlayer.setVolume(Math.max(0,Math.min(100,Number(controle.audioVolume)||0)));
+          if(controle.audioMuted)youtubePlayer.mute();else youtubePlayer.unMute();
+          youtubePlayer.setLoop(controle.audioLoop!==false);
+          if(controle.audioEnabled&&controle.audioPlaylistId&&youtubePlaylistCarregada!==controle.audioPlaylistId){
+            youtubePlaylistCarregada=controle.audioPlaylistId;
+            youtubePlayer.cuePlaylist({listType:"playlist",list:controle.audioPlaylistId,index:0,startSeconds:0});
+          }
+          if(Number(controle.audioActionSeq||0)!==ultimoAudioActionSeq){
+            ultimoAudioActionSeq=Number(controle.audioActionSeq||0);
+            if(controle.audioAction==="next")youtubePlayer.nextVideo();
+            if(controle.audioAction==="previous")youtubePlayer.previousVideo();
+          }
+          if(!controle.audioEnabled||!controle.audioPlaylistId){youtubePlayer.pauseVideo();return}
+          if(controle.audioPlaying)youtubePlayer.playVideo();else youtubePlayer.pauseVideo();
+        }catch(erro){}
+      }
       function aplicarImagem(){
         const imagem=document.getElementById("overlayImage");
         const ticker=document.querySelector(".ticker");
@@ -132,13 +166,14 @@
       }
       async function consultarControle(){
         if(consultandoControle)return;consultandoControle=true;const abort=new AbortController();const timeout=setTimeout(()=>abort.abort(),4500);
-        try{const url=new URL(`${CONFIG.apiBase}/api/control/state`);if(!CONFIG.forcarPlacar){url.searchParams.set("client",clienteId);url.searchParams.set("revision",controle.revision);url.searchParams.set("mode",controle.mode==="oculto"?"oculto":modoAtual);url.searchParams.set("imageReady",imagemCarregada?"1":"0")}
+        try{const url=new URL(`${CONFIG.apiBase}/api/control/state`);if(!CONFIG.forcarPlacar){url.searchParams.set("client",clienteId);url.searchParams.set("revision",controle.revision);url.searchParams.set("mode",controle.mode==="oculto"?"oculto":modoAtual);url.searchParams.set("imageReady",imagemCarregada?"1":"0");url.searchParams.set("audioReady",youtubeReady?"1":"0");url.searchParams.set("audioState",audioPlayerState)}
           const resposta=await fetch(url,{cache:"no-store",signal:abort.signal});if(!resposta.ok)return;const novo=await resposta.json();if(!["auto","rodape","placar","oculto"].includes(novo.mode)||!Number.isFinite(novo.revision))return;
-          const mudou=novo.revision!==controle.revision||novo.scrollOffsetY!==controle.scrollOffsetY||novo.overlayEnabled!==controle.overlayEnabled||novo.overlayUrl!==controle.overlayUrl||novo.overlayFit!==controle.overlayFit||novo.scrollDuration!==controle.scrollDuration||novo.mode!==controle.mode||novo.message!==controle.message||novo.messageMode!==controle.messageMode;
+          const mudou=novo.revision!==controle.revision||novo.scrollOffsetY!==controle.scrollOffsetY||novo.overlayEnabled!==controle.overlayEnabled||novo.overlayUrl!==controle.overlayUrl||novo.overlayFit!==controle.overlayFit||novo.scrollDuration!==controle.scrollDuration||novo.mode!==controle.mode||novo.message!==controle.message||novo.messageMode!==controle.messageMode||novo.audioEnabled!==controle.audioEnabled||novo.audioPlaylistId!==controle.audioPlaylistId||novo.audioPlaying!==controle.audioPlaying||novo.audioVolume!==controle.audioVolume||novo.audioMuted!==controle.audioMuted||novo.audioLoop!==controle.audioLoop||novo.audioActionSeq!==controle.audioActionSeq;
           if(novo.mode!==controle.mode&&novo.mode==="placar")inicioManual=Date.now();
           controle=novo;
           aplicarPosicaoScroll();
           aplicarImagem();
+          aplicarAudio();
           if(mudou){ajustarVelocidadeScroll();try{localStorage.setItem(chaveControle,JSON.stringify(controle))}catch(erro){}renderizarTicker();aplicarCiclo()}
         }catch(erro){}finally{clearTimeout(timeout);consultandoControle=false}
       }
@@ -232,7 +267,7 @@
       async function atualizar(){if(atualizando)return;atualizando=true;try{const novos=await Promise.all(CATEGORIAS.map(buscarCategoria));resultadosAtuais=novos.map((novo,indice)=>{const anterior=resultadosAtuais[indice];return anterior?.live&&(!novo.live||(anterior.dia||0)>(novo.dia||0))?{...anterior,consultaValida:false}:novo});confirmarLinha(resultadosAtuais);renderizarTicker();renderizarQuadros();aplicarCiclo()}finally{atualizando=false}}
       async function verificarVersao(){try{const resposta=await fetch(`${window.location.pathname}?_versao=${Date.now()}`,{cache:"no-store"});const html=await resposta.text();const versao=html.match(/const BUILD_ID="([^"]+)"/);if(versao&&versao[1]!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",versao[1]);window.location.replace(destino.toString())}}catch(erro){}}
       if(params.get("_build")!==BUILD_ID){const destino=new URL(window.location.href);destino.searchParams.set("_build",BUILD_ID);window.location.replace(destino.toString());return}
-      cycleStartedAt=Date.now();aplicarPosicaoScroll();aplicarImagem();renderizarTicker();renderizarQuadros();aplicarCiclo();atualizar();consultarControle();window.setInterval(consultarControle,5000);window.setInterval(atualizar,CONFIG.refreshMs);window.setInterval(aplicarCiclo,500);window.setInterval(verificarVersao,60000)
+      cycleStartedAt=Date.now();carregarYoutubeApi();aplicarPosicaoScroll();aplicarImagem();renderizarTicker();renderizarQuadros();aplicarCiclo();atualizar();consultarControle();window.setInterval(consultarControle,5000);window.setInterval(atualizar,CONFIG.refreshMs);window.setInterval(aplicarCiclo,500);window.setInterval(verificarVersao,60000)
     })();
   </script>
 </body>
