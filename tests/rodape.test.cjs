@@ -47,8 +47,8 @@ r=results(2);r[1]=results()[1];assert.equal(t.detectarLinhaCompleta(r),null);
 r=results();t.setResults(r);t.confirmarLinha(r);t.aplicarCiclo();assert.equal(t.state().modoAtual,'rodape');
 t.confirmarLinha(r);t.aplicarCiclo();assert.equal(t.state().modoAtual,'placar');
 assert.equal(t.state().ultimaLinha,1);
-now+=30000;t.aplicarCiclo();assert.equal(t.state().grupoAtual,1);
-now+=30000;t.aplicarCiclo();t.renderizarQuadros();
+now+=15000;t.aplicarCiclo();assert.equal(t.state().grupoAtual,1);
+now+=15000;t.aplicarCiclo();t.renderizarQuadros();
 assert.match(t.nodes.get('cards').innerHTML,/Atleta 9/);
 assert.equal((t.nodes.get('cards').innerHTML.match(/7º ao 9º/g)||[]).length,3);
 const restored=harness();restored.setResults(r);restored.aplicarCiclo();assert.equal(restored.state().grupoAtual,2);
@@ -69,7 +69,7 @@ t.setControl({overlayEnabled:true,overlayUrl:'https://example.com/test.png'});t.
 t.nodes.get('overlayImage').onload();assert.equal(t.nodes.get('overlayImage').style.display,'block');
 t.setControl({overlayEnabled:false});t.aplicarImagem();assert.equal(t.nodes.get('overlayImage').style.display,'none');
 t.setControl({overlayEnabled:true});t.aplicarImagem();assert.equal(t.nodes.get('overlayImage').style.display,'block');
-console.log('OK: ausência, linha incompleta, falha API, lista truncada, dias 1/2, confirmação dupla, 3 minutos, paginação 30s, atleta 9, sincronização, recarga e sem repetição.');
+console.log('OK: ausência, linha incompleta, falha API, lista truncada, dias 1/2, confirmação dupla, 3 minutos, paginação 15s, atleta 9, sincronização, recarga e sem repetição.');
 
 assert.ok(!html.includes('}\\\\n    body.overlay-ativo'),'CSS do overlay não pode conter barra-n literal');
 
