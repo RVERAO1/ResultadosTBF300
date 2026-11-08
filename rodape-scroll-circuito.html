@@ -65,7 +65,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261107-circuito-etapa4-placar-15s-v1";
+      const BUILD_ID="20261108-circuito-etapa4-sem-numero-evento-v2";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -214,7 +214,7 @@
       }
       function renderizarCategoriaTicker(resultado){
         if(!resultado.live||resultado.demo||!resultado.atletas.length)return "";
-        const atletas=resultado.atletas.slice(0,5);const origem=`Evento ${CONFIG.evento} • Dia ${resultado.dia}`;
+        const atletas=resultado.atletas.slice(0,5);const origem=`Dia ${resultado.dia}`;
         const itens=atletas.map((atleta,index)=>{const complemento=`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`
       }
