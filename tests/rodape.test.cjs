@@ -22,7 +22,7 @@ function harness() {
     `globalThis.test={detectarLinhaCompleta,normalizarAtletas,renderizarCategoriaTicker,
       confirmarLinha,aplicarCiclo,setResults:r=>resultadosAtuais=r,
       state:()=>({...estado,modoAtual,grupoAtual}),renderizarQuadros,
-      setControl:c=>{controle={...controle,...c}},renderizarTicker,aplicarImagem,aplicarPosicaoScroll};`);
+      setControl:c=>{controle={...controle,...c}},renderizarTicker,renderizarConfrontosFinais,aplicarImagem,aplicarPosicaoScroll};`);
   vm.runInNewContext(script, context);
   return {...context.test,nodes};
 }
@@ -78,3 +78,5 @@ assert.ok(html.includes('function aplicarAudio()'),'Fonte deve conter controle d
 
 assert.ok(html.includes('tickerSignature'), 'Fonte deve controlar assinatura do ticker');
 assert.ok(html.includes('mudouConteudo'), 'Ticker não deve reiniciar sem mudança de conteúdo');
+
+const finais=harness();finais.setResults(results());const txtFinais=finais.renderizarConfrontosFinais();assert.match(txtFinais,/CONFRONTO 1: 1º Atleta 1 x 4º Atleta 4/);assert.match(txtFinais,/CONFRONTO 2: 2º Atleta 2 x 3º Atleta 3/);
