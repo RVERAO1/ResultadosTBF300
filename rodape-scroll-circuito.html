@@ -65,7 +65,7 @@
   <script>
     (()=>{
       "use strict";
-      const BUILD_ID="20261108-circuito-etapa4-sem-numero-evento-v2";
+      const BUILD_ID="20261108-circuito-etapa4-finais-confrontos-v1";
       const params=new URLSearchParams(window.location.search);
       const numeroPositivo=(nome,padrao,minimo)=>{const valor=Number(params.get(nome));return Number.isFinite(valor)&&valor>=minimo?valor:padrao};
       const CONFIG={evento:params.get("evento")||"591",dia:params.get("dia")||"auto",apiBase:(params.get("api")||"https://noisy-sea-5a8a.rverao1.workers.dev").replace(/\/$/,""),refreshMs:Math.max(10000,Number(params.get("refresh"))||30000),duracao:Math.max(20,Number(params.get("duracao"))||72),placarMs:180000,forcarPlacar:params.get("preview")==="placar"||params.get("modo")==="placar",testeVisual:params.get("testeVisual")==="1"||params.get("preview")==="placar"};
@@ -218,6 +218,16 @@
         const itens=atletas.map((atleta,index)=>{const complemento=`${atleta.total} pontos • média ${formatarMedia(atleta.media)}`;return `<span class="ranking"><span class="position">${escapeHtml(atleta.posicao||index+1)}º</span><span class="athlete">${escapeHtml(atleta.atleta)}</span><span class="details">${escapeHtml(complemento)}</span></span><span class="separator"></span>`}).join("");
         return `<span class="category">${escapeHtml(resultado.categoria.nome)} • ${escapeHtml(origem)}</span><span class="separator"></span>${itens}`
       }
+      function renderizarConfrontosFinais(){
+        const nomes={"masculino-1":"1ª DIVISÃO MASCULINA","masculino-2":"2ª DIVISÃO MASCULINA","feminino":"DIVISÃO FEMININA"};
+        return resultadosAtuais.map(resultado=>{
+          if(!resultado.live||resultado.demo||resultado.atletas.length<4)return "";
+          const atletas=[...resultado.atletas].sort((a,b)=>(a.posicao||999)-(b.posicao||999)).slice(0,4);
+          const [primeiro,segundo,terceiro,quarto]=atletas;
+          const texto="FINAIS • "+(nomes[resultado.categoria.key]||resultado.categoria.nome)+" • CONFRONTO 1: 1º "+primeiro.atleta+" x 4º "+quarto.atleta+" • CONFRONTO 2: 2º "+segundo.atleta+" x 3º "+terceiro.atleta;
+          return `<span class="credits">${escapeHtml(texto)}</span><span class="separator"></span>`;
+        }).join("");
+      }
       function aplicarPosicaoScroll(){
         const offset=Math.max(-120,Math.min(240,Number(controle.scrollOffsetY)||0));
         const ticker=document.querySelector(".ticker");
@@ -248,7 +258,8 @@
           "RANKING APÓS A 3ª ETAPA • MASCULINO B • 1º GUSTAVO BUZELLE 250 • 2º GILBERTO RIBEIRO 225 • 3º NELSON SAGA 205 • 4º NELSON MARQUES 195 • 5º RONALDO OLIVEIRA 180 • 6º CÉLIO BELMONTE 155 • 7º ADELMO NOIMANN 125 • 8º GUILHERME SCHEER 110",
           "RANKING APÓS A 3ª ETAPA • FEMININO • 1ª RAQUEL TENUTA 285 • 2ª EDNÉIA MIRANDA SAGA 205 • 3ª JOSÉLIA MORENO 165 • 4ª AGDA NOGUEIRA 150 • 5ª DANIELLE LEDUR 145 • 6ª ADRIANA TAVEIRA 100 • 7ª TEREZA BELMONTE 60 • 8ª BET TEIXEIRA 55"
         ].map(texto=>`<span class="credits">${escapeHtml(texto)}</span><span class="separator"></span>`).join("");
-        const conteudo=temResultados?resultadosAtuais.map(renderizarCategoriaTicker).join("")+apoio:fallback+apoio;
+        const confrontos=temResultados?renderizarConfrontosFinais():"";
+        const conteudo=temResultados?resultadosAtuais.map(renderizarCategoriaTicker).join("")+confrontos+apoio:fallback+apoio;
         const mensagem=controle.message?`<span class="credits">${escapeHtml(controle.message)}</span><span class="separator"></span>`:"";
         const final=mensagem&&controle.messageMode==="replace"?mensagem+apoio:conteudo+mensagem;
         const mudouConteudo=final!==tickerSignature;
