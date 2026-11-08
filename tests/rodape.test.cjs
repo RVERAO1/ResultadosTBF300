@@ -79,4 +79,6 @@ assert.ok(html.includes('function aplicarAudio()'),'Fonte deve conter controle d
 assert.ok(html.includes('tickerSignature'), 'Fonte deve controlar assinatura do ticker');
 assert.ok(html.includes('mudouConteudo'), 'Ticker não deve reiniciar sem mudança de conteúdo');
 
-const finais=harness();finais.setResults(results());const txtFinais=finais.renderizarConfrontosFinais();assert.match(txtFinais,/CONFRONTO 1: 1º Atleta 1 x 4º Atleta 4/);assert.match(txtFinais,/CONFRONTO 2: 2º Atleta 2 x 3º Atleta 3/);
+const finais=harness();finais.setResults(results());const txtFinais=finais.renderizarConfrontosFinais();assert.match(txtFinais,/SEMIFINAL 1: 1º Atleta 1 x 4º Atleta 4/);assert.match(txtFinais,/SEMIFINAL 2: 2º Atleta 2 x 3º Atleta 3/);
+
+assert.ok(html.includes('VENCEDOR DA SEMIFINAL 1 x VENCEDOR DA SEMIFINAL 2'),'Rodape deve anunciar a final');
