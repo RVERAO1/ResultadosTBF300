@@ -79,6 +79,6 @@ assert.ok(html.includes('function aplicarAudio()'),'Fonte deve conter controle d
 assert.ok(html.includes('tickerSignature'), 'Fonte deve controlar assinatura do ticker');
 assert.ok(html.includes('mudouConteudo'), 'Ticker não deve reiniciar sem mudança de conteúdo');
 
-const finais=harness();finais.setResults(results());const txtFinais=finais.renderizarConfrontosFinais();assert.match(txtFinais,/SEMIFINAL 1: 1º Atleta 1 x 4º Atleta 4/);assert.match(txtFinais,/SEMIFINAL 2: 2º Atleta 2 x 3º Atleta 3/);
+const finais=harness();finais.setResults(results());const txtFinais=finais.renderizarConfrontosFinais();assert.match(txtFinais,/MOREIRA ÁVILA 169 x 201 MICHEL BELMONTE/);assert.match(txtFinais,/CÉLIO BELMONTE 213 x 172 GILBERTO RIBEIRO/);assert.match(txtFinais,/EDNEIA MIRANDA SAGA 143 x 130 JOSELIA MORENO/);assert.match(txtFinais,/MELHOR DE 3/);nais,/SEMIFINAL 1: 1º Atleta 1 x 4º Atleta 4/);assert.match(txtFinais,/SEMIFINAL 2: 2º Atleta 2 x 3º Atleta 3/);
 
 assert.ok(html.includes('VENCEDOR DA SEMIFINAL 1 x VENCEDOR DA SEMIFINAL 2'),'Rodape deve anunciar a final');
